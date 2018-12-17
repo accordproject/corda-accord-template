@@ -1,0 +1,9 @@
+{
+  "$class": "org.accordproject.supplyagreement.AgreementState",
+  "paymentObligation": {
+    "$class": "org.accordproject.supplyagreement.PaymentObligation",
+    "amount": 1577.2,
+    "party": "PETER"
+  },
+  "stateId": "org.accordproject.supplyagreement.AgreementState#1"
+}

@@ -1,0 +1,86 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+namespace org.accordproject.installmentsale
+
+import org.accordproject.cicero.runtime.*
+import org.accordproject.money.MonetaryAmount
+
+contract InstallmentSale over InstallmentSaleContract state InstallmentSaleState {
+  clause init(request : Request) : Response {
+    set state InstallmentSaleState{
+			stateId: "#1",
+      status: "WaitingForFirstDayOfNextMonth",
+      balance_remaining: contract.INITIAL_DUE,
+      total_paid: 0.0,
+      next_payment_month: contract.FIRST_MONTH
+    };
+    return Response{}
+  }
+
+  clause PayInstallment(request : Installment) : Balance emits PaymentObligation {
+    //enforce (state.status = "WaitingForFirstDayOfNextMonth"); // Make sure this is only called in the right state
+    enforce (contract.MIN_PAYMENT <= state.balance_remaining) and (state.next_payment_month <i 23);
+    enforce (contract.MIN_PAYMENT <= request.amount); // Underpaying is forbidden
+    enforce (request.amount <= state.balance_remaining); // overpaying is forbidden. this is NOT checked statically.
+
+    let before_interest = state.balance_remaining - request.amount;
+    let balance = before_interest * (1.0 + contract.INTEREST_RATE/100.00);
+    let total_paid = state.total_paid + request.amount;
+
+    set state InstallmentSaleState{
+      stateId: "#1",
+      status: "WaitingForFirstDayOfNextMonth",
+      balance_remaining: balance,
+      total_paid: total_paid,
+      next_payment_month: state.next_payment_month +i 1
+    };
+    emit PaymentObligation{
+			contract: contract,
+			promisor: some(contract.BUYER),
+			promisee: some(contract.SELLER),
+			deadline: none,
+			amount: MonetaryAmount{ doubleValue : request.amount, currencyCode : "USD" },
+			description: contract.BUYER.partyId ++ " should pay installment to " ++ contract.SELLER.partyId
+		};
+    return Balance{
+      balance: balance,
+      total_paid: total_paid
+    }
+  }
+  clause PayLastInstallment(request : ClosingPayment) : Balance emits PaymentObligation {
+    enforce (request.amount = state.balance_remaining + contract.DUE_AT_CLOSING);
+    let balance = state.balance_remaining + contract.DUE_AT_CLOSING - request.amount;
+    let total_paid = state.total_paid + request.amount;
+    set state InstallmentSaleState{
+      stateId: "#1",
+      status: "Fulfilled",
+      balance_remaining: balance,
+      total_paid: total_paid,
+      next_payment_month: 0
+    };
+    emit PaymentObligation{
+			contract: contract,
+			promisor: some(contract.BUYER),
+			promisee: some(contract.SELLER),
+			deadline: none,
+			amount: MonetaryAmount{ doubleValue : request.amount, currencyCode : "USD" },
+			description: contract.BUYER.partyId ++ " should pay installment to " ++ contract.SELLER.partyId
+		};
+    return Balance{
+      balance: balance,
+      total_paid: total_paid
+    }
+  }
+}

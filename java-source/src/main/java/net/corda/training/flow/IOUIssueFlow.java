@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import net.corda.core.contracts.Command;
 import net.corda.core.contracts.ContractState;
+import net.corda.core.crypto.SecureHash;
 import net.corda.core.flows.*;
 import net.corda.core.identity.AbstractParty;
 import net.corda.core.identity.Party;
@@ -30,9 +31,11 @@ public class IOUIssueFlow {
     @StartableByRPC
     public static class InitiatorFlow extends FlowLogic<SignedTransaction> {
         private final IOUState state;
+        private final SecureHash ciceroTemplateId;
 
-        public InitiatorFlow(IOUState state) {
-            this.state = state;
+        public InitiatorFlow(IOUState state, SecureHash ciceroTemplateId) {
+        	this.state = state;
+        	this.ciceroTemplateId = ciceroTemplateId;
         }
 
         @Suspendable
@@ -56,6 +59,8 @@ public class IOUIssueFlow {
             builder.addOutputState(state, IOUContract.IOU_CONTRACT_ID);
             builder.addCommand(issueCommand);
 
+            // Step 4.5 Added the Cicero template contract to the state
+			builder.addAttachment(ciceroTemplateId);
 
             // Step 5. Verify and sign it with our KeyPair.
             builder.verify(getServiceHub());
