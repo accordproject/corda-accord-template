@@ -1,17 +1,12 @@
 package net.corda.training.flow;
 
 import jdk.internal.util.xml.impl.Input;
-import net.corda.client.rpc.CordaRPCClient;
-import net.corda.client.rpc.RPCConnection;
-import net.corda.core.contracts.Amount;
 import net.corda.core.contracts.Command;
 import net.corda.core.contracts.TransactionVerificationException;
 import net.corda.core.crypto.SecureHash;
 import net.corda.core.identity.CordaX500Name;
 import net.corda.core.transactions.SignedTransaction;
-import net.corda.core.utilities.NetworkHostAndPort;
 import net.corda.finance.*;
-import net.corda.nodeapi.internal.persistence.DatabaseTransaction;
 import net.corda.testing.node.*;
 import net.corda.core.identity.Party;
 import net.corda.core.flows.*;
@@ -19,7 +14,6 @@ import net.corda.core.transactions.TransactionBuilder;
 
 
 import net.corda.training.contract.IOUContract;
-import net.corda.training.org.accordproject.promissorynote.PromissoryNoteContract;
 import net.corda.training.state.IOUState;
 
 import java.io.*;
@@ -27,18 +21,21 @@ import java.nio.file.FileAlreadyExistsException;
 import java.util.stream.Collectors;
 import java.util.concurrent.Future;
 import java.util.*;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
+import org.accordproject.promissorynote.PromissoryNoteContract;
 import org.accordproject.usa.business.BusinessEntity;
 import org.accordproject.money.CurrencyCode;
 import org.accordproject.money.MonetaryAmount;
+import org.hibernate.result.Output;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.core.IsInstanceOf.*;
-
-import java.security.PublicKey;
-
 
 /**
  * Practical exercise instructions Flows part 1.
@@ -76,7 +73,7 @@ public class IOUIssueFlowTests {
     @Rule
     public final ExpectedException exception = ExpectedException.none();
 
-    public PromissoryNoteContract getTestPromissoryNoteContract(Party lender, Party borrower) {
+    private PromissoryNoteContract getTestPromissoryNoteContract(Party lender, Party borrower) {
         PromissoryNoteContract promissoryNoteContract = new PromissoryNoteContract();
         MonetaryAmount amount = new MonetaryAmount();
         amount.doubleValue = 10.0;
@@ -99,14 +96,35 @@ public class IOUIssueFlowTests {
         return promissoryNoteContract;
     }
 
-    public SecureHash addCiceroTemplate(Party lender) throws FileNotFoundException, FileAlreadyExistsException, IOException {
+    private InputStream getCompressed( InputStream is )
+            throws IOException
+    {
+        byte data[] = new byte[2048];
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ZipOutputStream zos = new ZipOutputStream( bos );
+        BufferedInputStream entryStream = new BufferedInputStream( is, 2048);
+        ZipEntry entry = new ZipEntry( "" );
+        zos.putNextEntry( entry );
+        int count;
+        while ( ( count = entryStream.read( data, 0, 2048) ) != -1 )
+        {
+            zos.write( data, 0, count );
+        }
+        entryStream.close();
+        zos.closeEntry();
+        zos.close();
+
+        return new ByteArrayInputStream( bos.toByteArray() );
+    }
+
+    private SecureHash addCiceroTemplate(Party lender) throws FileNotFoundException, FileAlreadyExistsException, IOException {
         //TODO: use the relative path to the file.
-        File ciceroTemplateFile = new File("/Users/nicholasrogers/IdeaProjects/corda-accord-template/java-source/src/main/java/AccordProject/cicero-template-library/src/promissory-note/grammar/template.tem.zip");
-        InputStream ciceroTargetStream = new FileInputStream(ciceroTemplateFile);
+        File ciceroTemplateFile = new File("./src/main/java/AccordProject/cicero-template-library/src/promissory-note/grammar/template.tem");
+        InputStream ciceroTemplateFileInputStream = new FileInputStream(ciceroTemplateFile);
         SecureHash secureHash;
         return a.transaction(() -> {
             try {
-                return a.getServices().getAttachments().importAttachment(ciceroTargetStream, lender.getName().toString(), "ciceroContractTemplate.txt.zip");
+                return a.getServices().getAttachments().importAttachment(getCompressed(ciceroTemplateFileInputStream), lender.getName().toString(), "ciceroContractTemplate.txt.zip");
             } catch(Exception exception) {
                 System.out.println(exception);
             }

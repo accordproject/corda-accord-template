@@ -9,7 +9,7 @@ import net.corda.core.identity.AbstractParty;
 import java.util.*;
 import com.google.common.collect.ImmutableList;
 import net.corda.core.serialization.ConstructorForDeserialization;
-import net.corda.training.org.accordproject.promissorynote.PromissoryNoteContract;
+import org.accordproject.promissorynote.PromissoryNoteContract;
 
 /**
  * This is where you'll add the definition of your state object. Look at the unit tests in [IOUStateTests] for
