@@ -1,8 +1,13 @@
 package net.corda.training.flow;
 
 import co.paralleluniverse.fibers.Suspendable;
+
+import java.io.*;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import net.corda.core.contracts.Command;
 import net.corda.core.contracts.ContractState;
@@ -17,6 +22,11 @@ import net.corda.core.utilities.ProgressTracker;
 
 import net.corda.training.contract.IOUContract;
 import net.corda.training.state.IOUState;
+import org.accordproject.money.CurrencyCode;
+import org.accordproject.money.MonetaryAmount;
+import org.accordproject.promissorynote.PromissoryNoteContract;
+import org.accordproject.usa.business.BusinessEntity;
+
 import static net.corda.training.contract.IOUContract.Commands.*;
 
 /**

@@ -74,6 +74,10 @@ public class IOUIssueFlowTests {
     public final ExpectedException exception = ExpectedException.none();
 
     private PromissoryNoteContract getTestPromissoryNoteContract(Party lender, Party borrower) {
+
+        ProcessBuilder ciceroParseExecutor = new ProcessBuilder();
+        ciceroParseExecutor.command();
+
         PromissoryNoteContract promissoryNoteContract = new PromissoryNoteContract();
         MonetaryAmount amount = new MonetaryAmount();
         amount.doubleValue = 10.0;
@@ -122,6 +126,8 @@ public class IOUIssueFlowTests {
         File ciceroTemplateFile = new File("./src/main/java/AccordProject/cicero-template-library/src/promissory-note/grammar/template.tem");
         InputStream ciceroTemplateFileInputStream = new FileInputStream(ciceroTemplateFile);
         SecureHash secureHash;
+
+
         return a.transaction(() -> {
             try {
                 return a.getServices().getAttachments().importAttachment(getCompressed(ciceroTemplateFileInputStream), lender.getName().toString(), "ciceroContractTemplate.txt.zip");
