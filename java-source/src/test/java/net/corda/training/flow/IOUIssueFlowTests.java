@@ -1,6 +1,5 @@
 package net.corda.training.flow;
 
-import jdk.internal.util.xml.impl.Input;
 import net.corda.core.contracts.Command;
 import net.corda.core.contracts.TransactionVerificationException;
 import net.corda.core.crypto.SecureHash;
@@ -121,12 +120,10 @@ public class IOUIssueFlowTests {
         return new ByteArrayInputStream( bos.toByteArray() );
     }
 
-    private SecureHash addCiceroTemplate(Party lender) throws FileNotFoundException, FileAlreadyExistsException, IOException {
-        //TODO: use the relative path to the file.
-        File ciceroTemplateFile = new File("./src/main/java/AccordProject/cicero-template-library/src/promissory-note/grammar/template.tem");
-        InputStream ciceroTemplateFileInputStream = new FileInputStream(ciceroTemplateFile);
-        SecureHash secureHash;
+    private SecureHash addCiceroContract(Party lender) throws FileNotFoundException, FileAlreadyExistsException, IOException {
 
+        File ciceroTemplateFile = new File("./src/main/resources/src-contract.txt");
+        InputStream ciceroTemplateFileInputStream = new FileInputStream(ciceroTemplateFile);
 
         return a.transaction(() -> {
             try {
@@ -160,11 +157,11 @@ public class IOUIssueFlowTests {
     public void flowReturnsCorrectlyFormedPartiallySignedTransaction() throws Exception {
         Party lender = a.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
         Party borrower = b.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
-        IOUState iou = new IOUState(Currencies.POUNDS(10), lender, borrower, getTestPromissoryNoteContract(lender, borrower));
+        IOUState iou = new IOUState(Currencies.POUNDS(10), lender, borrower);
 
         // TODO: Note naming conflicts for transactions (database transaction) and getAttachments (gets attachment functionality)
         // TODO: Write a wrapper class for Lambda function
-        IOUIssueFlow.InitiatorFlow flow = new IOUIssueFlow.InitiatorFlow(iou, addCiceroTemplate(lender));
+        IOUIssueFlow.InitiatorFlow flow = new IOUIssueFlow.InitiatorFlow(iou, addCiceroContract(lender));
 
         Future<SignedTransaction> future = a.startFlow(flow);
         mockNetwork.runNetwork();
@@ -204,8 +201,8 @@ public class IOUIssueFlowTests {
         Party lender = a.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
         Party borrower = b.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
 
-        IOUState zeroIou = new IOUState(Currencies.POUNDS(0), lender, borrower, getTestPromissoryNoteContract(lender, borrower));
-        Future<SignedTransaction> futureOne = a.startFlow(new IOUIssueFlow.InitiatorFlow(zeroIou, addCiceroTemplate(lender)));
+        IOUState zeroIou = new IOUState(Currencies.POUNDS(0), lender, borrower);
+        Future<SignedTransaction> futureOne = a.startFlow(new IOUIssueFlow.InitiatorFlow(zeroIou, addCiceroContract(lender)));
         mockNetwork.runNetwork();
 
         exception.expectCause(instanceOf(TransactionVerificationException.class));
@@ -213,15 +210,15 @@ public class IOUIssueFlowTests {
         futureOne.get();
 
         // Check that an IOU with the same participants fails.
-        IOUState borrowerIsLenderIou = new IOUState(Currencies.POUNDS(10), lender, lender, getTestPromissoryNoteContract(lender, borrower));
-        Future<SignedTransaction> futureTwo = a.startFlow(new IOUIssueFlow.InitiatorFlow(borrowerIsLenderIou, addCiceroTemplate(lender)));
+        IOUState borrowerIsLenderIou = new IOUState(Currencies.POUNDS(10), lender, lender);
+        Future<SignedTransaction> futureTwo = a.startFlow(new IOUIssueFlow.InitiatorFlow(borrowerIsLenderIou, addCiceroContract(lender)));
         mockNetwork.runNetwork();
         exception.expectCause(instanceOf(TransactionVerificationException.class));
         futureTwo.get();
 
         // Check a good IOU passes.
-        IOUState iou = new IOUState(Currencies.POUNDS(10), lender, borrower, getTestPromissoryNoteContract(lender, borrower));
-        Future<SignedTransaction> futureThree = a.startFlow(new IOUIssueFlow.InitiatorFlow(iou, addCiceroTemplate(lender)));
+        IOUState iou = new IOUState(Currencies.POUNDS(10), lender, borrower);
+        Future<SignedTransaction> futureThree = a.startFlow(new IOUIssueFlow.InitiatorFlow(iou, addCiceroContract(lender)));
         mockNetwork.runNetwork();
         futureThree.get();
     }
@@ -254,8 +251,8 @@ public class IOUIssueFlowTests {
     public void flowReturnsTransactionSignedByBothParties() throws Exception {
         Party lender = a.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
         Party borrower = b.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
-        IOUState iou = new IOUState(Currencies.POUNDS(10), lender, borrower, getTestPromissoryNoteContract(lender, borrower));
-        IOUIssueFlow.InitiatorFlow flow = new IOUIssueFlow.InitiatorFlow(iou, addCiceroTemplate(lender));
+        IOUState iou = new IOUState(Currencies.POUNDS(10), lender, borrower);
+        IOUIssueFlow.InitiatorFlow flow = new IOUIssueFlow.InitiatorFlow(iou, addCiceroContract(lender));
 
         Future<SignedTransaction> future = a.startFlow(flow);
         mockNetwork.runNetwork();
@@ -280,8 +277,8 @@ public class IOUIssueFlowTests {
     public void flowRecordsTheSameTransactionInBothPartyVaults() throws Exception {
         Party lender = a.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
         Party borrower = b.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
-        IOUState iou = new IOUState(Currencies.POUNDS(10), lender, borrower, getTestPromissoryNoteContract(lender, borrower));
-        IOUIssueFlow.InitiatorFlow flow = new IOUIssueFlow.InitiatorFlow(iou, addCiceroTemplate(lender));
+        IOUState iou = new IOUState(Currencies.POUNDS(10), lender, borrower);
+        IOUIssueFlow.InitiatorFlow flow = new IOUIssueFlow.InitiatorFlow(iou, addCiceroContract(lender));
 
         Future<SignedTransaction> future = a.startFlow(flow);
         mockNetwork.runNetwork();

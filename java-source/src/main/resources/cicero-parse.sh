@@ -1,5 +1,3 @@
 #!/usr/bin/env bash
 
-$1 = templateDirectory
-
-cicero parse --template templateDirectory
+cicero parse --template $1

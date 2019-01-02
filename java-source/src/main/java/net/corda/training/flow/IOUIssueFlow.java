@@ -3,12 +3,18 @@ package net.corda.training.flow;
 import co.paralleluniverse.fibers.Suspendable;
 
 import java.io.*;
+import java.nio.file.FileAlreadyExistsException;
+import java.security.PublicKey;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.google.common.collect.ImmutableList;
+import net.corda.core.contracts.Amount;
 import net.corda.core.contracts.Command;
 import net.corda.core.contracts.ContractState;
 import net.corda.core.crypto.SecureHash;
@@ -20,12 +26,18 @@ import net.corda.core.transactions.TransactionBuilder;
 import static net.corda.core.contracts.ContractsDSL.requireThat;
 import net.corda.core.utilities.ProgressTracker;
 
+import net.corda.finance.Currencies;
 import net.corda.training.contract.IOUContract;
 import net.corda.training.state.IOUState;
 import org.accordproject.money.CurrencyCode;
 import org.accordproject.money.MonetaryAmount;
 import org.accordproject.promissorynote.PromissoryNoteContract;
 import org.accordproject.usa.business.BusinessEntity;
+import org.apache.commons.io.IOUtils;
+import org.intellij.lang.annotations.Flow;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import scala.util.parsing.json.JSON;
 
 import static net.corda.training.contract.IOUContract.Commands.*;
 
@@ -48,19 +60,42 @@ public class IOUIssueFlow {
         	this.ciceroTemplateId = ciceroTemplateId;
         }
 
+		private InputStream getStateFromContract() throws FileNotFoundException, FileAlreadyExistsException, IOException {
+			String[] command = {"./resources/cicero-parse.sh", "java/AccordProject/cicero-template-library/src/promissory-note"};
+			ProcessBuilder ciceroParse = new ProcessBuilder(command);
+			ciceroParse.directory(new File("./src/main"));
+			return ciceroParse.start().getInputStream();
+		}
+
         @Suspendable
         @Override
         public SignedTransaction call() throws FlowException {
+
+        	IOUState state;
+
+        	// Step 0. Generate an input state from the parsed Contract.
+			try {
+				InputStream dataFromContract = getStateFromContract();
+				String jsonData = IOUtils.toString(dataFromContract, "UTF-8");
+				PromissoryNoteContract parsedContractData = (PromissoryNoteContract) new JSONParser().parse(jsonData);
+				state = new IOUState(parsedContractData);
+			} catch (Exception e) {
+				throw new FlowException(e.getCause());
+			}
+
             // Step 1. Get a reference to the notary service on our network and our key pair.
             // Note: ongoing work to support multiple notary identities is still in progress.
             final Party notary = getServiceHub().getNetworkMapCache().getNotaryIdentities().get(0);
 
             // Step 2. Create a new issue command.
             // Remember that a command is a CommandData object and a list of CompositeKeys
-            final Command<Issue> issueCommand = new Command<>(
-                    new Issue(), state.getParticipants()
-                    .stream().map(AbstractParty::getOwningKey)
-                    .collect(Collectors.toList()));
+//            final Command<Issue> issueCommand = new Command<>(
+//                    new Issue(), state.getParticipants()
+//                    .stream().map(AbstractParty::getOwningKey)
+//                    .collect(Collectors.toList()));
+			final Command<Issue> issueCommand = new Command<>(
+                    new Issue(),
+					Arrays.asList(getOurIdentity().getOwningKey()));
 
             // Step 3. Create a new TransactionBuilder object.
             final TransactionBuilder builder = new TransactionBuilder(notary);
