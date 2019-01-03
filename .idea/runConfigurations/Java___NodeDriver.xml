@@ -5,10 +5,12 @@
     <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="net.corda.training.*" />
+        <option name="PATTERN" value="net.corda.accord.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
-    <method />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
   </configuration>
 </component>

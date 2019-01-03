@@ -67,11 +67,11 @@ Contract:
 Flow:
 
 * Issue template: `kotlin-source/src/main/kotlin/net/corda/training/flow/IOUIssueFlow.kt`
-* Issue tests: `kotlin-source/src/test/kotlin/net/corda/training/flow/IOUIssueFlowTests.kt`
+* Issue tests: `kotlin-source/src/test/kotlin/net/corda/training/flow/PromissoryNoteIssueFlowTests.kt`
 * Transfer template `kotlin-source/src/main/kotlin/net/corda/training/flow/IOUTransfer.kt`
-* Transfer tests: `kotlin-source/src/test/kotlin/net/corda/training/flow/IOUTransferFlowTests.kt`
+* Transfer tests: `kotlin-source/src/test/kotlin/net/corda/training/flow/PromissoryNoteTransferFlowTests.kt`
 * Settle template `kotlin-source/src/main/kotlin/net/corda/training/flow/IOUSettleFlow.kt`
-* Settle tests: `kotlin-source/src/test/kotlin/net/corda/training/flow/IOUSettleFlowTests.kt`
+* Settle tests: `kotlin-source/src/test/kotlin/net/corda/training/flow/PromissoryNoteSettleFlowTests.kt`
 
 The code in the following files was already added for you:
 
