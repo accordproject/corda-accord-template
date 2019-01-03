@@ -66,7 +66,7 @@ public class IOUSettleFlow {
             IOUState inputStateToSettle = (IOUState) ((StateAndRef) results.component1().get(0)).getState().getData();
 
             // 2. Check the party running this flow is the borrower.
-            if (!inputStateToSettle.borrower.getOwningKey().equals(getOurIdentity().getOwningKey())) {
+            if (!inputStateToSettle.makerCordaParty.getOwningKey().equals(getOurIdentity().getOwningKey())) {
                 throw new IllegalArgumentException("The borrower must issue the flow");
             }
 
@@ -84,7 +84,7 @@ public class IOUSettleFlow {
             }
 
             // 5. Get some cash from the vault and add a spend to our transaction builder.
-            Cash.generateSpend(getServiceHub(), tb, amount, inputStateToSettle.lender, ImmutableSet.of()).getSecond();
+            Cash.generateSpend(getServiceHub(), tb, amount, inputStateToSettle.lenderCordaParty, ImmutableSet.of()).getSecond();
 
 
             // 6.

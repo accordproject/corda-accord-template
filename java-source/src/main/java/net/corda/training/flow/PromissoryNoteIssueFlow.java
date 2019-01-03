@@ -4,63 +4,58 @@ import co.paralleluniverse.fibers.Suspendable;
 
 import java.io.*;
 import java.nio.file.FileAlreadyExistsException;
-import java.security.PublicKey;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.google.common.collect.ImmutableList;
-import net.corda.core.contracts.Amount;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.corda.core.contracts.Command;
 import net.corda.core.contracts.ContractState;
 import net.corda.core.crypto.SecureHash;
 import net.corda.core.flows.*;
-import net.corda.core.identity.AbstractParty;
 import net.corda.core.identity.Party;
 import net.corda.core.transactions.SignedTransaction;
 import net.corda.core.transactions.TransactionBuilder;
 import static net.corda.core.contracts.ContractsDSL.requireThat;
 import net.corda.core.utilities.ProgressTracker;
 
-import net.corda.finance.Currencies;
 import net.corda.training.contract.IOUContract;
 import net.corda.training.state.IOUState;
-import org.accordproject.money.CurrencyCode;
-import org.accordproject.money.MonetaryAmount;
 import org.accordproject.promissorynote.PromissoryNoteContract;
-import org.accordproject.usa.business.BusinessEntity;
 import org.apache.commons.io.IOUtils;
-import org.intellij.lang.annotations.Flow;
-import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import scala.util.parsing.json.JSON;
 
 import static net.corda.training.contract.IOUContract.Commands.*;
 
 /**
- * This is the flow which handles issuance of new IOUs on the ledger.
- * Gathering the counterparty's signature is handled by the [CollectSignaturesFlow].
- * Notarisation (if required) and commitment to the ledger is handled by the [FinalityFlow].
+ * This is the flow which handles issuance of new promissory notes from a legal document.
  * The flow returns the [SignedTransaction] that was committed to the ledger.
  */
-public class IOUIssueFlow {
+public class PromissoryNoteIssueFlow {
 
     @InitiatingFlow
     @StartableByRPC
     public static class InitiatorFlow extends FlowLogic<SignedTransaction> {
-        private final IOUState state;
-        private final SecureHash ciceroTemplateId;
+        private final Party lender;
+		private final Party maker;
+		private final SecureHash ciceroTemplateID;
 
-        public InitiatorFlow(IOUState state, SecureHash ciceroTemplateId) {
-        	this.state = state;
-        	this.ciceroTemplateId = ciceroTemplateId;
+        public InitiatorFlow(SecureHash ciceroTemplateId, Party lender, Party maker) {
+        	this.lender = lender;
+        	this.maker = maker;
+        	this.ciceroTemplateID = ciceroTemplateId;
         }
 
-		private InputStream getStateFromContract() throws FileNotFoundException, FileAlreadyExistsException, IOException {
+		/**
+		 * This function parses a legal document using a Cicero template and returns an input stream with the output from the terminal.
+		 * The script 'cicero-parse.sh writes the output of Cicero-parse to a temporary file, surpresses standard system-out messaging and then
+		 * logs out the JSON (which is captured in the input stream.
+ 		 */
+
+		// TODO: Enable the user to specify the file path for the promissary note template
+		// TODO: Adjust the cicero-parse command to include an option on only return the JSON with no initial messaging
+		// TODO: Enable the user to specify the file path for the source legal document
+		private InputStream getStateFromContract() throws IOException {
 			String[] command = {"./resources/cicero-parse.sh", "java/AccordProject/cicero-template-library/src/promissory-note"};
 			ProcessBuilder ciceroParse = new ProcessBuilder(command);
 			ciceroParse.directory(new File("./src/main"));
@@ -74,13 +69,16 @@ public class IOUIssueFlow {
         	IOUState state;
 
         	// Step 0. Generate an input state from the parsed Contract.
+
 			try {
 				InputStream dataFromContract = getStateFromContract();
 				String jsonData = IOUtils.toString(dataFromContract, "UTF-8");
-				PromissoryNoteContract parsedContractData = (PromissoryNoteContract) new JSONParser().parse(jsonData);
-				state = new IOUState(parsedContractData);
+				Object parsedJSONData = new JSONParser().parse(jsonData);
+				ObjectMapper objectMapper = new ObjectMapper();
+				PromissoryNoteContract parsedContractData = objectMapper.readValue(jsonData, PromissoryNoteContract.class);
+				state = new IOUState(parsedContractData, lender, maker);
 			} catch (Exception e) {
-				throw new FlowException(e.getCause());
+				throw new FlowException(e.toString());
 			}
 
             // Step 1. Get a reference to the notary service on our network and our key pair.
@@ -89,13 +87,10 @@ public class IOUIssueFlow {
 
             // Step 2. Create a new issue command.
             // Remember that a command is a CommandData object and a list of CompositeKeys
-//            final Command<Issue> issueCommand = new Command<>(
-//                    new Issue(), state.getParticipants()
-//                    .stream().map(AbstractParty::getOwningKey)
-//                    .collect(Collectors.toList()));
 			final Command<Issue> issueCommand = new Command<>(
                     new Issue(),
-					Arrays.asList(getOurIdentity().getOwningKey()));
+					Arrays.asList(lender.getOwningKey(), maker.getOwningKey())
+			);
 
             // Step 3. Create a new TransactionBuilder object.
             final TransactionBuilder builder = new TransactionBuilder(notary);
@@ -105,7 +100,7 @@ public class IOUIssueFlow {
             builder.addCommand(issueCommand);
 
             // Step 4.5 Added the Cicero template contract to the state
-			builder.addAttachment(ciceroTemplateId);
+			builder.addAttachment(ciceroTemplateID);
 
             // Step 5. Verify and sign it with our KeyPair.
             builder.verify(getServiceHub());

@@ -2,20 +2,11 @@ package net.corda.training.api;
 
 import net.corda.core.contracts.*;
 import net.corda.core.identity.CordaX500Name;
-import net.corda.core.identity.Party;
 import net.corda.core.messaging.CordaRPCOps;
 import net.corda.core.node.NodeInfo;
-import net.corda.core.transactions.SignedTransaction;
-import net.corda.core.internal.InternalUtils;
-import net.corda.core.internal.FetchDataFlow.Result;
 import net.corda.finance.contracts.GetBalances;
 import net.corda.finance.contracts.asset.Cash;
-import net.corda.finance.flows.CashIssueFlow;
 
-import net.corda.training.flow.IOUIssueFlow;
-import net.corda.training.flow.IOUSettleFlow;
-import net.corda.training.flow.IOUTransferFlow;
-import net.corda.training.flow.SelfIssueCashFlow;
 import net.corda.training.state.IOUState;
 
 import java.util.*;
@@ -149,8 +140,8 @@ public class IOUApi {
 //        // Create a new IOU state using the parameters given.
 //        try {
 //            IOUState state = new IOUState(new Amount<>((long)amount * 100, Currency.getInstance(currency)), lender, me);
-//            // Start the IOUIssueFlow. We block and waits for the flow to return.
-//            SignedTransaction result = rpcOps.startTrackedFlowDynamic(IOUIssueFlow.InitiatorFlow.class, state).getReturnValue().get();
+//            // Start the PromissoryNoteIssueFlow. We block and waits for the flow to return.
+//            SignedTransaction result = rpcOps.startTrackedFlowDynamic(PromissoryNoteIssueFlow.InitiatorFlow.class, state).getReturnValue().get();
 //            // Return the response.
 //            return Response
 //                    .status(Response.Status.CREATED)

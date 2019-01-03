@@ -14,6 +14,8 @@ import org.accordproject.money.MonetaryAmount;
 import org.accordproject.promissorynote.PromissoryNoteContract;
 import org.accordproject.usa.business.BusinessEntity;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * This is where you'll add the definition of your state object. Look at the unit tests in [IOUStateTests] for
  * instructions on how to complete the [IOUState] class.
@@ -21,8 +23,7 @@ import org.accordproject.usa.business.BusinessEntity;
  */
 public class IOUState implements ContractState, LinearState {
 
-    // TODO: `amount` and `principal` are both included in parsedJSON as a accord-project monetary amount.
-    // They must be converted to the Corda Amount<Currency> class.
+    // TODO: `amount` and `principal` are both included in parsedJSON as a accord-project monetary amount. They must be converted to the Corda Amount<Currency> class.
     public Amount<Currency> amount;
     public Date date;
     public String maker;
@@ -39,6 +40,7 @@ public class IOUState implements ContractState, LinearState {
     public String jurisdiction;
     public UniqueIdentifier linearId;
     public Amount<Currency> paid;
+    // TODO: Parties parsed from legal contract contain a String Name and Address, these needs to be assigned to Node identities.
     public Party makerCordaParty;
     public Party lenderCordaParty;
 
@@ -150,6 +152,14 @@ public class IOUState implements ContractState, LinearState {
         return paid;
     }
 
+    public Party getLenderCordaParty() {
+        return lenderCordaParty;
+    }
+
+    public Party getMakerCordaParty() {
+        return makerCordaParty;
+    }
+
     @Override
     public UniqueIdentifier getLinearId() {
 	    return linearId;
@@ -161,9 +171,31 @@ public class IOUState implements ContractState, LinearState {
         return ImmutableList.of(makerCordaParty, lenderCordaParty);
     }
 
-    public IOUState pay(Amount paidAmount) {
+    public IOUState pay(Amount<Currency> paidAmount) {
         Amount<Currency> newAmountPaid = this.paid.plus(paidAmount);
         return new IOUState(amount, date, maker, interestRate, individual, makerAddress, lender, legalEntity, lenderAddress, principal, maturityDate, defaultDays, insolvencyDays, jurisdiction, linearId, newAmountPaid, lenderCordaParty, makerCordaParty);
+    }
+
+    public IOUState withNewLender(Party newLender) {
+        return this.copy(
+                this.amount,
+                this.date,
+                this.maker,
+                this.interestRate,
+                this.individual,
+                this.makerAddress,
+                this.lender,
+                this.legalEntity,
+                this.lenderAddress,
+                this.principal,
+                this.maturityDate,
+                this.defaultDays,
+                this.insolvencyDays,
+                this.jurisdiction,
+                this.paid,
+                newLender,
+                this.makerCordaParty
+        );
     }
 
     public IOUState copy(Amount<Currency> amount,
@@ -180,7 +212,9 @@ public class IOUState implements ContractState, LinearState {
                          int defaultDays,
                          int insolvencyDays,
                          String jurisdiction,
-                         Amount<Currency> paid) {
+                         Amount<Currency> paid,
+                         Party lenderCordaParty,
+                         Party makerCordaParty) {
         return new IOUState(amount, date, maker, interestRate, individual, makerAddress, lender, legalEntity, lenderAddress, principal, maturityDate, defaultDays, insolvencyDays, jurisdiction, this.getLinearId(), paid, lenderCordaParty, makerCordaParty);
     }
 

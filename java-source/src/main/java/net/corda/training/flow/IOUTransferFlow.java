@@ -73,7 +73,7 @@ public class IOUTransferFlow{
             tb.addInputState(inputStateAndRefToTransfer);
             tb.addOutputState(inputStateToTransfer.withNewLender(newLender), IOUContract.IOU_CONTRACT_ID);
 
-            if (!inputStateToTransfer.lender.getOwningKey().equals(getOurIdentity().getOwningKey())) {
+            if (!inputStateToTransfer.lenderCordaParty.getOwningKey().equals(getOurIdentity().getOwningKey())) {
                 throw new IllegalArgumentException("This flow must be run by the current lender.");
             }
 
