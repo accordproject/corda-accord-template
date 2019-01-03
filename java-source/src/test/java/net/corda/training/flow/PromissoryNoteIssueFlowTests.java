@@ -1,11 +1,9 @@
 package net.corda.training.flow;
 
 import net.corda.core.contracts.Command;
-import net.corda.core.contracts.TransactionVerificationException;
 import net.corda.core.crypto.SecureHash;
 import net.corda.core.identity.CordaX500Name;
 import net.corda.core.transactions.SignedTransaction;
-import net.corda.finance.*;
 import net.corda.testing.node.*;
 import net.corda.core.identity.Party;
 import net.corda.core.flows.*;
@@ -20,8 +18,6 @@ import java.nio.file.FileAlreadyExistsException;
 import java.util.stream.Collectors;
 import java.util.concurrent.Future;
 import java.util.*;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -29,18 +25,14 @@ import org.accordproject.promissorynote.PromissoryNoteContract;
 import org.accordproject.usa.business.BusinessEntity;
 import org.accordproject.money.CurrencyCode;
 import org.accordproject.money.MonetaryAmount;
-import org.hibernate.result.Output;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
-
-import static org.junit.Assert.*;
-import static org.hamcrest.core.IsInstanceOf.*;
 
 /**
  * Practical exercise instructions Flows part 1.
  * Uncomment the unit tests and use the hints + unit test body to complete the FLows such that the unit tests pass.
  */
-public class IOUIssueFlowTests {
+public class PromissoryNoteIssueFlowTests {
     private MockNetwork mockNetwork;
     private StartedMockNode a, b;
 
@@ -59,7 +51,7 @@ public class IOUIssueFlowTests {
         startedNodes.add(b);
 
         // For real nodes this happens automatically, but we have to manually register the flow for tests
-        startedNodes.forEach(el -> el.registerInitiatedFlow(IOUIssueFlow.ResponderFlow.class));
+        startedNodes.forEach(el -> el.registerInitiatedFlow(PromissoryNoteIssueFlow.ResponderFlow.class));
         mockNetwork.runNetwork();
 
     }
@@ -137,8 +129,8 @@ public class IOUIssueFlowTests {
 
     /**
      * Task 1.
-     * Build out the {@link IOUIssueFlow}!
-     * TODO: Implement the {@link IOUIssueFlow} flow which builds and returns a partially {@link SignedTransaction}.
+     * Build out the {@link PromissoryNoteIssueFlow}!
+     * TODO: Implement the {@link PromissoryNoteIssueFlow} flow which builds and returns a partially {@link SignedTransaction}.
      * Hint:
      * - There's a lot to do to get this unit test to pass!
      * - Create a {@link TransactionBuilder} and pass it a notary reference.
@@ -160,12 +152,12 @@ public class IOUIssueFlowTests {
 
         // TODO: Note naming conflicts for transactions (database transaction) and getAttachments (gets attachment functionality)
         // TODO: Write a wrapper class for Lambda function
-        IOUIssueFlow.InitiatorFlow flow = new IOUIssueFlow.InitiatorFlow(addCiceroContract(lender), lender, maker);
+        PromissoryNoteIssueFlow.InitiatorFlow flow = new PromissoryNoteIssueFlow.InitiatorFlow(addCiceroContract(lender), lender, maker);
 
         Future<SignedTransaction> future = a.startFlow(flow);
         mockNetwork.runNetwork();
 
-        // Return the unsigned(!) SignedTransaction object from the IOUIssueFlow.
+        // Return the unsigned(!) SignedTransaction object from the PromissoryNoteIssueFlow.
         SignedTransaction ptx = future.get();
 
         // Print the transaction for debugging purposes.
@@ -192,7 +184,7 @@ public class IOUIssueFlowTests {
     /**
      * Task 2.
      * Now we have a well formed transaction, we need to properly verify it using the {@link IOUContract}.
-     * TODO: Amend the {@link IOUIssueFlow} to verify the transaction as well as sign it.
+     * TODO: Amend the {@link PromissoryNoteIssueFlow} to verify the transaction as well as sign it.
      * Hint: You can verify on the builder directly prior to finalizing the transaction. This way
      * you can confirm the transaction prior to making it immutable with the signature.
      */
@@ -203,7 +195,7 @@ public class IOUIssueFlowTests {
 //        Party borrower = b.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
 //
 //        IOUState zeroIou = new IOUState(Currencies.POUNDS(0), lender, borrower);
-//        Future<SignedTransaction> futureOne = a.startFlow(new IOUIssueFlow.InitiatorFlow(zeroIou, addCiceroContract(lender)));
+//        Future<SignedTransaction> futureOne = a.startFlow(new PromissoryNoteIssueFlow.InitiatorFlow(zeroIou, addCiceroContract(lender)));
 //        mockNetwork.runNetwork();
 //
 //        exception.expectCause(instanceOf(TransactionVerificationException.class));
@@ -212,14 +204,14 @@ public class IOUIssueFlowTests {
 //
 //        // Check that an IOU with the same participants fails.
 //        IOUState borrowerIsLenderIou = new IOUState(Currencies.POUNDS(10), lender, lender);
-//        Future<SignedTransaction> futureTwo = a.startFlow(new IOUIssueFlow.InitiatorFlow(borrowerIsLenderIou, addCiceroContract(lender)));
+//        Future<SignedTransaction> futureTwo = a.startFlow(new PromissoryNoteIssueFlow.InitiatorFlow(borrowerIsLenderIou, addCiceroContract(lender)));
 //        mockNetwork.runNetwork();
 //        exception.expectCause(instanceOf(TransactionVerificationException.class));
 //        futureTwo.get();
 //
 //        // Check a good IOU passes.
 //        IOUState iou = new IOUState(Currencies.POUNDS(10), lender, borrower);
-//        Future<SignedTransaction> futureThree = a.startFlow(new IOUIssueFlow.InitiatorFlow(iou, addCiceroContract(lender)));
+//        Future<SignedTransaction> futureThree = a.startFlow(new PromissoryNoteIssueFlow.InitiatorFlow(iou, addCiceroContract(lender)));
 //        mockNetwork.runNetwork();
 //        futureThree.get();
 //    }
@@ -228,7 +220,7 @@ public class IOUIssueFlowTests {
      * IMPORTANT: Review the {@link CollectSignaturesFlow} before continuing here.
      * Task 3.
      * Now we need to collect the signature from the [otherParty] using the {@link CollectSignaturesFlow}.
-     * TODO: Amend the {@link IOUIssueFlow} to collect the [otherParty]'s signature.
+     * TODO: Amend the {@link PromissoryNoteIssueFlow} to collect the [otherParty]'s signature.
      * Hint:
      * On the Initiator side:
      * - Get a set of the required signers from the participants who are not the node - refer to Task 6 of IOUIssueTests
@@ -253,7 +245,7 @@ public class IOUIssueFlowTests {
 //        Party lender = a.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
 //        Party borrower = b.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
 //        IOUState iou = new IOUState(Currencies.POUNDS(10), lender, borrower);
-//        IOUIssueFlow.InitiatorFlow flow = new IOUIssueFlow.InitiatorFlow(iou, addCiceroContract(lender));
+//        PromissoryNoteIssueFlow.InitiatorFlow flow = new PromissoryNoteIssueFlow.InitiatorFlow(iou, addCiceroContract(lender));
 //
 //        Future<SignedTransaction> future = a.startFlow(flow);
 //        mockNetwork.runNetwork();
@@ -265,7 +257,7 @@ public class IOUIssueFlowTests {
     /**
      * Task 4.
      * Now we need to store the finished {@link SignedTransaction} in both counter-party vaults.
-     * TODO: Amend the {@link IOUIssueFlow} by adding a call to {@link FinalityFlow}.
+     * TODO: Amend the {@link PromissoryNoteIssueFlow} by adding a call to {@link FinalityFlow}.
      * Hint:
      * - As mentioned above, use the {@link FinalityFlow} to ensure the transaction is recorded in both {@link Party} vaults.
      * - Do not use the [BroadcastTransactionFlow]!
@@ -279,7 +271,7 @@ public class IOUIssueFlowTests {
 //        Party lender = a.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
 //        Party borrower = b.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
 //        IOUState iou = new IOUState(Currencies.POUNDS(10), lender, borrower);
-//        IOUIssueFlow.InitiatorFlow flow = new IOUIssueFlow.InitiatorFlow(iou, addCiceroContract(lender));
+//        PromissoryNoteIssueFlow.InitiatorFlow flow = new PromissoryNoteIssueFlow.InitiatorFlow(iou, addCiceroContract(lender));
 //
 //        Future<SignedTransaction> future = a.startFlow(flow);
 //        mockNetwork.runNetwork();

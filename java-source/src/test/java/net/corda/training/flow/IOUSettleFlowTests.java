@@ -76,7 +76,7 @@ public class IOUSettleFlowTests{
 //    public final ExpectedException exception = ExpectedException.none();
 //
 //    private SignedTransaction issueIOU(IOUState iouState) throws InterruptedException, ExecutionException {
-//        IOUIssueFlow.InitiatorFlow flow = new IOUIssueFlow.InitiatorFlow(iouState);
+//        PromissoryNoteIssueFlow.InitiatorFlow flow = new PromissoryNoteIssueFlow.InitiatorFlow(iouState);
 //        CordaFuture future = a.startFlow(flow);
 //        mockNetwork.runNetwork();
 //        return (SignedTransaction) future.get();
