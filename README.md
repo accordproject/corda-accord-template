@@ -29,14 +29,18 @@ again leaving all options as they are.
 * In this repo, a Java object has been precompiled from Cicero based on the promissory note example.
 * No additional setup is required. To parse a state and issue a Promissory note on the ledger see either `Running The Tests` or `Deploying Locally`.
 
-### Running the test
+### Running the tests
 * Java: Select `Java - Unit tests` from the dropdown run configuration menu, and click the green play button.
-* Note - there is currently only one test, which demonstrates the functionality. Other tests are a carry-over from another repo that must be adapted.
+* Note - there is currently only one test, which demonstrates the Corda-Accord integration. Other tests are a carry-over from the training material. They will be adapted to test this integration more thoroughly.
 * Kotlin: N/A, still a WIP.
 * Individual tests can be run by clicking the green arrow in the line number column next to each test.
 * When running flow tests you must add the following to your run / debug configuration in the VM options field. This enables us to use
 * Quasar - a library that provides high-performance, lightweight threads.
 * "-javaagent: /PATH_TO_FILE_FROM_ROOT_DIR/quasar.jar"
+
+### Deploying Locally
+* From the root directory run './gradlew deployNodes' at the command line.
+* From the root directory you may then run 'java-source/build/nodes/runNodes'
 
 # Template Files
 
@@ -66,7 +70,3 @@ Flow:
 * Transfer tests: `java-source/src/test/java/net/corda/training/flow/PromissoryNoteTransferFlowTests.java`
 * Settle template: `java-source/src/main/java/net/corda/training/flow/PromissoryNoteSettleFlow.java`
 * Settle tests: `java-source/src/test/java/net/corda/training/flow/PromissoryNoteSettleFlowTests.java`
-
-# Running the CorDapp
-Once your application passes all tests in `PromissoryNoteStateTests`, `PromissoryNoteIssueTests`, and `PromissoryNoteIssueFlowTests`, you can run the application and 
-interact with it via a web browser. To run the finished application, you have two choices for each language: from the terminal, and from IntelliJ.
