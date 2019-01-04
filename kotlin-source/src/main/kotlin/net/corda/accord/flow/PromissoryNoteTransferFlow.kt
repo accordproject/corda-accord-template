@@ -15,7 +15,7 @@ import net.corda.core.node.services.vault.QueryCriteria
 import net.corda.core.transactions.SignedTransaction
 import net.corda.core.transactions.TransactionBuilder
 import net.corda.accord.contract.PromissoryNoteContract
-import net.corda.accord.state.IOUState
+import net.corda.accord.state.PromissoryNoteState
 import java.lang.IllegalArgumentException
 
 /**
@@ -32,7 +32,7 @@ class PromissoryNoteTransferFlow(val linearId: UniqueIdentifier, val newLender: 
 
         // Get components from the flow
         val queryCriteria = QueryCriteria.LinearStateQueryCriteria(linearId = listOf(linearId))
-        val iouStateAndRef =  serviceHub.vaultService.queryBy(IOUState::class.java, queryCriteria).states.single()
+        val iouStateAndRef =  serviceHub.vaultService.queryBy(PromissoryNoteState::class.java, queryCriteria).states.single()
         val inputState = iouStateAndRef.state.data
         val notary = serviceHub.networkMapCache.notaryIdentities[0]
 
@@ -76,7 +76,7 @@ class PromissoryNoteTransferFlowResponder(val flowSession: FlowSession): FlowLog
         val signedTransactionFlow = object : SignTransactionFlow(flowSession) {
             override fun checkTransaction(stx: SignedTransaction) = requireThat {
                 val output = stx.tx.outputs.single().data
-                "This must be an IOU transaction" using (output is IOUState)
+                "This must be an IOU transaction" using (output is PromissoryNoteState)
             }
         }
 

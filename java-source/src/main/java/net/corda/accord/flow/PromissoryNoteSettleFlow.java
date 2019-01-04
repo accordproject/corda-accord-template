@@ -2,7 +2,8 @@ package net.corda.accord.flow;
 
 import co.paralleluniverse.fibers.Suspendable;
 import com.google.common.collect.ImmutableSet;
-import net.corda.accord.contract.IOUContract;
+import net.corda.accord.contract.PromissoryNoteContract;
+import net.corda.accord.state.PromissoryNoteState;
 import net.corda.core.contracts.*;
 import net.corda.core.flows.*;
 import net.corda.core.identity.AbstractParty;
@@ -16,7 +17,6 @@ import net.corda.core.utilities.ProgressTracker;
 import net.corda.finance.contracts.asset.Cash;
 import net.corda.finance.flows.AbstractCashFlow;
 import net.corda.finance.flows.CashIssueFlow;
-import net.corda.accord.state.IOUState;
 
 import java.lang.IllegalArgumentException;
 
@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class IOUSettleFlow {
+public class PromissoryNoteSettleFlow {
 
     /**
      * This is the flow which handles the (partial) settlement of existing IOUs on the ledger.
@@ -58,13 +58,13 @@ public class IOUSettleFlow {
             listOfLinearIds.add(stateLinearId.getId());
             QueryCriteria queryCriteria = new QueryCriteria.LinearStateQueryCriteria(null, listOfLinearIds);
 
-            Vault.Page results = getServiceHub().getVaultService().queryBy(IOUState.class, queryCriteria);
+            Vault.Page results = getServiceHub().getVaultService().queryBy(PromissoryNoteState.class, queryCriteria);
             StateAndRef inputStateAndRefToSettle = (StateAndRef) results.component1().get(0);
-            IOUState inputStateToSettle = (IOUState) ((StateAndRef) results.component1().get(0)).getState().getData();
+            PromissoryNoteState inputStateToSettle = (PromissoryNoteState) ((StateAndRef) results.component1().get(0)).getState().getData();
 
             // 2. Check the party running this flow is the borrower.
             if (!inputStateToSettle.makerCordaParty.getOwningKey().equals(getOurIdentity().getOwningKey())) {
-                throw new IllegalArgumentException("The borrower must issue the flow");
+                throw new IllegalArgumentException("The maker must issue the flow");
             }
 
             // 3. Create a transaction builder
@@ -75,9 +75,9 @@ public class IOUSettleFlow {
             final Amount<Currency> cashBalance = getCashBalance(getServiceHub(), (Currency) amount.getToken());
 
             if (cashBalance.getQuantity() < amount.getQuantity()) {
-                throw new IllegalArgumentException("Borrower doesn't have enough cash to settle with the amount specified.");
+                throw new IllegalArgumentException("Maker doesn't have enough cash to settle with the amount specified.");
             } else if (amount.getQuantity() > (inputStateToSettle.amount.getQuantity() - inputStateToSettle.paid.getQuantity())) {
-                throw new IllegalArgumentException("Borrow tried to settle with more than was required for the obligation.");
+                throw new IllegalArgumentException("Maker tried to settle with more than was required for the obligation.");
             }
 
             // 5. Get some cash from the vault and add a spend to our transaction builder.
@@ -85,8 +85,8 @@ public class IOUSettleFlow {
 
 
             // 6.
-            Command<IOUContract.Commands.Settle> command = new Command<>(
-                    new IOUContract.Commands.Settle(),
+            Command<PromissoryNoteContract.Commands.Settle> command = new Command<>(
+                    new PromissoryNoteContract.Commands.Settle(),
                     inputStateToSettle.getParticipants()
                             .stream().map(AbstractParty::getOwningKey)
                             .collect(Collectors.toList())
@@ -98,7 +98,7 @@ public class IOUSettleFlow {
 
             // 7. Add an IOU output state for an IOU that has not been full settled.
             if (amount.getQuantity() < inputStateToSettle.amount.getQuantity()) {
-                tb.addOutputState(inputStateToSettle.pay(amount), IOUContract.IOU_CONTRACT_ID);
+                tb.addOutputState(inputStateToSettle.pay(amount), PromissoryNoteContract.IOU_CONTRACT_ID);
             }
 
 
@@ -128,7 +128,7 @@ public class IOUSettleFlow {
      * This is the flow which signs IOU settlements.
      * The signing is handled by the [SignTransactionFlow].
      */
-    @InitiatedBy(IOUSettleFlow.InitiatorFlow.class)
+    @InitiatedBy(PromissoryNoteSettleFlow.InitiatorFlow.class)
     public static class Responder extends FlowLogic<SignedTransaction> {
 
         private final FlowSession otherPartyFlow;
@@ -148,8 +148,8 @@ public class IOUSettleFlow {
                 @Override
                 protected void checkTransaction(SignedTransaction stx) {
                     requireThat(require -> {
-                        ContractState output = stx.getTx().outputsOfType(IOUState.class).get(0);
-                        require.using("This must be an IOU transaction", output instanceof IOUState);
+                        ContractState output = stx.getTx().outputsOfType(PromissoryNoteState.class).get(0);
+                        require.using("This must be an IOU transaction", output instanceof PromissoryNoteState);
                         return null;
                     });
                 }

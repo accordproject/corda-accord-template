@@ -1,2 +1,2 @@
 # Register a ServiceLoader service extending from net.corda.node.CordaPluginRegistry
-net.corda.accord.plugin.IOUPlugin
+net.corda.accord.plugin.PromissoryNotePlugin

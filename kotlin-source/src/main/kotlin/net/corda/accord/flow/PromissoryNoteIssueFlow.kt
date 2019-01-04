@@ -16,7 +16,7 @@ import net.corda.core.node.ServiceHub
 import net.corda.core.transactions.SignedTransaction
 import net.corda.core.transactions.TransactionBuilder
 import net.corda.accord.contract.PromissoryNoteContract
-import net.corda.accord.state.IOUState
+import net.corda.accord.state.PromissoryNoteState
 
 /**
  * This is the flow which handles issuance of new IOUs on the ledger.
@@ -26,7 +26,7 @@ import net.corda.accord.state.IOUState
  */
 @InitiatingFlow
 @StartableByRPC
-class PromissoryNoteIssueFlow(val state: IOUState) : FlowLogic<SignedTransaction>() {
+class PromissoryNoteIssueFlow(val state: PromissoryNoteState) : FlowLogic<SignedTransaction>() {
     @Suspendable
     override fun call(): SignedTransaction {
 
@@ -72,7 +72,7 @@ class PromissoryNoteIssueFlowResponder(val flowSession: FlowSession): FlowLogic<
         val signedTransactionFlow = object : SignTransactionFlow(flowSession) {
             override fun checkTransaction(stx: SignedTransaction) = requireThat {
                 val output = stx.tx.outputs.single().data
-                "This must be an IOU transaction" using (output is IOUState)
+                "This must be an IOU transaction" using (output is PromissoryNoteState)
             }
         }
         subFlow(signedTransactionFlow)

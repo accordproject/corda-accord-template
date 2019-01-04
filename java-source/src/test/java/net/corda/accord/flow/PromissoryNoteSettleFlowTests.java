@@ -5,10 +5,9 @@ import net.corda.testing.node.*;
 import static net.corda.testing.node.NodeTestUtils.ledger;
 
 /**
- * Practical exercise instructions Flows part 3.
- * Uncomment the unit tests and use the hints + unit test body to complete the FLows such that the unit tests pass.
+ * TODO: Write tests for promissory note settling once functionality is complete.
  */
-public class IOUSettleFlowTests{
+public class PromissoryNoteSettleFlowTests {
 
     private MockNetwork mockNetwork;
     private StartedMockNode a, b, c;
@@ -30,7 +29,7 @@ public class IOUSettleFlowTests{
 //        startedNodes.add(c);
 //
 //        // For real nodes this happens automatically, but we have to manually register the flow for tests
-//        startedNodes.forEach(el -> el.registerInitiatedFlow(IOUSettleFlow.Responder.class));
+//        startedNodes.forEach(el -> el.registerInitiatedFlow(PromissoryNoteSettleFlow.Responder.class));
 //        mockNetwork.runNetwork();
 //    }
 //
@@ -42,7 +41,7 @@ public class IOUSettleFlowTests{
 //    @Rule
 //    public final ExpectedException exception = ExpectedException.none();
 //
-//    private SignedTransaction issueIOU(IOUState iouState) throws InterruptedException, ExecutionException {
+//    private SignedTransaction issueIOU(PromissoryNoteState iouState) throws InterruptedException, ExecutionException {
 //        PromissoryNoteIssueFlow.InitiatorFlow flow = new PromissoryNoteIssueFlow.InitiatorFlow(iouState);
 //        CordaFuture future = a.startFlow(flow);
 //        mockNetwork.runNetwork();
@@ -58,40 +57,40 @@ public class IOUSettleFlowTests{
 
     /**
      * Task 1.
-     * The first task is to grab the [IOUState] for the given [linearId] from the vault, assemble a transaction
+     * The first task is to grab the [PromissoryNoteState] for the given [linearId] from the vault, assemble a transaction
      * and sign it.
      * TODO: Grab the IOU for the given [linearId] from the vault, build and sign the settle transaction.
      * Hints:
-     * - Use the code from the [IOUTransferFlow] to get the correct [IOUState] from the vault.
+     * - Use the code from the [PromissoryNoteTransferFlow] to get the correct [PromissoryNoteState] from the vault.
      * - You will need to use the [Cash.generateSpend] functionality of the vault to add the cash states and cash command
      *   to your transaction. The API is quite simple. It takes a reference to a [TransactionBuilder], an [Amount] and
      *   the [Party] object for the recipient. The function will mutate your builder by adding the states and commands.
-     * - You then need to produce the output [IOUState] by using the [IOUState.pay] function.
-     * - Add the input [IOUState] [StateAndRef] and the new output [IOUState] to the transaction.
+     * - You then need to produce the output [PromissoryNoteState] by using the [PromissoryNoteState.pay] function.
+     * - Add the input [PromissoryNoteState] [StateAndRef] and the new output [PromissoryNoteState] to the transaction.
      * - Sign the transaction and return it.
      */
 
 //    @Test
 //    public void flowReturnsCorrectlyFormedPartiallySignedTransaction() throws Exception {
-//        SignedTransaction stx = issueIOU(new IOUState(Currencies.POUNDS(10), b.getInfo().getLegalIdentities().get(0), a.getInfo().getLegalIdentities().get(0)));
+//        SignedTransaction stx = issueIOU(new PromissoryNoteState(Currencies.POUNDS(10), b.getInfo().getLegalIdentities().get(0), a.getInfo().getLegalIdentities().get(0)));
 //        issueCash(Currencies.POUNDS(5));
-//        IOUState inputIOU = stx.getTx().outputsOfType(IOUState.class).get(0);
-//        IOUSettleFlow.InitiatorFlow flow = new IOUSettleFlow.InitiatorFlow(inputIOU.getLinearId(), Currencies.POUNDS(5));
+//        PromissoryNoteState inputIOU = stx.getTx().outputsOfType(PromissoryNoteState.class).get(0);
+//        PromissoryNoteSettleFlow.InitiatorFlow flow = new PromissoryNoteSettleFlow.InitiatorFlow(inputIOU.getLinearId(), Currencies.POUNDS(5));
 //        Future<SignedTransaction> futureSettleResult = a.startFlow(flow);
 //
 //        mockNetwork.runNetwork();
 //
 //        SignedTransaction settleResult = futureSettleResult.get();
 //        // Check the transaction is well formed...
-//        // One output IOUState, one input IOUState reference, input and output cash
+//        // One output PromissoryNoteState, one input PromissoryNoteState reference, input and output cash
 //        a.transaction(() -> {
 //            try {
 //                LedgerTransaction ledgerTx = settleResult.toLedgerTransaction(a.getServices(), false);
 //                assert(ledgerTx.getInputs().size() == 2);
 //                assert(ledgerTx.getOutputs().size() == 2);
 //
-//                IOUState outputIOU = ledgerTx.outputsOfType(IOUState.class).get(0);
-//                IOUState correctOutputIOU = inputIOU.pay(Currencies.POUNDS(5));
+//                PromissoryNoteState outputIOU = ledgerTx.outputsOfType(PromissoryNoteState.class).get(0);
+//                PromissoryNoteState correctOutputIOU = inputIOU.pay(Currencies.POUNDS(5));
 //
 //                assert (outputIOU.amount.equals(correctOutputIOU.amount));
 //                assert (outputIOU.paid.equals(correctOutputIOU.paid));
@@ -115,7 +114,7 @@ public class IOUSettleFlowTests{
 //                assert (outputCashSum.equals(inputIOU.amount.minus(inputIOU.paid).minus(outputIOU.paid)));
 //
 //                CommandWithParties command = ledgerTx.getCommands().get(0);
-//                assert (command.getValue().equals(new IOUContract.Commands.Settle()));
+//                assert (command.getValue().equals(new PromissoryNoteContract.Commands.Settle()));
 //
 //                settleResult.verifySignaturesExcept(b.getInfo().getLegalIdentities().get(0).getOwningKey(),
 //                        mockNetwork.getDefaultNotaryIdentity().getOwningKey());
@@ -138,10 +137,10 @@ public class IOUSettleFlowTests{
 
 //    @Test
 //    public void settleFlowCanOnlyBeRunByBorrower() throws Exception {
-//        SignedTransaction stx = issueIOU(new IOUState(Currencies.POUNDS(10), b.getInfo().getLegalIdentities().get(0), a.getInfo().getLegalIdentities().get(0)));
+//        SignedTransaction stx = issueIOU(new PromissoryNoteState(Currencies.POUNDS(10), b.getInfo().getLegalIdentities().get(0), a.getInfo().getLegalIdentities().get(0)));
 //        issueCash(Currencies.POUNDS(5));
-//        IOUState inputIOU = stx.getTx().outputsOfType(IOUState.class).get(0);
-//        IOUSettleFlow.InitiatorFlow flow = new IOUSettleFlow.InitiatorFlow(inputIOU.getLinearId(), Currencies.POUNDS(5));
+//        PromissoryNoteState inputIOU = stx.getTx().outputsOfType(PromissoryNoteState.class).get(0);
+//        PromissoryNoteSettleFlow.InitiatorFlow flow = new PromissoryNoteSettleFlow.InitiatorFlow(inputIOU.getLinearId(), Currencies.POUNDS(5));
 //        Future<SignedTransaction> futureSettleResult = b.startFlow(flow);
 //
 //        try {
@@ -163,10 +162,10 @@ public class IOUSettleFlowTests{
 
 //    @Test
 //    public void borrowerMustHaveCashInRightCurrency() throws Exception {
-//        SignedTransaction stx = issueIOU(new IOUState(Currencies.POUNDS(10), b.getInfo().getLegalIdentities().get(0), a.getInfo().getLegalIdentities().get(0)));
+//        SignedTransaction stx = issueIOU(new PromissoryNoteState(Currencies.POUNDS(10), b.getInfo().getLegalIdentities().get(0), a.getInfo().getLegalIdentities().get(0)));
 //        issueCash(Currencies.POUNDS(5));
-//        IOUState inputIOU = stx.getTx().outputsOfType(IOUState.class).get(0);
-//        IOUSettleFlow.InitiatorFlow flow = new IOUSettleFlow.InitiatorFlow(inputIOU.getLinearId(), Currencies.POUNDS(5));
+//        PromissoryNoteState inputIOU = stx.getTx().outputsOfType(PromissoryNoteState.class).get(0);
+//        PromissoryNoteSettleFlow.InitiatorFlow flow = new PromissoryNoteSettleFlow.InitiatorFlow(inputIOU.getLinearId(), Currencies.POUNDS(5));
 //        Future<SignedTransaction> futureSettleResult = a.startFlow(flow);
 //
 //        try {
@@ -186,9 +185,9 @@ public class IOUSettleFlowTests{
 
 //    @Test
 //    public void borrowerMustHaveEnoughCashInRightCurrency() throws Exception {
-//        SignedTransaction stx = issueIOU(new IOUState(Currencies.POUNDS(10), b.getInfo().getLegalIdentities().get(0), a.getInfo().getLegalIdentities().get(0)));
-//        IOUState inputIOU = stx.getTx().outputsOfType(IOUState.class).get(0);
-//        IOUSettleFlow.InitiatorFlow flow = new IOUSettleFlow.InitiatorFlow(inputIOU.getLinearId(), Currencies.POUNDS(5));
+//        SignedTransaction stx = issueIOU(new PromissoryNoteState(Currencies.POUNDS(10), b.getInfo().getLegalIdentities().get(0), a.getInfo().getLegalIdentities().get(0)));
+//        PromissoryNoteState inputIOU = stx.getTx().outputsOfType(PromissoryNoteState.class).get(0);
+//        PromissoryNoteSettleFlow.InitiatorFlow flow = new PromissoryNoteSettleFlow.InitiatorFlow(inputIOU.getLinearId(), Currencies.POUNDS(5));
 //        Future<SignedTransaction> futureSettleResult = a.startFlow(flow);
 //
 //        try {
@@ -207,10 +206,10 @@ public class IOUSettleFlowTests{
 
 //    @Test
 //    public void flowReturnsTransactionSignedByBothParties() throws Exception {
-//        SignedTransaction stx = issueIOU(new IOUState(Currencies.POUNDS(10), b.getInfo().getLegalIdentities().get(0), a.getInfo().getLegalIdentities().get(0)));
+//        SignedTransaction stx = issueIOU(new PromissoryNoteState(Currencies.POUNDS(10), b.getInfo().getLegalIdentities().get(0), a.getInfo().getLegalIdentities().get(0)));
 //        issueCash(Currencies.POUNDS(5));
-//        IOUState inputIOU = stx.getTx().outputsOfType(IOUState.class).get(0);
-//        IOUSettleFlow.InitiatorFlow flow = new IOUSettleFlow.InitiatorFlow(inputIOU.getLinearId(), Currencies.POUNDS(5));
+//        PromissoryNoteState inputIOU = stx.getTx().outputsOfType(PromissoryNoteState.class).get(0);
+//        PromissoryNoteSettleFlow.InitiatorFlow flow = new PromissoryNoteSettleFlow.InitiatorFlow(inputIOU.getLinearId(), Currencies.POUNDS(5));
 //        Future<SignedTransaction> futureSettleResult = a.startFlow(flow);
 //
 //        try {
@@ -229,10 +228,10 @@ public class IOUSettleFlowTests{
 
 //    @Test
 //    public void flowReturnsCommittedTransaction() throws Exception {
-//        SignedTransaction stx = issueIOU(new IOUState(Currencies.POUNDS(10), b.getInfo().getLegalIdentities().get(0), a.getInfo().getLegalIdentities().get(0)));
+//        SignedTransaction stx = issueIOU(new PromissoryNoteState(Currencies.POUNDS(10), b.getInfo().getLegalIdentities().get(0), a.getInfo().getLegalIdentities().get(0)));
 //        issueCash(Currencies.POUNDS(5));
-//        IOUState inputIOU = stx.getTx().outputsOfType(IOUState.class).get(0);
-//        IOUSettleFlow.InitiatorFlow flow = new IOUSettleFlow.InitiatorFlow(inputIOU.getLinearId(), Currencies.POUNDS(5));
+//        PromissoryNoteState inputIOU = stx.getTx().outputsOfType(PromissoryNoteState.class).get(0);
+//        PromissoryNoteSettleFlow.InitiatorFlow flow = new PromissoryNoteSettleFlow.InitiatorFlow(inputIOU.getLinearId(), Currencies.POUNDS(5));
 //        Future<SignedTransaction> futureSettleResult = a.startFlow(flow);
 //
 //        try {

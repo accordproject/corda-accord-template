@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.corda.accord.contract.IOUContract;
-import net.corda.accord.state.IOUState;
+import net.corda.accord.contract.PromissoryNoteContract;
+import net.corda.accord.state.PromissoryNoteState;
 import net.corda.core.contracts.Command;
 import net.corda.core.contracts.ContractState;
 import net.corda.core.crypto.SecureHash;
@@ -20,7 +20,6 @@ import net.corda.core.transactions.TransactionBuilder;
 import static net.corda.core.contracts.ContractsDSL.requireThat;
 import net.corda.core.utilities.ProgressTracker;
 
-import org.accordproject.promissorynote.PromissoryNoteContract;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.parser.JSONParser;
 
@@ -63,7 +62,7 @@ public class PromissoryNoteIssueFlow {
         @Override
         public SignedTransaction call() throws FlowException {
 
-        	IOUState state;
+        	PromissoryNoteState state;
 
         	// Step 0. Generate an input state from the parsed Contract.
 
@@ -72,8 +71,8 @@ public class PromissoryNoteIssueFlow {
 				String jsonData = IOUtils.toString(dataFromContract, "UTF-8");
 				Object parsedJSONData = new JSONParser().parse(jsonData);
 				ObjectMapper objectMapper = new ObjectMapper();
-				PromissoryNoteContract parsedContractData = objectMapper.readValue(jsonData, PromissoryNoteContract.class);
-				state = new IOUState(parsedContractData, lender, maker);
+				org.accordproject.promissorynote.PromissoryNoteContract parsedContractData = objectMapper.readValue(jsonData, org.accordproject.promissorynote.PromissoryNoteContract.class);
+				state = new PromissoryNoteState(parsedContractData, lender, maker);
 			} catch (Exception e) {
 				throw new FlowException(e.toString());
 			}
@@ -84,8 +83,8 @@ public class PromissoryNoteIssueFlow {
 
             // Step 2. Create a new issue command.
             // Remember that a command is a CommandData object and a list of CompositeKeys
-			final Command<IOUContract.Commands.Issue> issueCommand = new Command<>(
-                    new IOUContract.Commands.Issue(),
+			final Command<PromissoryNoteContract.Commands.Issue> issueCommand = new Command<>(
+                    new PromissoryNoteContract.Commands.Issue(),
 					Arrays.asList(lender.getOwningKey(), maker.getOwningKey())
 			);
 
@@ -93,7 +92,7 @@ public class PromissoryNoteIssueFlow {
             final TransactionBuilder builder = new TransactionBuilder(notary);
 
             // Step 4. Add the iou as an output state, as well as a command to the transaction builder.
-            builder.addOutputState(state, IOUContract.IOU_CONTRACT_ID);
+            builder.addOutputState(state, PromissoryNoteContract.IOU_CONTRACT_ID);
             builder.addCommand(issueCommand);
 
             // Step 4.5 Added the Cicero template contract to the state
@@ -147,7 +146,7 @@ public class PromissoryNoteIssueFlow {
 				protected void checkTransaction(SignedTransaction stx){
 					requireThat(req -> {
 						ContractState output = stx.getTx().getOutputs().get(0).getData();
-						req.using("This must be an IOU transaction", output instanceof IOUState);
+						req.using("This must be an IOU transaction", output instanceof PromissoryNoteState);
 						return null;
 					});
 				}

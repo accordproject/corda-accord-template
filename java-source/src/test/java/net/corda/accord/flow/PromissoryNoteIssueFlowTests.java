@@ -1,6 +1,5 @@
 package net.corda.accord.flow;
 
-import net.corda.accord.flow.PromissoryNoteIssueFlow;
 import net.corda.core.contracts.Command;
 import net.corda.core.crypto.SecureHash;
 import net.corda.core.identity.CordaX500Name;
@@ -11,8 +10,8 @@ import net.corda.core.flows.*;
 import net.corda.core.transactions.TransactionBuilder;
 
 
-import net.corda.accord.contract.IOUContract;
-import net.corda.accord.state.IOUState;
+import net.corda.accord.contract.PromissoryNoteContract;
+import net.corda.accord.state.PromissoryNoteState;
 
 import java.io.*;
 import java.nio.file.FileAlreadyExistsException;
@@ -22,7 +21,6 @@ import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.accordproject.promissorynote.PromissoryNoteContract;
 import org.accordproject.usa.business.BusinessEntity;
 import org.accordproject.money.CurrencyCode;
 import org.accordproject.money.MonetaryAmount;
@@ -30,9 +28,9 @@ import org.junit.*;
 import org.junit.rules.ExpectedException;
 
 /**
- * Practical exercise instructions Flows part 1.
- * Uncomment the unit tests and use the hints + unit test body to complete the FLows such that the unit tests pass.
+ * The test executed below will parse the source contract data and create a corresponding Corda state representing a promissory note.
  */
+
 public class PromissoryNoteIssueFlowTests {
     private MockNetwork mockNetwork;
     private StartedMockNode a, b;
@@ -64,33 +62,6 @@ public class PromissoryNoteIssueFlowTests {
 
     @Rule
     public final ExpectedException exception = ExpectedException.none();
-
-    private PromissoryNoteContract getTestPromissoryNoteContract(Party lender, Party borrower) {
-
-        ProcessBuilder ciceroParseExecutor = new ProcessBuilder();
-        ciceroParseExecutor.command();
-
-        PromissoryNoteContract promissoryNoteContract = new PromissoryNoteContract();
-        MonetaryAmount amount = new MonetaryAmount();
-        amount.doubleValue = 10.0;
-        amount.currencyCode = CurrencyCode.GBP;
-
-        promissoryNoteContract.amount = new MonetaryAmount();
-        promissoryNoteContract.date = new Date();
-        promissoryNoteContract.maker = borrower.getName().toString();
-        promissoryNoteContract.interestRate = 0.5;
-        promissoryNoteContract.individual = true;
-        promissoryNoteContract.makerAddress = "555 Fake British Avenue";
-        promissoryNoteContract.lender = lender.getName().toString();
-        promissoryNoteContract.legalEntity = BusinessEntity.CORP;
-        promissoryNoteContract.lenderAddress = "666 Fake British Road";
-        promissoryNoteContract.principal = amount;
-        promissoryNoteContract.maturityDate = new Date(1595065298);
-        promissoryNoteContract.defaultDays = 30;
-        promissoryNoteContract.insolvencyDays = 90;
-        promissoryNoteContract.jurisdiction = "Great Britain";
-        return promissoryNoteContract;
-    }
 
     private InputStream getCompressed( InputStream is )
             throws IOException
@@ -137,10 +108,10 @@ public class PromissoryNoteIssueFlowTests {
      * - Create a {@link TransactionBuilder} and pass it a notary reference.
      * -- A notary {@link Party} object can be obtained from [FlowLogic.getServiceHub().getNetworkMapCache().getNotaryIdentities()].
      * -- In this accord project there is only one notary
-     * - Create a new {@link Command} object with the [IOUContract.Commands.Issue] type
+     * - Create a new {@link Command} object with the [PromissoryNoteContract.Commands.Issue] type
      * -- The required signers will be the same as the state's participants
      * -- Add the {@link Command} to the transaction builder [addCommand].
-     * - Use the flow's {@link IOUState} parameter as the output state with [addOutputState]
+     * - Use the flow's {@link PromissoryNoteState} parameter as the output state with [addOutputState]
      * - Extra credit: use [TransactionBuilder.withItems] to create the transaction instead
      * - Sign the transaction and convert it to a {@link SignedTransaction} using the [getServiceHub().signInitialTransaction] method.
      * - Return the {@link SignedTransaction}.
@@ -165,14 +136,14 @@ public class PromissoryNoteIssueFlowTests {
         System.out.println(ptx.getTx());
 
         // Check the transaction is well formed...
-        // No outputs, one input IOUState and a command with the right properties.
+        // No outputs, one input PromissoryNoteState and a command with the right properties.
         assert (ptx.getTx().getInputs().isEmpty());
 
-        IOUState outputState = (IOUState) ptx.getTx().getOutputs().get(0).getData();
-        assert (ptx.getTx().getOutputs().get(0).getData() instanceof IOUState);
+        PromissoryNoteState outputState = (PromissoryNoteState) ptx.getTx().getOutputs().get(0).getData();
+        assert (ptx.getTx().getOutputs().get(0).getData() instanceof PromissoryNoteState);
 
         Command command = ptx.getTx().getCommands().get(0);
-        assert (command.getValue() instanceof IOUContract.Commands.Issue);
+        assert (command.getValue() instanceof PromissoryNoteContract.Commands.Issue);
         assert (new HashSet<>(command.getSigners()).equals(
                 new HashSet<>(outputState.getParticipants()
                         .stream().map(el -> el.getOwningKey())
@@ -184,7 +155,7 @@ public class PromissoryNoteIssueFlowTests {
 
     /**
      * Task 2.
-     * Now we have a well formed transaction, we need to properly verify it using the {@link IOUContract}.
+     * Now we have a well formed transaction, we need to properly verify it using the {@link PromissoryNoteContract}.
      * TODO: Amend the {@link PromissoryNoteIssueFlow} to verify the transaction as well as sign it.
      * Hint: You can verify on the builder directly prior to finalizing the transaction. This way
      * you can confirm the transaction prior to making it immutable with the signature.
@@ -195,7 +166,7 @@ public class PromissoryNoteIssueFlowTests {
 //        Party lender = a.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
 //        Party borrower = b.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
 //
-//        IOUState zeroIou = new IOUState(Currencies.POUNDS(0), lender, borrower);
+//        PromissoryNoteState zeroIou = new PromissoryNoteState(Currencies.POUNDS(0), lender, borrower);
 //        Future<SignedTransaction> futureOne = a.startFlow(new PromissoryNoteIssueFlow.InitiatorFlow(zeroIou, addCiceroContract(lender)));
 //        mockNetwork.runNetwork();
 //
@@ -204,14 +175,14 @@ public class PromissoryNoteIssueFlowTests {
 //        futureOne.get();
 //
 //        // Check that an IOU with the same participants fails.
-//        IOUState borrowerIsLenderIou = new IOUState(Currencies.POUNDS(10), lender, lender);
+//        PromissoryNoteState borrowerIsLenderIou = new PromissoryNoteState(Currencies.POUNDS(10), lender, lender);
 //        Future<SignedTransaction> futureTwo = a.startFlow(new PromissoryNoteIssueFlow.InitiatorFlow(borrowerIsLenderIou, addCiceroContract(lender)));
 //        mockNetwork.runNetwork();
 //        exception.expectCause(instanceOf(TransactionVerificationException.class));
 //        futureTwo.get();
 //
 //        // Check a good IOU passes.
-//        IOUState iou = new IOUState(Currencies.POUNDS(10), lender, borrower);
+//        PromissoryNoteState iou = new PromissoryNoteState(Currencies.POUNDS(10), lender, borrower);
 //        Future<SignedTransaction> futureThree = a.startFlow(new PromissoryNoteIssueFlow.InitiatorFlow(iou, addCiceroContract(lender)));
 //        mockNetwork.runNetwork();
 //        futureThree.get();
@@ -224,7 +195,7 @@ public class PromissoryNoteIssueFlowTests {
      * TODO: Amend the {@link PromissoryNoteIssueFlow} to collect the [otherParty]'s signature.
      * Hint:
      * On the Initiator side:
-     * - Get a set of the required signers from the participants who are not the node - refer to Task 6 of IOUIssueTests
+     * - Get a set of the required signers from the participants who are not the node - refer to Task 6 of PromissoryNoteIssueTests
      * - - [getOurIdentity()] will give you the identity of the node you are operating as
      * - Use [initateFlow] to get a set of {@link FlowSession} objects
      * - - Using [state.participants] as a base to determine the sessions needed is recommended. [participants] is on
@@ -245,7 +216,7 @@ public class PromissoryNoteIssueFlowTests {
 //    public void flowReturnsTransactionSignedByBothParties() throws Exception {
 //        Party lender = a.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
 //        Party borrower = b.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
-//        IOUState iou = new IOUState(Currencies.POUNDS(10), lender, borrower);
+//        PromissoryNoteState iou = new PromissoryNoteState(Currencies.POUNDS(10), lender, borrower);
 //        PromissoryNoteIssueFlow.InitiatorFlow flow = new PromissoryNoteIssueFlow.InitiatorFlow(iou, addCiceroContract(lender));
 //
 //        Future<SignedTransaction> future = a.startFlow(flow);
@@ -271,7 +242,7 @@ public class PromissoryNoteIssueFlowTests {
 //    public void flowRecordsTheSameTransactionInBothPartyVaults() throws Exception {
 //        Party lender = a.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
 //        Party borrower = b.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
-//        IOUState iou = new IOUState(Currencies.POUNDS(10), lender, borrower);
+//        PromissoryNoteState iou = new PromissoryNoteState(Currencies.POUNDS(10), lender, borrower);
 //        PromissoryNoteIssueFlow.InitiatorFlow flow = new PromissoryNoteIssueFlow.InitiatorFlow(iou, addCiceroContract(lender));
 //
 //        Future<SignedTransaction> future = a.startFlow(flow);
@@ -286,5 +257,32 @@ public class PromissoryNoteIssueFlowTests {
 //            System.out.printf("$txHash == %h\n", stx.getId());
 //            assertEquals(stx.getId(), txHash);
 //        });
+//    }
+
+//    private org.accordproject.promissorynote.PromissoryNoteContract getTestPromissoryNoteContract(Party lender, Party borrower) {
+//
+//        ProcessBuilder ciceroParseExecutor = new ProcessBuilder();
+//        ciceroParseExecutor.command();
+//
+//        org.accordproject.promissorynote.PromissoryNoteContract promissoryNoteContract = new org.accordproject.promissorynote.PromissoryNoteContract();
+//        MonetaryAmount amount = new MonetaryAmount();
+//        amount.doubleValue = 10.0;
+//        amount.currencyCode = CurrencyCode.GBP;
+//
+//        promissoryNoteContract.amount = new MonetaryAmount();
+//        promissoryNoteContract.date = new Date();
+//        promissoryNoteContract.maker = borrower.getName().toString();
+//        promissoryNoteContract.interestRate = 0.5;
+//        promissoryNoteContract.individual = true;
+//        promissoryNoteContract.makerAddress = "555 Fake British Avenue";
+//        promissoryNoteContract.lender = lender.getName().toString();
+//        promissoryNoteContract.legalEntity = BusinessEntity.CORP;
+//        promissoryNoteContract.lenderAddress = "666 Fake British Road";
+//        promissoryNoteContract.principal = amount;
+//        promissoryNoteContract.maturityDate = new Date(1595065298);
+//        promissoryNoteContract.defaultDays = 30;
+//        promissoryNoteContract.insolvencyDays = 90;
+//        promissoryNoteContract.jurisdiction = "Great Britain";
+//        return promissoryNoteContract;
 //    }
 }

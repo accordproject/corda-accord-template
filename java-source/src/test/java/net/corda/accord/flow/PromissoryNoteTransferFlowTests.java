@@ -2,7 +2,10 @@ package net.corda.accord.flow;
 
 import net.corda.testing.node.*;
 
-public class IOUTransferFlowTests {
+/**
+ * TODO: Write tests for promissory note transfer flow once functionality is complete.
+ */
+public class PromissoryNoteTransferFlowTests {
 
     private MockNetwork mockNetwork;
     private StartedMockNode a, b, c;
@@ -23,7 +26,7 @@ public class IOUTransferFlowTests {
 //        startedNodes.add(c);
 //
 //        // For real nodes this happens automatically, but we have to manually register the flow for tests
-//        startedNodes.forEach(el -> el.registerInitiatedFlow(IOUTransferFlow.Responder.class));
+//        startedNodes.forEach(el -> el.registerInitiatedFlow(PromissoryNoteTransferFlow.Responder.class));
 //        mockNetwork.runNetwork();
 //    }
 //
@@ -35,7 +38,7 @@ public class IOUTransferFlowTests {
 //    @Rule
 //    public final ExpectedException exception = ExpectedException.none();
 //
-//    private SignedTransaction issueIOU(IOUState iouState) throws InterruptedException, ExecutionException {
+//    private SignedTransaction issueIOU(PromissoryNoteState iouState) throws InterruptedException, ExecutionException {
 //        PromissoryNoteIssueFlow.InitiatorFlow flow = new PromissoryNoteIssueFlow.InitiatorFlow(iouState);
 //        CordaFuture future = a.startFlow(flow);
 //        mockNetwork.runNetwork();
@@ -44,15 +47,15 @@ public class IOUTransferFlowTests {
 
     /**
      * Task 1.
-     * Build out the beginnings of [IOUTransferFlow]!
-     * TODO: Implement the [IOUTransferFlow] flow which builds and returns a partially [SignedTransaction].
+     * Build out the beginnings of [PromissoryNoteTransferFlow]!
+     * TODO: Implement the [PromissoryNoteTransferFlow] flow which builds and returns a partially [SignedTransaction].
      * Hint:
      * - This flow will look similar to the [PromissoryNoteIssueFlow].
      * - This time our transaction has an input state, so we need to retrieve it from the vault!
      * - You can use the [getServiceHub().getVaultService().queryBy(Class, queryCriteria)] method to get the latest linear states of a particular
      *   type from the vault. It returns a list of states matching your query.
      * - Use the [UniqueIdentifier] which is passed into the flow to create the appropriate Query Criteria.
-     * - Use the [IOUState.withNewLender] method to create a copy of the state with a new lender.
+     * - Use the [PromissoryNoteState.withNewLender] method to create a copy of the state with a new lender.
      * - Create a Command - we will need to use the Transfer command.
      * - Remember, as we are involving three parties we will need to collect three signatures, so need to add three
      *   [PublicKey]s to the Command's signers list. We can get the signers from the input IOU and the new IOU you
@@ -65,9 +68,9 @@ public class IOUTransferFlowTests {
 //    public void flowReturnsCorrectlyFormedPartiallySignedTransaction() throws Exception {
 //        Party lender = a.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
 //        Party borrower = b.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
-//        SignedTransaction stx = issueIOU(new IOUState(Currencies.DOLLARS(10), lender, borrower));
-//        IOUState inputIou = (IOUState) stx.getTx().getOutputs().get(0).getData();
-//        IOUTransferFlow.InitiatorFlow flow = new IOUTransferFlow.InitiatorFlow(inputIou.getLinearId(), c.getInfo().getLegalIdentities().get(0));
+//        SignedTransaction stx = issueIOU(new PromissoryNoteState(Currencies.DOLLARS(10), lender, borrower));
+//        PromissoryNoteState inputIou = (PromissoryNoteState) stx.getTx().getOutputs().get(0).getData();
+//        PromissoryNoteTransferFlow.InitiatorFlow flow = new PromissoryNoteTransferFlow.InitiatorFlow(inputIou.getLinearId(), c.getInfo().getLegalIdentities().get(0));
 //        Future<SignedTransaction> future = a.startFlow(flow);
 //
 //        mockNetwork.runNetwork();
@@ -75,25 +78,25 @@ public class IOUTransferFlowTests {
 //        SignedTransaction ptx = future.get();
 //
 //        // Check the transaction is well formed...
-//        // One output IOUState, one input state reference and a Transfer command with the right properties.
+//        // One output PromissoryNoteState, one input state reference and a Transfer command with the right properties.
 //        assert (ptx.getTx().getInputs().size() == 1);
 //        assert (ptx.getTx().getOutputs().size() == 1);
-//        assert (ptx.getTx().getOutputs().get(0).getData() instanceof IOUState);
+//        assert (ptx.getTx().getOutputs().get(0).getData() instanceof PromissoryNoteState);
 //        assert (ptx.getTx().getInputs().get(0).equals(new StateRef(stx.getId(), 0)));
 //
-//        IOUState outputIOU = (IOUState) ptx.getTx().getOutput(0);
+//        PromissoryNoteState outputIOU = (PromissoryNoteState) ptx.getTx().getOutput(0);
 //        Command command = ptx.getTx().getCommands().get(0);
 //
-//        assert (command.getValue().equals(new IOUContract.Commands.Transfer()));
+//        assert (command.getValue().equals(new PromissoryNoteContract.Commands.Transfer()));
 //        ptx.verifySignaturesExcept(b.getInfo().getLegalIdentities().get(0).getOwningKey(), c.getInfo().getLegalIdentities().get(0).getOwningKey(), mockNetwork.getDefaultNotaryIdentity().getOwningKey());
 //    }
 
     /**
      * Task 2.
      * We need to make sure that only the current lender can execute this flow.
-     * TODO: Amend the [IOUTransferFlow] to only allow the current lender to execute the flow.
+     * TODO: Amend the [PromissoryNoteTransferFlow] to only allow the current lender to execute the flow.
      * Hint:
-     * - Remember: You can use the node's identity and compare it to the [Party] object within the [IOUState] you
+     * - Remember: You can use the node's identity and compare it to the [Party] object within the [PromissoryNoteState] you
      *   retrieved from the vault.
      * - Throw an [IllegalArgumentException] if the wrong party attempts to run the flow!
      */
@@ -102,9 +105,9 @@ public class IOUTransferFlowTests {
 //    public void flowCanOnlyBeRunByCurrentLender() throws Exception {
 //        Party lender = a.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
 //        Party borrower = b.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
-//        SignedTransaction stx = issueIOU(new IOUState(Currencies.DOLLARS(10), lender, borrower));
-//        IOUState inputIou = (IOUState) stx.getTx().getOutputs().get(0).getData();
-//        IOUTransferFlow.InitiatorFlow flow = new IOUTransferFlow.InitiatorFlow(inputIou.getLinearId(), c.getInfo().component2().get(0).getParty());
+//        SignedTransaction stx = issueIOU(new PromissoryNoteState(Currencies.DOLLARS(10), lender, borrower));
+//        PromissoryNoteState inputIou = (PromissoryNoteState) stx.getTx().getOutputs().get(0).getData();
+//        PromissoryNoteTransferFlow.InitiatorFlow flow = new PromissoryNoteTransferFlow.InitiatorFlow(inputIou.getLinearId(), c.getInfo().component2().get(0).getParty());
 //        Future<SignedTransaction> future = b.startFlow(flow);
 //        try {
 //            mockNetwork.runNetwork();
@@ -117,7 +120,7 @@ public class IOUTransferFlowTests {
 
     /**
      * Task 3.
-     * Check that an [IOUState] cannot be transferred to the same lender.
+     * Check that an [PromissoryNoteState] cannot be transferred to the same lender.
      * TODO: You shouldn't have to do anything additional to get this test to pass. Belts and Braces!
      */
 
@@ -125,9 +128,9 @@ public class IOUTransferFlowTests {
 //    public void iouCannotBeTransferredToSameParty() throws Exception {
 //        Party lender = a.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
 //        Party borrower = b.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
-//        SignedTransaction stx = issueIOU(new IOUState(Currencies.DOLLARS(10), lender, borrower));
-//        IOUState inputIou = (IOUState) stx.getTx().getOutputs().get(0).getData();
-//        IOUTransferFlow.InitiatorFlow flow = new IOUTransferFlow.InitiatorFlow(inputIou.getLinearId(), c.getInfo().component2().get(0).getParty());
+//        SignedTransaction stx = issueIOU(new PromissoryNoteState(Currencies.DOLLARS(10), lender, borrower));
+//        PromissoryNoteState inputIou = (PromissoryNoteState) stx.getTx().getOutputs().get(0).getData();
+//        PromissoryNoteTransferFlow.InitiatorFlow flow = new PromissoryNoteTransferFlow.InitiatorFlow(inputIou.getLinearId(), c.getInfo().component2().get(0).getParty());
 //        Future<SignedTransaction> future = a.startFlow(flow);
 //        try {
 //            mockNetwork.runNetwork();
@@ -142,7 +145,7 @@ public class IOUTransferFlowTests {
     /**
      * Task 4.
      * Get the borrowers and the new lenders signatures.
-     * TODO: Amend the [IOUTransferFlow] to handle collecting signatures from multiple parties.
+     * TODO: Amend the [PromissoryNoteTransferFlow] to handle collecting signatures from multiple parties.
      * Hint: use [initiateFlow] and the [CollectSignaturesFlow] in the same way you did for the [PromissoryNoteIssueFlow].
      */
 
@@ -150,9 +153,9 @@ public class IOUTransferFlowTests {
 //    public void flowReturnsTransactionSignedBtAllParties() throws Exception {
 //        Party lender = a.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
 //        Party borrower = b.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
-//        SignedTransaction stx = issueIOU(new IOUState(Currencies.DOLLARS(10), lender, borrower));
-//        IOUState inputIou = (IOUState) stx.getTx().getOutputs().get(0).getData();
-//        IOUTransferFlow.InitiatorFlow flow = new IOUTransferFlow.InitiatorFlow(inputIou.getLinearId(), lender);
+//        SignedTransaction stx = issueIOU(new PromissoryNoteState(Currencies.DOLLARS(10), lender, borrower));
+//        PromissoryNoteState inputIou = (PromissoryNoteState) stx.getTx().getOutputs().get(0).getData();
+//        PromissoryNoteTransferFlow.InitiatorFlow flow = new PromissoryNoteTransferFlow.InitiatorFlow(inputIou.getLinearId(), lender);
 //        Future<SignedTransaction> future = a.startFlow(flow);
 //        try {
 //            mockNetwork.runNetwork();
@@ -174,9 +177,9 @@ public class IOUTransferFlowTests {
 //    public void flowReturnsTransactionSignedByAllPartiesAndNotary() throws Exception {
 //        Party lender = a.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
 //        Party borrower = b.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
-//        SignedTransaction stx = issueIOU(new IOUState(Currencies.DOLLARS(10), lender, borrower));
-//        IOUState inputIou = (IOUState) stx.getTx().getOutputs().get(0).getData();
-//        IOUTransferFlow.InitiatorFlow flow = new IOUTransferFlow.InitiatorFlow(inputIou.getLinearId(), c.getInfo().component2().get(0).getParty());
+//        SignedTransaction stx = issueIOU(new PromissoryNoteState(Currencies.DOLLARS(10), lender, borrower));
+//        PromissoryNoteState inputIou = (PromissoryNoteState) stx.getTx().getOutputs().get(0).getData();
+//        PromissoryNoteTransferFlow.InitiatorFlow flow = new PromissoryNoteTransferFlow.InitiatorFlow(inputIou.getLinearId(), c.getInfo().component2().get(0).getParty());
 //        Future<SignedTransaction> future = a.startFlow(flow);
 //        try {
 //            mockNetwork.runNetwork();

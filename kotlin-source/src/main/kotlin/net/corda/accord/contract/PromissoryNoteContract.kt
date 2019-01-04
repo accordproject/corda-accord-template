@@ -4,7 +4,7 @@ import net.corda.core.contracts.*
 import net.corda.core.transactions.LedgerTransaction
 import net.corda.finance.contracts.asset.Cash
 import net.corda.finance.utils.sumCash
-import net.corda.accord.state.IOUState
+import net.corda.accord.state.PromissoryNoteState
 import java.security.PublicKey
 
 /**
@@ -41,7 +41,7 @@ class PromissoryNoteContract : Contract {
                 "No inputs should be consumed when issuing an IOU." using ( tx.inputStates.size == 0 )
                 "Only one output state should be created when issuing an IOU." using (tx.outputStates.size == 1)
 
-                val outputState = tx.outputStates.single() as IOUState
+                val outputState = tx.outputStates.single() as PromissoryNoteState
                 "A newly issued IOU must have a positive amount." using (outputState.amount.quantity > 0)
                 "The lender and borrower cannot have the same identity." using (outputState.lender != outputState.borrower)
 
@@ -55,8 +55,8 @@ class PromissoryNoteContract : Contract {
                 "An IOU transfer transaction should only create one output state." using (tx.outputStates.size == 1)
 
                 // Copy of input with new lender
-                val checkOutputState = tx.outputStates.single() as IOUState
-                val checkInputState = tx.inputStates.single() as IOUState
+                val checkOutputState = tx.outputStates.single() as PromissoryNoteState
+                val checkInputState = tx.inputStates.single() as PromissoryNoteState
                 "Only the lender property may change." using (checkOutputState.withNewLender(checkInputState.lender) == checkInputState)
                 "The lender property must change in a transfer." using (checkOutputState.lender != checkInputState.lender)
                 val listOfPublicKeys = listOf(checkInputState.lender.owningKey, checkInputState.borrower.owningKey, checkOutputState.lender.owningKey)
@@ -67,7 +67,7 @@ class PromissoryNoteContract : Contract {
             }
 
             is Commands.Settle -> requireThat {
-                val groupStates = tx.groupStates<IOUState, UniqueIdentifier> { it.linearId }
+                val groupStates = tx.groupStates<PromissoryNoteState, UniqueIdentifier> { it.linearId }
                 "There must be one input IOU." using (tx.inputStates.size > 0)
                 "List has more than one element." using (groupStates.size < 2)
                 "There must be output cash." using ( tx.outputsOfType<Cash.State>().size > 0 )
@@ -75,10 +75,10 @@ class PromissoryNoteContract : Contract {
                 //sum the cash states
                 val cashStates = tx.outputsOfType<Cash.State>()
                 val sum = cashStates.sumCash().withoutIssuer()
-                val inputAmount = tx.inputsOfType<IOUState>().single()
+                val inputAmount = tx.inputsOfType<PromissoryNoteState>().single()
                 "The amount settled cannot be more than the amount outstanding." using (inputAmount.amount >= sum)
 
-                val checkOutput = tx.inputsOfType<IOUState>().single()
+                val checkOutput = tx.inputsOfType<PromissoryNoteState>().single()
                 val ourCash = cashStates.filter { it.owner.owningKey == checkOutput.lender.owningKey }
 
                 "There must be output cash paid to the recipient." using ( ourCash.size > 0 )
@@ -86,11 +86,11 @@ class PromissoryNoteContract : Contract {
                 val ourTotalCashAmount = ourCash.sumCash().quantity
 
 
-                val inputState = tx.inputsOfType<IOUState>().single()
+                val inputState = tx.inputsOfType<PromissoryNoteState>().single()
 
                 if (inputState.amount.quantity > ourTotalCashAmount) {
 
-                    val outputStates = tx.outputsOfType<IOUState>()
+                    val outputStates = tx.outputsOfType<PromissoryNoteState>()
                     "There must be one output IOU." using ( outputStates.size == 1 )
 
                     "The borrower may not change when settling." using ( inputState.borrower == outputStates.single().borrower )
@@ -99,7 +99,7 @@ class PromissoryNoteContract : Contract {
 
                 } else {
 
-                    "There must be no output IOU as it has been fully settled." using ( tx.outputsOfType<IOUState>().size == 0 )
+                    "There must be no output IOU as it has been fully settled." using ( tx.outputsOfType<PromissoryNoteState>().size == 0 )
 
                 }
 

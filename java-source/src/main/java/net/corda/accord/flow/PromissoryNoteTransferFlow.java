@@ -1,12 +1,14 @@
 package net.corda.accord.flow;
 
 import co.paralleluniverse.fibers.Suspendable;
+import net.corda.accord.contract.PromissoryNoteContract;
+import net.corda.accord.state.PromissoryNoteState;
 import net.corda.core.contracts.Command;
 import net.corda.core.contracts.ContractState;
 import net.corda.core.contracts.StateAndRef;
 import net.corda.core.flows.*;
 import net.corda.core.utilities.ProgressTracker;
-import net.corda.accord.contract.IOUContract.Commands.Transfer;
+import net.corda.accord.contract.PromissoryNoteContract.Commands.Transfer;
 import net.corda.core.contracts.UniqueIdentifier;
 import net.corda.core.identity.AbstractParty;
 import net.corda.core.identity.Party;
@@ -14,8 +16,6 @@ import net.corda.core.node.services.Vault;
 import net.corda.core.node.services.vault.QueryCriteria;
 import net.corda.core.transactions.SignedTransaction;
 import net.corda.core.transactions.TransactionBuilder;
-import net.corda.accord.contract.IOUContract;
-import net.corda.accord.state.IOUState;
 
 import javax.validation.constraints.NotNull;
 import java.security.PublicKey;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 import static net.corda.core.contracts.ContractsDSL.requireThat;
 
-public class IOUTransferFlow{
+public class PromissoryNoteTransferFlow {
 
     @InitiatingFlow
     @StartableByRPC
@@ -49,9 +49,9 @@ public class IOUTransferFlow{
             QueryCriteria queryCriteria = new QueryCriteria.LinearStateQueryCriteria(null, listOfLinearIds);
 
             // Get flow components
-            Vault.Page results = getServiceHub().getVaultService().queryBy(IOUState.class, queryCriteria);
+            Vault.Page results = getServiceHub().getVaultService().queryBy(PromissoryNoteState.class, queryCriteria);
             StateAndRef inputStateAndRefToTransfer = (StateAndRef) results.getStates().get(0);
-            IOUState inputStateToTransfer = (IOUState) inputStateAndRefToTransfer.getState().getData();
+            PromissoryNoteState inputStateToTransfer = (PromissoryNoteState) inputStateAndRefToTransfer.getState().getData();
 
             Party notary = getServiceHub().getNetworkMapCache().getNotaryIdentities().get(0);
             TransactionBuilder tb = new TransactionBuilder(notary);
@@ -70,7 +70,7 @@ public class IOUTransferFlow{
 
             // Add states to flow
             tb.addInputState(inputStateAndRefToTransfer);
-            tb.addOutputState(inputStateToTransfer.withNewLender(newLender), IOUContract.IOU_CONTRACT_ID);
+            tb.addOutputState(inputStateToTransfer.withNewLender(newLender), PromissoryNoteContract.IOU_CONTRACT_ID);
 
             if (!inputStateToTransfer.lenderCordaParty.getOwningKey().equals(getOurIdentity().getOwningKey())) {
                 throw new IllegalArgumentException("This flow must be run by the current lender.");
@@ -105,7 +105,7 @@ public class IOUTransferFlow{
      * This is the flow which signs IOU settlements.
      * The signing is handled by the [SignTransactionFlow].
      */
-    @InitiatedBy(IOUTransferFlow.InitiatorFlow.class)
+    @InitiatedBy(PromissoryNoteTransferFlow.InitiatorFlow.class)
     public static class Responder extends FlowLogic<SignedTransaction> {
 
         private final FlowSession otherPartyFlow;
@@ -127,7 +127,7 @@ public class IOUTransferFlow{
                 protected void checkTransaction(SignedTransaction stx) {
                     requireThat(require -> {
                         ContractState output = stx.getTx().getOutputs().get(0).getData();
-                        require.using("This must be an IOU transaction", output instanceof IOUState);
+                        require.using("This must be an IOU transaction", output instanceof PromissoryNoteState);
                         return null;
                     });
                 }
