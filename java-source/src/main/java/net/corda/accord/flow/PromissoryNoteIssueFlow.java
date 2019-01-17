@@ -52,7 +52,7 @@ public class PromissoryNoteIssueFlow {
 		// TODO: Adjust the cicero-parse command to include an option on only return the JSON with no initial messaging
 		// TODO: Enable the user to specify the file path for the source legal document
 		private InputStream getStateFromContract() throws IOException {
-			String[] command = {"./resources/cicero-parse.sh", "java/AccordProject/cicero-template-library/src/promissory-note"};
+      String[] command = {"./resources/cicero-parse.sh", "../../../node_modules/promissory-note", "../../../contract.txt"};
 			ProcessBuilder ciceroParse = new ProcessBuilder(command);
 			ciceroParse.directory(new File("./src/main"));
 			return ciceroParse.start().getInputStream();
