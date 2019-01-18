@@ -1,4 +1,7 @@
-![Corda](https://www.corda.net/wp-content/uploads/2016/11/fg005_corda_b.png)
+<div>
+<img src="./corda_logo.png" width="40%" alt="Corda"/>
+<img src="./accord_logo.png" width="40%" alt="Accord Project"/>
+</div>
 
 # Corda + Accord Project Template
 
