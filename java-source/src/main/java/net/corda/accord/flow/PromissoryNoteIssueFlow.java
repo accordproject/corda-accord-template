@@ -44,7 +44,7 @@ public class PromissoryNoteIssueFlow {
 
 		/**
 		 * This function parses a legal document using a Cicero template and returns an input stream with the output from the terminal.
-		 * The script 'cicero-parse.sh writes the output of Cicero-parse to a temporary file, surpresses standard system-out messaging and then
+		 * The script 'cicero-parse.sh writes the output of Cicero-parse to a temporary file, suppresses standard system-out messaging and then
 		 * logs out the JSON (which is captured in the input stream.
  		 */
 
