@@ -94,7 +94,7 @@ public class PromissoryNoteState implements ContractState, LinearState {
      */
 	public PromissoryNoteState(PromissoryNoteContract promissoryNoteContract, Party makerCordaParty, Party lenderCordaParty) {
         this(
-                new Amount<Currency>((long) promissoryNoteContract.amount.doubleValue, Currencies.DOLLARS(0).getToken()),
+                Currencies.DOLLARS(promissoryNoteContract.amount.doubleValue),
                 promissoryNoteContract.date,
                 promissoryNoteContract.maker,
                 promissoryNoteContract.interestRate,

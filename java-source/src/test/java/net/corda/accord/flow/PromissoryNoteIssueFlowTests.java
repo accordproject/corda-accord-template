@@ -88,7 +88,6 @@ public class PromissoryNoteIssueFlowTests {
 
         File ciceroTemplateFile = new File("./src/main/resources/src-contract.txt");
         InputStream ciceroTemplateFileInputStream = new FileInputStream(ciceroTemplateFile);
-
         return a.transaction(() -> {
             try {
                 return a.getServices().getAttachments().importAttachment(getCompressed(ciceroTemplateFileInputStream), lender.getName().toString(), "ciceroContractTemplate.txt.zip");
