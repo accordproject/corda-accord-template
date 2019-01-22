@@ -17,7 +17,7 @@ import java.util.*;
  * This contract governs how promissory notes may be Issued, Settled or Transferred.
  */
 public class PromissoryNoteContract implements Contract {
-    public static final String IOU_CONTRACT_ID = "PromissoryNoteContract";
+    public static final String PROMISSORY_NOTE_CONTRACT_ID = "net.corda.accord.contract.PromissoryNoteContract";
     
     public interface Commands extends CommandData {
         class Issue extends TypeOnlyCommandData implements Commands{};

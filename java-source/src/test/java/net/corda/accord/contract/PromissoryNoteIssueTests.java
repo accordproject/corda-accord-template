@@ -3,11 +3,8 @@ package net.corda.accord.contract;
 import net.corda.core.contracts.*;
 import net.corda.testing.node.MockServices;
 
-import static net.corda.testing.node.NodeTestUtils.ledger;
 import net.corda.core.transactions.LedgerTransaction;
-
 import net.corda.accord.state.PromissoryNoteState;
-import net.corda.accord.state.PromissoryNoteStateTests;
 
 import java.util.Arrays;
 
@@ -20,7 +17,7 @@ public class PromissoryNoteIssueTests {
         class DummyCommand extends TypeOnlyCommandData implements Commands{}
     }
 
-    static private final MockServices ledgerServices = new MockServices(Arrays.asList("net.corda.accord"));
+    static private final MockServices ledgerServices = new MockServices(Arrays.asList("net.corda.accord", "net.corda.finance"));
 
     /**
      * Task 1.

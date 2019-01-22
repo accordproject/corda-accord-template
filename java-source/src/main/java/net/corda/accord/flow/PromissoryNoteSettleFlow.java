@@ -98,7 +98,7 @@ public class PromissoryNoteSettleFlow {
 
             // 7. Add an IOU output state for an IOU that has not been full settled.
             if (amount.getQuantity() < inputStateToSettle.amount.getQuantity()) {
-                tb.addOutputState(inputStateToSettle.pay(amount), PromissoryNoteContract.IOU_CONTRACT_ID);
+                tb.addOutputState(inputStateToSettle.pay(amount), PromissoryNoteContract.PROMISSORY_NOTE_CONTRACT_ID);
             }
 
 

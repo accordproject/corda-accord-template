@@ -92,13 +92,13 @@ public class PromissoryNoteIssueFlow {
             final TransactionBuilder builder = new TransactionBuilder(notary);
 
             // Step 4. Add the iou as an output state, as well as a command to the transaction builder.
-            builder.addOutputState(state, PromissoryNoteContract.IOU_CONTRACT_ID);
+            builder.addOutputState(state, PromissoryNoteContract.PROMISSORY_NOTE_CONTRACT_ID);
             builder.addCommand(issueCommand);
 
             // Step 4.5 Added the Cicero template contract to the state
 			builder.addAttachment(ciceroTemplateID);
 
-            // Step 5. Verify and sign it with our KeyPair.
+			// Step 5. Verify and sign it with our KeyPair.
             builder.verify(getServiceHub());
             final SignedTransaction ptx = getServiceHub().signInitialTransaction(builder);
 
