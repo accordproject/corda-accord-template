@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.corda.accord.AccordUtils;
 import net.corda.accord.contract.PromissoryNoteContract;
 import net.corda.accord.state.PromissoryNoteState;
 import net.corda.core.contracts.Command;
@@ -48,15 +49,10 @@ public class PromissoryNoteIssueFlow {
 		 * logs out the JSON (which is captured in the input stream.
  		 */
 
-		// TODO: Enable the user to specify the file path for the promissary note template
-		// TODO: Adjust the cicero-parse command to include an option on only return the JSON with no initial messaging
-		// TODO: Enable the user to specify the file path for the source legal document
-		private InputStream getStateFromContract() throws IOException {
-			String[] command = {"./resources/cicero-parse.sh", "java/AccordProject/cicero-template-library/src/promissory-note"};
-			ProcessBuilder ciceroParse = new ProcessBuilder(command);
-			ciceroParse.directory(new File("./src/main"));
-			return ciceroParse.start().getInputStream();
-		}
+		/** TODO: Enable the user to specify the file path for the promissary note template
+		 * TODO: Adjust the cicero-parse command to include an option on only return the JSON with no initial messaging
+		 * TODO: Enable the user to specify the file path for the source legal document */
+
 
         @Suspendable
         @Override
@@ -65,11 +61,9 @@ public class PromissoryNoteIssueFlow {
         	PromissoryNoteState state;
 
         	// Step 0. Generate an input state from the parsed Contract.
-
 			try {
-				InputStream dataFromContract = getStateFromContract();
+				InputStream dataFromContract = AccordUtils.getStateFromContract();
 				String jsonData = IOUtils.toString(dataFromContract, "UTF-8");
-				Object parsedJSONData = new JSONParser().parse(jsonData);
 				ObjectMapper objectMapper = new ObjectMapper();
 				org.accordproject.promissorynote.PromissoryNoteContract parsedContractData = objectMapper.readValue(jsonData, org.accordproject.promissorynote.PromissoryNoteContract.class);
 				state = new PromissoryNoteState(parsedContractData, lender, maker);
@@ -98,12 +92,24 @@ public class PromissoryNoteIssueFlow {
             // Step 4.5 Added the Cicero template contract to the state
 			builder.addAttachment(ciceroTemplateID);
 
-			// Step 5. Verify and sign it with our KeyPair.
+
+			// Step 5. Add the contract to the transaction
+			File ciceroTemplateFile = new File("./src/main/resources/src-contract.txt");
+
+			try {
+				InputStream ciceroTemplateFileInputStream = new FileInputStream(ciceroTemplateFile);
+				SecureHash attachmentHash = getServiceHub().getAttachments().importAttachment(AccordUtils.getCompressed(ciceroTemplateFileInputStream), getOurIdentity().getName().toString(), ciceroTemplateFile.getName());
+				builder.addAttachment(attachmentHash);
+			} catch (Exception e) {
+				throw new Error(e.getMessage());
+			}
+
+			// Step 6. Verify and sign it with our KeyPair.
             builder.verify(getServiceHub());
             final SignedTransaction ptx = getServiceHub().signInitialTransaction(builder);
 
 
-            // Step 6. Collect the other party's signature using the SignTransactionFlow.
+            // Step 7. Collect the other party's signature using the SignTransactionFlow.
             List<Party> otherParties = state.getParticipants()
                     .stream().map(el -> (Party)el)
                     .collect(Collectors.toList());
@@ -116,7 +122,7 @@ public class PromissoryNoteIssueFlow {
 
             SignedTransaction stx = subFlow(new CollectSignaturesFlow(ptx, sessions));
 
-            // Step 7. Assuming no exceptions, we can now finalise the transaction.
+            // Step 8. Assuming no exceptions, we can now finalise the transaction.
             return subFlow(new FinalityFlow(stx));
         }
     }

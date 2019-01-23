@@ -2,9 +2,11 @@ package net.corda.accord.flow;
 
 import co.paralleluniverse.fibers.Suspendable;
 import com.google.common.collect.ImmutableSet;
+import net.corda.accord.AccordUtils;
 import net.corda.accord.contract.PromissoryNoteContract;
 import net.corda.accord.state.PromissoryNoteState;
 import net.corda.core.contracts.*;
+import net.corda.core.crypto.SecureHash;
 import net.corda.core.flows.*;
 import net.corda.core.identity.AbstractParty;
 import net.corda.core.identity.Party;
@@ -18,6 +20,7 @@ import net.corda.finance.contracts.asset.Cash;
 import net.corda.finance.flows.AbstractCashFlow;
 import net.corda.finance.flows.CashIssueFlow;
 
+import java.io.*;
 import java.lang.IllegalArgumentException;
 
 import static net.corda.core.contracts.ContractsDSL.requireThat;
@@ -101,12 +104,22 @@ public class PromissoryNoteSettleFlow {
                 tb.addOutputState(inputStateToSettle.pay(amount), PromissoryNoteContract.PROMISSORY_NOTE_CONTRACT_ID);
             }
 
+            // 8. Add the contract to the transaction
+            File ciceroTemplateFile = new File("./src/main/resources/src-contract.txt");
 
-            // 8. Verify and sign the transaction
+            try {
+                InputStream ciceroTemplateFileInputStream = new FileInputStream(ciceroTemplateFile);
+                SecureHash attachmentHash = getServiceHub().getAttachments().importAttachment(AccordUtils.getCompressed(ciceroTemplateFileInputStream), getOurIdentity().getName().toString(), ciceroTemplateFile.getName());
+                tb.addAttachment(attachmentHash);
+            } catch (Exception e) {
+                throw new Error(e.getMessage());
+            }
+
+            // 9. Verify and sign the transaction
             tb.verify(getServiceHub());
             SignedTransaction stx = getServiceHub().signInitialTransaction(tb, getOurIdentity().getOwningKey());
 
-            //Collect Signatures
+            // 10. Collect Signatures
             List<FlowSession> listOfFlows = new ArrayList<>();
 
             for (AbstractParty participant: inputStateToSettle.getParticipants()) {

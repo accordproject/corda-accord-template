@@ -21,9 +21,6 @@ import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.accordproject.usa.business.BusinessEntity;
-import org.accordproject.money.CurrencyCode;
-import org.accordproject.money.MonetaryAmount;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
