@@ -70,3 +70,6 @@ crashlytics-build.properties
 
 # docs related
 docs/virtualenv/
+
+# NPM
+node_modules/
