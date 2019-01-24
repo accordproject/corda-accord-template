@@ -21,9 +21,6 @@ import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.accordproject.usa.business.BusinessEntity;
-import org.accordproject.money.CurrencyCode;
-import org.accordproject.money.MonetaryAmount;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
@@ -63,41 +60,6 @@ public class PromissoryNoteIssueFlowTests {
     @Rule
     public final ExpectedException exception = ExpectedException.none();
 
-    private InputStream getCompressed( InputStream is )
-            throws IOException
-    {
-        byte data[] = new byte[2048];
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ZipOutputStream zos = new ZipOutputStream( bos );
-        BufferedInputStream entryStream = new BufferedInputStream( is, 2048);
-        ZipEntry entry = new ZipEntry( "" );
-        zos.putNextEntry( entry );
-        int count;
-        while ( ( count = entryStream.read( data, 0, 2048) ) != -1 )
-        {
-            zos.write( data, 0, count );
-        }
-        entryStream.close();
-        zos.closeEntry();
-        zos.close();
-
-        return new ByteArrayInputStream( bos.toByteArray() );
-    }
-
-    private SecureHash addCiceroContract(Party lender) throws FileNotFoundException, FileAlreadyExistsException, IOException {
-
-        File ciceroTemplateFile = new File("../contract.txt");
-        InputStream ciceroTemplateFileInputStream = new FileInputStream(ciceroTemplateFile);
-        return a.transaction(() -> {
-            try {
-                return a.getServices().getAttachments().importAttachment(getCompressed(ciceroTemplateFileInputStream), lender.getName().toString(), "ciceroContractTemplate.txt.zip");
-            } catch(Exception exception) {
-                System.out.println(exception);
-            }
-            return null;
-        });
-    }
-
     /**
      * Task 1.
      * Build out the {@link PromissoryNoteIssueFlow}!
@@ -123,7 +85,7 @@ public class PromissoryNoteIssueFlowTests {
 
         // TODO: Note naming conflicts for transactions (database transaction) and getAttachments (gets attachment functionality)
         // TODO: Write a wrapper class for Lambda function
-        PromissoryNoteIssueFlow.InitiatorFlow flow = new PromissoryNoteIssueFlow.InitiatorFlow(addCiceroContract(lender), lender, maker);
+        PromissoryNoteIssueFlow.InitiatorFlow flow = new PromissoryNoteIssueFlow.InitiatorFlow(lender, maker);
 
         Future<SignedTransaction> future = a.startFlow(flow);
         mockNetwork.runNetwork();

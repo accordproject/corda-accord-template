@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.corda.accord.AccordUtils;
 import net.corda.accord.contract.PromissoryNoteContract;
 import net.corda.accord.state.PromissoryNoteState;
 import net.corda.core.contracts.Command;
@@ -19,6 +20,7 @@ import net.corda.core.transactions.SignedTransaction;
 import net.corda.core.transactions.TransactionBuilder;
 import static net.corda.core.contracts.ContractsDSL.requireThat;
 import net.corda.core.utilities.ProgressTracker;
+import net.corda.core.utilities.ProgressTracker.Step;
 
 import org.apache.commons.io.IOUtils;
 import org.json.simple.parser.JSONParser;
@@ -34,28 +36,56 @@ public class PromissoryNoteIssueFlow {
     public static class InitiatorFlow extends FlowLogic<SignedTransaction> {
         private final Party lender;
 		private final Party maker;
-		private final SecureHash ciceroTemplateID;
 
-        public InitiatorFlow(SecureHash ciceroTemplateId, Party lender, Party maker) {
+        public InitiatorFlow(Party lender, Party maker) {
         	this.lender = lender;
         	this.maker = maker;
-        	this.ciceroTemplateID = ciceroTemplateId;
         }
 
-		/**
-		 * This function parses a legal document using a Cicero template and returns an input stream with the output from the terminal.
-		 * The script 'cicero-parse.sh writes the output of Cicero-parse to a temporary file, suppresses standard system-out messaging and then
-		 * logs out the JSON (which is captured in the input stream.
- 		 */
+		/** TODO: Enable the user to specify the file path for the promissary note template
+		 * TODO: Adjust the cicero-parse command to include an option on only return the JSON with no initial messaging
+		 * TODO: Enable the user to specify the file path for the source legal document */
 
-		// TODO: Enable the user to specify the file path for the promissary note template
-		// TODO: Adjust the cicero-parse command to include an option on only return the JSON with no initial messaging
-		// TODO: Enable the user to specify the file path for the source legal document
-		private InputStream getStateFromContract() throws IOException {
-      String[] command = {"./resources/cicero-parse.sh", "../../../node_modules/promissory-note", "../../../contract.txt"};
-			ProcessBuilder ciceroParse = new ProcessBuilder(command);
-			ciceroParse.directory(new File("./src/main"));
-			return ciceroParse.start().getInputStream();
+		// Giving our flow a progress tracker allows us to see the flow's
+		// progress visually in our node's CRaSH shell.
+		private static final Step GENERATING_STATE_FROM_CONTRACT = new Step("Generating a state using Cicero CLI Functionality to Parse a legal document.");
+		private static final Step PARSING_LEGALESE = new Step("Parsing Legalese");
+		private static final Step GETTING_LAW_DEGREE = new Step("Getting Law Degree");
+		private static final Step MAKING_PARENTS_HAPPY = new Step("Making Parents Happy");
+		private static final Step RETRIEVING_NOTARY_IDENTITY = new Step("Getting a reference to the notary node.");
+		private static final Step TX_BUILDING = new Step("Building a transaction.");
+		private static final Step TX_SIGNING = new Step("Signing a transaction.");
+		private static final Step TX_VERIFICATION = new Step("Verifying a transaction.");
+		private static final Step SIGNATURE_GATHERING = new Step("Gathering a transaction's signatures.") {
+			// Wiring up a child progress tracker allows us to see the
+			// subflow's progress steps in our flow's progress tracker.
+			@Override public ProgressTracker childProgressTracker() {
+				return CollectSignaturesFlow.Companion.tracker();
+			}
+		};
+		private static final Step VERIFYING_SIGS = new Step("Verifying a transaction's signatures.");
+		private static final Step FINALISATION = new Step("Finalising a transaction.") {
+			@Override public ProgressTracker childProgressTracker() {
+				return FinalityFlow.Companion.tracker();
+			}
+		};
+
+		private final ProgressTracker progressTracker = new ProgressTracker(
+				GENERATING_STATE_FROM_CONTRACT,
+				PARSING_LEGALESE,
+				GETTING_LAW_DEGREE,
+				MAKING_PARENTS_HAPPY,
+				RETRIEVING_NOTARY_IDENTITY,
+				TX_BUILDING,
+				TX_VERIFICATION,
+				TX_SIGNING,
+				SIGNATURE_GATHERING,
+				FINALISATION
+		);
+
+		@Override
+		public ProgressTracker getProgressTracker() {
+			return progressTracker;
 		}
 
         @Suspendable
@@ -64,25 +94,29 @@ public class PromissoryNoteIssueFlow {
 
         	PromissoryNoteState state;
 
-        	// Step 0. Generate an input state from the parsed Contract.
-
+			// Step 0. Generate an input state from the parsed Contract.
+			progressTracker.setCurrentStep(GENERATING_STATE_FROM_CONTRACT);
 			try {
-				InputStream dataFromContract = getStateFromContract();
+				progressTracker.setCurrentStep(GETTING_LAW_DEGREE);
+				InputStream dataFromContract = AccordUtils.getStateFromContract();
 				String jsonData = IOUtils.toString(dataFromContract, "UTF-8");
-				Object parsedJSONData = new JSONParser().parse(jsonData);
 				ObjectMapper objectMapper = new ObjectMapper();
+				progressTracker.setCurrentStep(PARSING_LEGALESE);
 				org.accordproject.promissorynote.PromissoryNoteContract parsedContractData = objectMapper.readValue(jsonData, org.accordproject.promissorynote.PromissoryNoteContract.class);
 				state = new PromissoryNoteState(parsedContractData, lender, maker);
+				progressTracker.setCurrentStep(MAKING_PARENTS_HAPPY);
 			} catch (Exception e) {
 				throw new FlowException(e.toString());
 			}
 
             // Step 1. Get a reference to the notary service on our network and our key pair.
             // Note: ongoing work to support multiple notary identities is still in progress.
+			progressTracker.setCurrentStep(RETRIEVING_NOTARY_IDENTITY);
             final Party notary = getServiceHub().getNetworkMapCache().getNotaryIdentities().get(0);
 
             // Step 2. Create a new issue command.
             // Remember that a command is a CommandData object and a list of CompositeKeys
+			progressTracker.setCurrentStep(TX_BUILDING);
 			final Command<PromissoryNoteContract.Commands.Issue> issueCommand = new Command<>(
                     new PromissoryNoteContract.Commands.Issue(),
 					Arrays.asList(lender.getOwningKey(), maker.getOwningKey())
@@ -95,15 +129,26 @@ public class PromissoryNoteIssueFlow {
             builder.addOutputState(state, PromissoryNoteContract.PROMISSORY_NOTE_CONTRACT_ID);
             builder.addCommand(issueCommand);
 
-            // Step 4.5 Added the Cicero template contract to the state
-			builder.addAttachment(ciceroTemplateID);
+			// Step 5. Add the contract to the transaction
+			File ciceroTemplateFile = new File("../../../../contract.txt");
 
-			// Step 5. Verify and sign it with our KeyPair.
+			try {
+				InputStream ciceroTemplateFileInputStream = new FileInputStream(ciceroTemplateFile);
+				SecureHash attachmentHash = getServiceHub().getAttachments().importAttachment(AccordUtils.getCompressed(ciceroTemplateFileInputStream), getOurIdentity().getName().toString(), ciceroTemplateFile.getName());
+				builder.addAttachment(attachmentHash);
+			} catch (Exception e) {
+				throw new Error(e.getMessage());
+			}
+
+			// Step 6. Verify and sign it with our KeyPair.
+			progressTracker.setCurrentStep(TX_VERIFICATION);
             builder.verify(getServiceHub());
+			progressTracker.setCurrentStep(TX_SIGNING);
             final SignedTransaction ptx = getServiceHub().signInitialTransaction(builder);
 
 
-            // Step 6. Collect the other party's signature using the SignTransactionFlow.
+            // Step 7. Collect the other party's signature using the SignTransactionFlow.
+			progressTracker.setCurrentStep(SIGNATURE_GATHERING);
             List<Party> otherParties = state.getParticipants()
                     .stream().map(el -> (Party)el)
                     .collect(Collectors.toList());
@@ -114,10 +159,11 @@ public class PromissoryNoteIssueFlow {
                     .stream().map(el -> initiateFlow(el))
                     .collect(Collectors.toList());
 
-            SignedTransaction stx = subFlow(new CollectSignaturesFlow(ptx, sessions));
+            SignedTransaction stx = subFlow(new CollectSignaturesFlow(ptx, sessions, SIGNATURE_GATHERING.childProgressTracker()));
 
-            // Step 7. Assuming no exceptions, we can now finalise the transaction.
-            return subFlow(new FinalityFlow(stx));
+            // Step 8. Assuming no exceptions, we can now finalise the transaction.
+			progressTracker.setCurrentStep(FINALISATION);
+            return subFlow(new FinalityFlow(stx, FINALISATION.childProgressTracker()));
         }
     }
 
