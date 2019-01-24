@@ -15,9 +15,13 @@ This repository is divided into two parts: a Java reference solution (which is c
 * JDK 1.8 latest version
 * IntelliJ latest version (2017.1 or newer)
 * git
+* Node.js v8.x (LTS)
 
-After installing the required tools, clone or download a zip of this repository, and place it in your desired 
-location.
+After installing the required tools, clone or download a zip of this repository, and place it in your desired location.
+
+### Cicero setup
+
+* from the command line where you placed this repository, run: `npm install` (to install `cicero` and the `promissory-note` template)
 
 ### IntelliJ setup
 * From the main menu, click `open` (not `import`!) then navigate to where you placed this repository.
@@ -47,8 +51,9 @@ again leaving all options as they are.
 
 # Template Files
 
-### Accord Project
-* Promissory Note Template: `java-source/src/main/java/AccordProject/cicero-template-library/src/promissory-note`
+### Accord
+* Promissory Note Template: `node_modules/promissory-note`
+* Promissory Note Contract: `contract.txt`
 * Promissory Note Java Object & Associated Classes: `java-source/src/main/java/org`
 * Cicero-Parse Shell Script: `java-source/src/main/resources/cicero-parse.sh`
 
