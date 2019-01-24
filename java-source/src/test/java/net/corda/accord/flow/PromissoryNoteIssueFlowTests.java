@@ -86,7 +86,7 @@ public class PromissoryNoteIssueFlowTests {
 
     private SecureHash addCiceroContract(Party lender) throws FileNotFoundException, FileAlreadyExistsException, IOException {
 
-        File ciceroTemplateFile = new File("./src/main/resources/src-contract.txt");
+        File ciceroTemplateFile = new File("../contract.txt");
         InputStream ciceroTemplateFileInputStream = new FileInputStream(ciceroTemplateFile);
         return a.transaction(() -> {
             try {

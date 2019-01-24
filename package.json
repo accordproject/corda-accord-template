@@ -1,0 +1,18 @@
+{
+  "devDependencies": {
+    "@accordproject/cicero-core": "0.10.0",
+    "@accordproject/cicero-cli": "0.10.0",
+    "promissory-note": "file:./promissory-note.0.9.1.tar.gz"
+  },
+  "name": "corda-accord-template",
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rogersanick/corda-accord-template.git"
+  },
+  "keywords": [
+    "corda",
+    "accord",
+    "legal"
+  ]
+}

@@ -103,20 +103,20 @@ public class PromissoryNoteState implements ContractState, LinearState {
                 promissoryNoteContract.lender,
                 promissoryNoteContract.legalEntity,
                 promissoryNoteContract.lenderAddress,
-                new Amount<Currency>((long) promissoryNoteContract.principal.doubleValue, Currencies.DOLLARS(0).getToken()),
+                Currencies.DOLLARS(promissoryNoteContract.principal.doubleValue),
                 promissoryNoteContract.maturityDate,
                 promissoryNoteContract.defaultDays,
                 promissoryNoteContract.insolvencyDays,
                 promissoryNoteContract.jurisdiction,
                 new UniqueIdentifier(),
-                new Amount<Currency>((long) promissoryNoteContract.amount.doubleValue, Currencies.DOLLARS(0).getToken()),
+                Currencies.DOLLARS(promissoryNoteContract.amount.doubleValue),
                 lenderCordaParty,
                 makerCordaParty
         );
     }
 
     public Amount<Currency> getAmount() {
-        return amount;
+        return amount ;
     }
 
     public Date getDate() {
