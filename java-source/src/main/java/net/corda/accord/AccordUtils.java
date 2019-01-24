@@ -1,11 +1,20 @@
 package net.corda.accord;
 
+import net.corda.core.crypto.SecureHash;
+import net.corda.core.node.ServiceHub;
+
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class AccordUtils {
 
+
+    /**
+     * This function returns an input stream after compressing the file that is read from disk.
+    */
     public static InputStream getCompressed(InputStream is )
             throws IOException
     {
@@ -27,11 +36,32 @@ public class AccordUtils {
         return new ByteArrayInputStream( bos.toByteArray() );
     }
 
+    /**
+     * This function parses a legal document using a Cicero template and returns an input stream with the output from the terminal.
+     * The script 'cicero-parse.sh writes the output of Cicero-parse to a temporary file, suppresses standard system-out messaging and then
+     * logs out the JSON (which is captured in the input stream.
+     */
+
     public static InputStream getStateFromContract() throws IOException {
-        String[] command = {"./resources/cicero-parse.sh", "java/AccordProject/cicero-template-library/src/promissory-note"};
+        String[] command = { "../../../src/main/resources/cicero-parse.sh"
+                , "../../../src/main/resources/src-contract.txt" };
         ProcessBuilder ciceroParse = new ProcessBuilder(command);
-        ciceroParse.directory(new File("./src/main"));
         return ciceroParse.start().getInputStream();
     }
 
+//    public static InputStream getStateFromContract(ServiceHub serviceHub, SecureHash secureHash) throws IOException {
+//        InputStream inputStream = serviceHub.getAttachments().openAttachment(secureHash).open();
+//        File targetFile = new File("/tmp/attachedPromissoryNote");
+//
+//        Files.copy(
+//                inputStream,
+//                targetFile.toPath(),
+//                StandardCopyOption.REPLACE_EXISTING
+//        );
+//
+//        String[] command = {"#!/usr/bin/env bash; cicero parse --template $1 --out /tmp/tempOutput.txt > /tmp/cicero.log 2>&1; cat /tmp/tempOutput.txt"
+//                , "./tmp/attachedPromissoryNote"};
+//        ProcessBuilder ciceroParse = new ProcessBuilder(command);
+//        return ciceroParse.start().getInputStream();
+//    }
 }
