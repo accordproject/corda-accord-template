@@ -130,7 +130,7 @@ public class PromissoryNoteIssueFlow {
             builder.addCommand(issueCommand);
 
 			// Step 5. Add the contract to the transaction
-			File ciceroTemplateFile = new File("../../../src/main/resources/src-contract.txt");
+			File ciceroTemplateFile = new File("../../../../contract.txt");
 
 			try {
 				InputStream ciceroTemplateFileInputStream = new FileInputStream(ciceroTemplateFile);
