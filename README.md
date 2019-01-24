@@ -5,7 +5,7 @@
 
 # Corda + Accord Project Template
 
-This repo contains an MVP integration between Corda and the Accord Project. The goal of this application is to demonstrate how a contract may be parsed using a Cicero and the issued as a Corda State onto the ledger.
+This repo contains an MVP integration between Corda and the Accord Project. The goal of this application is to demonstrate how a contract may be parsed using [Accord Project Cicero](https://github.com/accordproject/cicero) and the issued as a Corda State onto the ledger.
 
 This repository is divided into two parts: a Java reference solution (which is complete), and a Kotlin reference solutions (which is still a WIP). 
 
@@ -47,7 +47,7 @@ again leaving all options as they are.
 
 # Template Files
 
-### Accord
+### Accord Project
 * Promissory Note Template: `java-source/src/main/java/AccordProject/cicero-template-library/src/promissory-note`
 * Promissory Note Java Object & Associated Classes: `java-source/src/main/java/org`
 * Cicero-Parse Shell Script: `java-source/src/main/resources/cicero-parse.sh`
