@@ -43,9 +43,9 @@ public class AccordUtils {
      */
 
     public static InputStream getStateFromContract() throws IOException {
-        String[] command = { "../../../src/main/resources/cicero-parse.sh"
-                , "../../../src/main/resources/src-contract.txt" };
+        String[] command = {"./resources/cicero-parse.sh", "../../../node_modules/promissory-note", "../../../contract.txt"};
         ProcessBuilder ciceroParse = new ProcessBuilder(command);
+        ciceroParse.directory(new File("./src/main"));
         return ciceroParse.start().getInputStream();
     }
 
