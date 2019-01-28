@@ -23,7 +23,6 @@ import net.corda.core.utilities.ProgressTracker;
 import net.corda.core.utilities.ProgressTracker.Step;
 
 import org.apache.commons.io.IOUtils;
-import org.json.simple.parser.JSONParser;
 
 /**
  * This is the flow which handles issuance of new promissory notes from a legal document.
@@ -42,7 +41,7 @@ public class PromissoryNoteIssueFlow {
         	this.maker = maker;
         }
 
-		/** TODO: Enable the user to specify the file path for the promissary note template
+		/** TODO: Enable the user to specify the file path for the promissory note template
 		 * TODO: Adjust the cicero-parse command to include an option on only return the JSON with no initial messaging
 		 * TODO: Enable the user to specify the file path for the source legal document */
 
@@ -163,7 +162,7 @@ public class PromissoryNoteIssueFlow {
 
             // Step 8. Assuming no exceptions, we can now finalise the transaction.
 			progressTracker.setCurrentStep(FINALISATION);
-            return subFlow(new FinalityFlow(stx, FINALISATION.childProgressTracker()));
+            return subFlow(new FinalityFlow(stx, sessions, FINALISATION.childProgressTracker()));
         }
     }
 
@@ -173,7 +172,9 @@ public class PromissoryNoteIssueFlow {
 	 */
 	@InitiatedBy(InitiatorFlow.class)
 	public static class ResponderFlow extends FlowLogic<SignedTransaction>{
+
 		private final FlowSession flowSession;
+		private SecureHash txWeJustSigned;
 
 		public ResponderFlow(FlowSession flowSession){
 			this.flowSession = flowSession;
@@ -195,9 +196,22 @@ public class PromissoryNoteIssueFlow {
 						req.using("This must be an IOU transaction", output instanceof PromissoryNoteState);
 						return null;
 					});
+					// Once the transaction has verified, initialize txWeJustSignedID variable.
+					txWeJustSigned = stx.getId();
 				}
 			}
-			return subFlow(new SignTxFlow(flowSession, SignTransactionFlow.Companion.tracker()));
+
+			flowSession.getCounterpartyFlowInfo().getFlowVersion();
+
+			// Create a sign transaction flow
+			SignTxFlow signTxFlow = new SignTxFlow(flowSession, SignTransactionFlow.Companion.tracker());
+
+			// Run the sign transaction flow to sign the transaction
+			subFlow(signTxFlow);
+
+			// Run the ReceiveFinalityFlow to finalize the transaction and persist it to the vault.
+			return subFlow(new ReceiveFinalityFlow(flowSession, txWeJustSigned));
+
 		}
 	}
 }
