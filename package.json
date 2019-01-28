@@ -1,7 +1,7 @@
 {
   "devDependencies": {
-    "@accordproject/cicero-core": "0.10.0",
-    "@accordproject/cicero-cli": "0.10.0",
+    "@accordproject/cicero-core": "0.10.1",
+    "@accordproject/cicero-cli": "0.10.1",
     "promissory-note": "file:./promissory-note.0.9.1.tar.gz"
   },
   "name": "corda-accord-template",
