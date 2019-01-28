@@ -37,7 +37,6 @@ public class PromissoryNoteIssueFlowTests {
     public void setup() {
         MockNetworkParameters mockNetworkParameters = new MockNetworkParameters().withNotarySpecs(Arrays.asList(new MockNetworkNotarySpec(new CordaX500Name("Notary", "London", "GB"))));
         mockNetwork = new MockNetwork(Arrays.asList("net.corda.accord"), mockNetworkParameters);
-        System.out.println(mockNetwork);
 
         a = mockNetwork.createNode(new MockNodeParameters());
         b = mockNetwork.createNode(new MockNodeParameters());

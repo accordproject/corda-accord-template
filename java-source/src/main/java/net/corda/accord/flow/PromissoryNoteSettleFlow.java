@@ -120,18 +120,18 @@ public class PromissoryNoteSettleFlow {
             SignedTransaction stx = getServiceHub().signInitialTransaction(tb, getOurIdentity().getOwningKey());
 
             // 10. Collect Signatures
-            List<FlowSession> listOfFlows = new ArrayList<>();
+            List<FlowSession> sessions = new ArrayList<>();
 
             for (AbstractParty participant: inputStateToSettle.getParticipants()) {
                 Party partyToInitiateFlow = (Party) participant;
                 if (!partyToInitiateFlow.getOwningKey().equals(getOurIdentity().getOwningKey())) {
-                    listOfFlows.add(initiateFlow(partyToInitiateFlow));
+                    sessions.add(initiateFlow(partyToInitiateFlow));
                 }
             }
 
-            SignedTransaction fullySignedTransaction = subFlow(new CollectSignaturesFlow(stx, listOfFlows));
+            SignedTransaction fullySignedTransaction = subFlow(new CollectSignaturesFlow(stx, sessions));
 
-            return subFlow(new FinalityFlow(fullySignedTransaction));
+            return subFlow(new FinalityFlow(fullySignedTransaction, sessions));
 
         }
 
@@ -145,6 +145,7 @@ public class PromissoryNoteSettleFlow {
     public static class Responder extends FlowLogic<SignedTransaction> {
 
         private final FlowSession otherPartyFlow;
+        private SecureHash txWeJustSignedId;
 
         public Responder(FlowSession otherPartyFlow) {
             this.otherPartyFlow = otherPartyFlow;
@@ -165,10 +166,20 @@ public class PromissoryNoteSettleFlow {
                         require.using("This must be an IOU transaction", output instanceof PromissoryNoteState);
                         return null;
                     });
+                    // Once the transaction has verified, initialize txWeJustSignedID variable.
+                    txWeJustSignedId = stx.getId();
                 }
             }
 
-            return subFlow(new SignTxFlow(otherPartyFlow, SignTransactionFlow.Companion.tracker()));
+            // Create a sign transaction flow
+            SignTxFlow signTxFlow = new SignTxFlow(otherPartyFlow, SignTransactionFlow.Companion.tracker());
+
+            // Run the sign transaction flow to sign the transaction
+            subFlow(signTxFlow);
+
+            // Run the ReceiveFinalityFlow to finalize the transaction and persist it to the vault.
+            return subFlow(new ReceiveFinalityFlow(otherPartyFlow, txWeJustSignedId));
+
         }
     }
 

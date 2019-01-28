@@ -6,6 +6,7 @@ import net.corda.accord.state.PromissoryNoteState;
 import net.corda.core.contracts.Command;
 import net.corda.core.contracts.ContractState;
 import net.corda.core.contracts.StateAndRef;
+import net.corda.core.crypto.SecureHash;
 import net.corda.core.flows.*;
 import net.corda.core.utilities.ProgressTracker;
 import net.corda.accord.contract.PromissoryNoteContract.Commands.Transfer;
@@ -83,20 +84,20 @@ public class PromissoryNoteTransferFlow {
             SignedTransaction partiallySignedTransaction = getServiceHub().signInitialTransaction(tb);
 
             //Collect Signatures
-            List<FlowSession> listOfFlows = new ArrayList<>();
+            List<FlowSession> sessions = new ArrayList<>();
 
             for (AbstractParty participant: inputStateToTransfer.getParticipants()) {
                 Party partyToInitiateFlow = (Party) participant;
                 if (!partyToInitiateFlow.getOwningKey().equals(getOurIdentity().getOwningKey())) {
-                    listOfFlows.add(initiateFlow(partyToInitiateFlow));
+                    sessions.add(initiateFlow(partyToInitiateFlow));
                 }
             }
 
-            listOfFlows.add(initiateFlow(newLender));
+            sessions.add(initiateFlow(newLender));
 
-            SignedTransaction fullySignedTransaction = subFlow(new CollectSignaturesFlow(partiallySignedTransaction, listOfFlows));
+            SignedTransaction fullySignedTransaction = subFlow(new CollectSignaturesFlow(partiallySignedTransaction, sessions));
 
-            return subFlow(new FinalityFlow(fullySignedTransaction));
+            return subFlow(new FinalityFlow(fullySignedTransaction, sessions));
         }
     }
 
@@ -109,6 +110,7 @@ public class PromissoryNoteTransferFlow {
     public static class Responder extends FlowLogic<SignedTransaction> {
 
         private final FlowSession otherPartyFlow;
+        private SecureHash txWeJustSignedId;
 
         public Responder(FlowSession otherPartyFlow) {
             this.otherPartyFlow = otherPartyFlow;
@@ -130,10 +132,19 @@ public class PromissoryNoteTransferFlow {
                         require.using("This must be an IOU transaction", output instanceof PromissoryNoteState);
                         return null;
                     });
+                    // Once the transaction has verified, initialize txWeJustSignedID variable.
+                    txWeJustSignedId = stx.getId();
                 }
             }
 
-            return subFlow(new SignTxFlow(otherPartyFlow, SignTransactionFlow.Companion.tracker()));
+            // Create a sign transaction flow
+            SignTxFlow signTxFlow = new SignTxFlow(otherPartyFlow, SignTransactionFlow.Companion.tracker());
+
+            // Run the sign transaction flow to sign the transaction
+            subFlow(signTxFlow);
+
+            // Run the ReceiveFinalityFlow to finalize the transaction and persist it to the vault.
+            return subFlow(new ReceiveFinalityFlow(otherPartyFlow, txWeJustSignedId));
         }
 
     }
