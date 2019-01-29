@@ -11,7 +11,6 @@ import org.accordproject.cicero.contract.*;
 import org.accordproject.cicero.runtime.*;
 import org.accordproject.money.MonetaryAmount;
 import org.accordproject.usa.business.BusinessEntity;
-
 @CordaSerializable
 public class PromissoryNoteContract extends AccordContract {
    

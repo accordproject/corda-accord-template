@@ -4,9 +4,8 @@ package org.accordproject.usa.business;
 import net.corda.core.serialization.CordaSerializable;
 import org.hyperledger.composer.system.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-@CordaSerializable
 @JsonIgnoreProperties({"$class"})
+@CordaSerializable
 public enum BusinessEntity {
    GENERAL_PARTNERSHIP,
    LP,

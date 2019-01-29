@@ -1,6 +1,7 @@
 // this code is generated and should not be modified
 package org.accordproject.promissorynote;
 
+import net.corda.core.serialization.CordaSerializable;
 import org.hyperledger.composer.system.*;
 import org.accordproject.base.Event;
 import org.accordproject.base.Transaction;
@@ -10,6 +11,7 @@ import org.accordproject.cicero.contract.*;
 import org.accordproject.cicero.runtime.*;
 import org.accordproject.money.MonetaryAmount;
 import org.accordproject.usa.business.BusinessEntity;
+@CordaSerializable
 public class Result extends Response {
    
    // the accessor for the identifying field
