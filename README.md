@@ -46,7 +46,7 @@ again leaving all options as they are.
 * "-javaagent: /PATH_TO_FILE_FROM_ROOT_DIR/quasar.jar"
 
 ### Deploying Locally
-* From the root directory run './gradlew deployNodes' at the command line.
+* From the root directory run './gradlew clean deployNodes' at the command line.
 * From the root directory you may then run 'java-source/build/nodes/runNodes'
 
 # Template Files

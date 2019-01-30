@@ -1,8 +1,11 @@
 {
   "devDependencies": {
-    "@accordproject/cicero-core": "0.10.1",
-    "@accordproject/cicero-cli": "0.10.1",
+    "@accordproject/cicero-core": "0.10.2-20190129142217",
+    "@accordproject/cicero-cli": "0.10.2-20190129142217",
     "promissory-note": "file:./promissory-note.0.9.1.tar.gz"
+  },
+  "scripts": {
+    "build": "cicero generate --template node_modules/promissory-note --format Corda --outputDirectory ./java-source/src/main/java"
   },
   "name": "corda-accord-template",
   "version": "0.1.0",

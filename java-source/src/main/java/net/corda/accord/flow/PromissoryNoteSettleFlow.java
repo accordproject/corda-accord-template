@@ -79,7 +79,7 @@ public class PromissoryNoteSettleFlow {
 
             if (cashBalance.getQuantity() < amount.getQuantity()) {
                 throw new IllegalArgumentException("Maker doesn't have enough cash to settle with the amount specified.");
-            } else if (amount.getQuantity() > (inputStateToSettle.amount.getQuantity() - inputStateToSettle.paid.getQuantity())) {
+            } else if (amount.getQuantity() > (inputStateToSettle.getAmount().getQuantity() - inputStateToSettle.paid.getQuantity())) {
                 throw new IllegalArgumentException("Maker tried to settle with more than was required for the obligation.");
             }
 
@@ -100,7 +100,7 @@ public class PromissoryNoteSettleFlow {
             tb.addInputState(inputStateAndRefToSettle);
 
             // 7. Add an IOU output state for an IOU that has not been full settled.
-            if (amount.getQuantity() < inputStateToSettle.amount.getQuantity()) {
+            if (amount.getQuantity() < inputStateToSettle.getAmount().getQuantity()) {
                 tb.addOutputState(inputStateToSettle.pay(amount), PromissoryNoteContract.PROMISSORY_NOTE_CONTRACT_ID);
             }
 

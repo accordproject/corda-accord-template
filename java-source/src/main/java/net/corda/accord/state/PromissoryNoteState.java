@@ -12,6 +12,7 @@ import net.corda.core.serialization.ConstructorForDeserialization;
 import net.corda.finance.Currencies;
 import org.accordproject.promissorynote.PromissoryNoteContract;
 import org.accordproject.usa.business.BusinessEntity;
+import org.accordproject.money.MonetaryAmount;
 
 /**
  * The data in this state is parsed from a source legal document using Cicero. Where necessary, classes have been manually converted from Accord Project classes
@@ -32,7 +33,7 @@ public class PromissoryNoteState implements ContractState, LinearState {
     public String lender;
     public BusinessEntity legalEntity;
     public String lenderAddress;
-    public Amount<Currency> principal;
+    public MonetaryAmount principal;
     public Date maturityDate;
     public int defaultDays;
     public int insolvencyDays;
@@ -54,7 +55,7 @@ public class PromissoryNoteState implements ContractState, LinearState {
                                 String lender,
                                 BusinessEntity legalEntity,
                                 String lenderAddress,
-                                Amount<Currency> principal,
+                                MonetaryAmount principal,
                                 Date maturityDate,
                                 int defaultDays,
                                 int insolvencyDays,
@@ -103,7 +104,7 @@ public class PromissoryNoteState implements ContractState, LinearState {
                 promissoryNoteContract.lender,
                 promissoryNoteContract.legalEntity,
                 promissoryNoteContract.lenderAddress,
-                Currencies.DOLLARS(promissoryNoteContract.principal.doubleValue),
+                promissoryNoteContract.principal,
                 promissoryNoteContract.maturityDate,
                 promissoryNoteContract.defaultDays,
                 promissoryNoteContract.insolvencyDays,
@@ -152,7 +153,7 @@ public class PromissoryNoteState implements ContractState, LinearState {
     }
 
     public Amount<Currency> getPrincipal() {
-        return principal;
+        return Currencies.DOLLARS(principal.doubleValue);
     }
 
     public Amount<Currency> getPaid() {
@@ -216,7 +217,7 @@ public class PromissoryNoteState implements ContractState, LinearState {
                                     String lender,
                                     BusinessEntity legalEntity,
                                     String lenderAddress,
-                                    Amount<Currency> principal,
+                                    MonetaryAmount principal,
                                     Date maturityDate,
                                     int defaultDays,
                                     int insolvencyDays,
