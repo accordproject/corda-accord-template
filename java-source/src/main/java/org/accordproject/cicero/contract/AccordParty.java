@@ -1,8 +1,8 @@
 // this code is generated and should not be modified
 package org.accordproject.cicero.contract;
 
-import net.corda.core.serialization.CordaSerializable;
 import org.hyperledger.composer.system.*;
+import net.corda.core.serialization.CordaSerializable;
 import org.accordproject.base.Event;
 import org.accordproject.base.Transaction;
 import org.accordproject.base.Participant;
@@ -16,4 +16,12 @@ public class AccordParty extends Participant {
    }
 
    public String partyId;
+
+   public String getPartyId() {
+      return this.partyId;
+   }
+
+   public void setPartyId(String partyId) {
+      this.partyId = partyId;
+   }
 }

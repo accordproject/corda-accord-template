@@ -1,8 +1,8 @@
 // this code is generated and should not be modified
 package org.accordproject.cicero.runtime;
 
-import net.corda.core.serialization.CordaSerializable;
 import org.hyperledger.composer.system.*;
+import net.corda.core.serialization.CordaSerializable;
 import org.accordproject.base.Event;
 import org.accordproject.base.Transaction;
 import org.accordproject.base.Participant;
@@ -18,4 +18,24 @@ public class Success {
    public Response response;
    public AccordContractState state;
    public Event[] emit;
+
+   public Response getResponse() {
+      return this.response;
+   }
+   public AccordContractState getState() {
+      return this.state;
+   }
+   public Event[] getEmit() {
+      return this.emit;
+   }
+
+   public void setResponse(Response response) {
+      this.response = response;
+   }
+   public void setState(AccordContractState state) {
+      this.state = state;
+   }
+   public void setEmit(Event[] emit) {
+      this.emit = emit;
+   }
 }

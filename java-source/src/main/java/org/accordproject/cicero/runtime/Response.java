@@ -1,8 +1,8 @@
 // this code is generated and should not be modified
 package org.accordproject.cicero.runtime;
 
-import net.corda.core.serialization.CordaSerializable;
 import org.hyperledger.composer.system.*;
+import net.corda.core.serialization.CordaSerializable;
 import org.accordproject.base.Event;
 import org.accordproject.base.Transaction;
 import org.accordproject.base.Participant;
@@ -17,5 +17,7 @@ public class Response extends Transaction {
    public String getID() {
       return transactionId;
    }
+
+
 
 }

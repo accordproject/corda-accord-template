@@ -1,8 +1,8 @@
 // this code is generated and should not be modified
 package org.accordproject.cicero.runtime;
 
-import net.corda.core.serialization.CordaSerializable;
 import org.hyperledger.composer.system.*;
+import net.corda.core.serialization.CordaSerializable;
 import org.accordproject.base.Event;
 import org.accordproject.base.Transaction;
 import org.accordproject.base.Participant;
@@ -22,4 +22,30 @@ public abstract class Obligation extends Event {
    public Participant promisor;
    public Participant promisee;
    public java.util.Date deadline;
+
+   public AccordContract getContract() {
+      return this.contract;
+   }
+   public Participant getPromisor() {
+      return this.promisor;
+   }
+   public Participant getPromisee() {
+      return this.promisee;
+   }
+   public java.util.Date getDeadline() {
+      return this.deadline;
+   }
+
+   public void setContract(AccordContract contract) {
+      this.contract = contract;
+   }
+   public void setPromisor(Participant promisor) {
+      this.promisor = promisor;
+   }
+   public void setPromisee(Participant promisee) {
+      this.promisee = promisee;
+   }
+   public void setDeadline(java.util.Date deadline) {
+      this.deadline = deadline;
+   }
 }

@@ -1,8 +1,8 @@
 // this code is generated and should not be modified
 package org.accordproject.cicero.runtime;
 
-import net.corda.core.serialization.CordaSerializable;
 import org.hyperledger.composer.system.*;
+import net.corda.core.serialization.CordaSerializable;
 import org.accordproject.base.Event;
 import org.accordproject.base.Transaction;
 import org.accordproject.base.Participant;
@@ -16,4 +16,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @CordaSerializable
 public class Failure {
    public ErrorResponse error;
+
+   public ErrorResponse getError() {
+      return this.error;
+   }
+
+   public void setError(ErrorResponse error) {
+      this.error = error;
+   }
 }

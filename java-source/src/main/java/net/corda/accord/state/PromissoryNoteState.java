@@ -24,7 +24,7 @@ public class PromissoryNoteState implements ContractState, LinearState {
 
     // TODO: `amount` and `principal` are both included in parsedJSON as a accord-project monetary amount. They must be converted to the Corda Amount<Currency> class.
     // The fields listed here correspond to the fields returned in the JSON output from the Cicero-Parse shell-script.
-    public Amount<Currency> amount;
+    public MonetaryAmount amount;
     public Date date;
     public String maker;
     public double interestRate;
@@ -46,7 +46,7 @@ public class PromissoryNoteState implements ContractState, LinearState {
 
     // Private constructor used only for copying a State object
     @ConstructorForDeserialization
-    private PromissoryNoteState(Amount<Currency> amount,
+    private PromissoryNoteState(MonetaryAmount amount,
                                 Date date,
                                 String maker,
                                 double interestRate,
@@ -95,7 +95,7 @@ public class PromissoryNoteState implements ContractState, LinearState {
      */
 	public PromissoryNoteState(PromissoryNoteContract promissoryNoteContract, Party makerCordaParty, Party lenderCordaParty) {
         this(
-                Currencies.DOLLARS(promissoryNoteContract.amount.doubleValue),
+                promissoryNoteContract.amount,
                 promissoryNoteContract.date,
                 promissoryNoteContract.maker,
                 promissoryNoteContract.interestRate,
@@ -110,14 +110,14 @@ public class PromissoryNoteState implements ContractState, LinearState {
                 promissoryNoteContract.insolvencyDays,
                 promissoryNoteContract.jurisdiction,
                 new UniqueIdentifier(),
-                Currencies.DOLLARS(promissoryNoteContract.amount.doubleValue),
+                promissoryNoteContract.amount.getCurrency(),
                 lenderCordaParty,
                 makerCordaParty
         );
     }
 
-    public Amount<Currency> getAmount() {
-        return amount ;
+    public MonetaryAmount getAmount() {
+        return amount;
     }
 
     public Date getDate() {
@@ -152,8 +152,8 @@ public class PromissoryNoteState implements ContractState, LinearState {
         return lenderAddress;
     }
 
-    public Amount<Currency> getPrincipal() {
-        return Currencies.DOLLARS(principal.doubleValue);
+    public MonetaryAmount getPrincipal() {
+        return principal;
     }
 
     public Amount<Currency> getPaid() {
@@ -208,7 +208,7 @@ public class PromissoryNoteState implements ContractState, LinearState {
     }
 
     // Utility function for copying a promissory note state with the
-    public PromissoryNoteState copy(Amount<Currency> amount,
+    public PromissoryNoteState copy(MonetaryAmount amount,
                                     Date date,
                                     String maker,
                                     double interestRate,

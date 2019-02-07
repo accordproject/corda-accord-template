@@ -1,8 +1,8 @@
 // this code is generated and should not be modified
 package org.accordproject.cicero.contract;
 
-import net.corda.core.serialization.CordaSerializable;
 import org.hyperledger.composer.system.*;
+import net.corda.core.serialization.CordaSerializable;
 import org.accordproject.base.Event;
 import org.accordproject.base.Transaction;
 import org.accordproject.base.Participant;
@@ -16,4 +16,12 @@ public class AccordContractState extends Asset {
    }
 
    public String stateId;
+
+   public String getStateId() {
+      return this.stateId;
+   }
+
+   public void setStateId(String stateId) {
+      this.stateId = stateId;
+   }
 }
