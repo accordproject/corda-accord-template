@@ -15,16 +15,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties({"$class"})
 @CordaSerializable
 public class MonetaryAmount {
-   public double doubleValue;
-   public CurrencyCode currencyCode;
-
+   private double doubleValue;
+   private CurrencyCode currencyCode;
    public double getDoubleValue() {
       return this.doubleValue;
    }
    public CurrencyCode getCurrencyCode() {
       return this.currencyCode;
    }
-
    public void setDoubleValue(double doubleValue) {
       this.doubleValue = doubleValue;
    }

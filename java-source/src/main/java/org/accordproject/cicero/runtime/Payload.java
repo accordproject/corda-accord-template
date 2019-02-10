@@ -15,10 +15,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties({"$class"})
 @CordaSerializable
 public class Payload {
-   public AccordContract contract;
-   public Request request;
-   public AccordContractState state;
-
+   private AccordContract contract;
+   private Request request;
+   private AccordContractState state;
    public AccordContract getContract() {
       return this.contract;
    }
@@ -28,7 +27,6 @@ public class Payload {
    public AccordContractState getState() {
       return this.state;
    }
-
    public void setContract(AccordContract contract) {
       this.contract = contract;
    }

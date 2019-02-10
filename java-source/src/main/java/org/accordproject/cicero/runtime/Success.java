@@ -15,10 +15,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties({"$class"})
 @CordaSerializable
 public class Success {
-   public Response response;
-   public AccordContractState state;
-   public Event[] emit;
-
+   private Response response;
+   private AccordContractState state;
+   private Event[] emit;
    public Response getResponse() {
       return this.response;
    }
@@ -28,7 +27,6 @@ public class Success {
    public Event[] getEmit() {
       return this.emit;
    }
-
    public void setResponse(Response response) {
       this.response = response;
    }

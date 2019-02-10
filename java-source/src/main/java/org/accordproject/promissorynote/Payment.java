@@ -16,15 +16,13 @@ public class Payment extends Request {
    
    // the accessor for the identifying field
    public String getID() {
-      return transactionId;
+      return this.getTransactionId();
    }
 
-   public MonetaryAmount amountPaid;
-
+   private MonetaryAmount amountPaid;
    public MonetaryAmount getAmountPaid() {
       return this.amountPaid;
    }
-
    public void setAmountPaid(MonetaryAmount amountPaid) {
       this.amountPaid = amountPaid;
    }

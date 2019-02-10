@@ -12,15 +12,13 @@ public class AccordContractState extends Asset {
    
    // the accessor for the identifying field
    public String getID() {
-      return stateId;
+      return this.getStateId();
    }
 
-   public String stateId;
-
+   private String stateId;
    public String getStateId() {
       return this.stateId;
    }
-
    public void setStateId(String stateId) {
       this.stateId = stateId;
    }

@@ -15,19 +15,17 @@ public class NotificationObligation extends Obligation {
    
    // the accessor for the identifying field
    public String getID() {
-      return eventId;
+      return this.getEventId();
    }
 
-   public String title;
-   public String message;
-
+   private String title;
+   private String message;
    public String getTitle() {
       return this.title;
    }
    public String getMessage() {
       return this.message;
    }
-
    public void setTitle(String title) {
       this.title = title;
    }

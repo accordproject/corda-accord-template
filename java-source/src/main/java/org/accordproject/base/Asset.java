@@ -5,6 +5,4 @@ import org.hyperledger.composer.system.*;
 import net.corda.core.serialization.CordaSerializable;
 @CordaSerializable
 public abstract class Asset extends org.hyperledger.composer.system.Resource {
-
-
 }

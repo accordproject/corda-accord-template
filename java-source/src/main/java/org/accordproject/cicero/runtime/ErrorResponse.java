@@ -15,9 +15,7 @@ public abstract class ErrorResponse extends Transaction {
    
    // the accessor for the identifying field
    public String getID() {
-      return transactionId;
+      return this.getTransactionId();
    }
-
-
 
 }

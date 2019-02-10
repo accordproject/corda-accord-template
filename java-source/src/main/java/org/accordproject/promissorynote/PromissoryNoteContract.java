@@ -16,24 +16,23 @@ public class PromissoryNoteContract extends AccordContract {
    
    // the accessor for the identifying field
    public String getID() {
-      return contractId;
+      return this.getContractId();
    }
 
-   public MonetaryAmount amount;
-   public java.util.Date date;
-   public String maker;
-   public double interestRate;
-   public boolean individual;
-   public String makerAddress;
-   public String lender;
-   public BusinessEntity legalEntity;
-   public String lenderAddress;
-   public MonetaryAmount principal;
-   public java.util.Date maturityDate;
-   public int defaultDays;
-   public int insolvencyDays;
-   public String jurisdiction;
-
+   private MonetaryAmount amount;
+   private java.util.Date date;
+   private String maker;
+   private double interestRate;
+   private boolean individual;
+   private String makerAddress;
+   private String lender;
+   private BusinessEntity legalEntity;
+   private String lenderAddress;
+   private MonetaryAmount principal;
+   private java.util.Date maturityDate;
+   private int defaultDays;
+   private int insolvencyDays;
+   private String jurisdiction;
    public MonetaryAmount getAmount() {
       return this.amount;
    }
@@ -76,7 +75,6 @@ public class PromissoryNoteContract extends AccordContract {
    public String getJurisdiction() {
       return this.jurisdiction;
    }
-
    public void setAmount(MonetaryAmount amount) {
       this.amount = amount;
    }

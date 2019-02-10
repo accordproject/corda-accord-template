@@ -15,12 +15,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties({"$class"})
 @CordaSerializable
 public class Failure {
-   public ErrorResponse error;
-
+   private ErrorResponse error;
    public ErrorResponse getError() {
       return this.error;
    }
-
    public void setError(ErrorResponse error) {
       this.error = error;
    }

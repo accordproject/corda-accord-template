@@ -15,14 +15,13 @@ public abstract class Obligation extends Event {
    
    // the accessor for the identifying field
    public String getID() {
-      return eventId;
+      return this.getEventId();
    }
 
-   public AccordContract contract;
-   public Participant promisor;
-   public Participant promisee;
-   public java.util.Date deadline;
-
+   private AccordContract contract;
+   private Participant promisor;
+   private Participant promisee;
+   private java.util.Date deadline;
    public AccordContract getContract() {
       return this.contract;
    }
@@ -35,7 +34,6 @@ public abstract class Obligation extends Event {
    public java.util.Date getDeadline() {
       return this.deadline;
    }
-
    public void setContract(AccordContract contract) {
       this.contract = contract;
    }

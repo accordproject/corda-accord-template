@@ -12,15 +12,13 @@ public abstract class AccordClause extends Asset {
    
    // the accessor for the identifying field
    public String getID() {
-      return clauseId;
+      return this.getClauseId();
    }
 
-   public String clauseId;
-
+   private String clauseId;
    public String getClauseId() {
       return this.clauseId;
    }
-
    public void setClauseId(String clauseId) {
       this.clauseId = clauseId;
    }

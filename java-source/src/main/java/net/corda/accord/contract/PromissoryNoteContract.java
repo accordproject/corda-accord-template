@@ -42,7 +42,7 @@ public class PromissoryNoteContract implements Contract {
                 require.using( "Only one output state should be created when issuing a Promissory Note.", tx.getOutputStates().size() == 1);
 
                 PromissoryNoteState outputState = tx.outputsOfType(PromissoryNoteState.class).get(0);
-                require.using( "A newly issued Promissory Note must have a positive amount.", outputState.getAmount().getCurrency().getQuantity() > 0);
+                require.using( "A newly issued Promissory Note must have a positive amount.", outputState.getAmount().getQuantity() > 0);
                 require.using( "The lender and maker cannot have the same identity.", outputState.lenderCordaParty.getOwningKey() != outputState.makerCordaParty.getOwningKey());
 
                 List<PublicKey> signers = tx.getCommands().get(0).getSigners();

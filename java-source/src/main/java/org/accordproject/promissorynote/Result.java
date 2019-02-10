@@ -16,15 +16,13 @@ public class Result extends Response {
    
    // the accessor for the identifying field
    public String getID() {
-      return transactionId;
+      return this.getTransactionId();
    }
 
-   public double outstandingBalance;
-
+   private double outstandingBalance;
    public double getOutstandingBalance() {
       return this.outstandingBalance;
    }
-
    public void setOutstandingBalance(double outstandingBalance) {
       this.outstandingBalance = outstandingBalance;
    }

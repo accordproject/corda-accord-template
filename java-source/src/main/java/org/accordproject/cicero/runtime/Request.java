@@ -15,9 +15,7 @@ public class Request extends Transaction {
    
    // the accessor for the identifying field
    public String getID() {
-      return transactionId;
+      return this.getTransactionId();
    }
-
-
 
 }

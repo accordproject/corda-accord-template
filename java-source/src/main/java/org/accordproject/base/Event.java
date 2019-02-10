@@ -8,19 +8,17 @@ public abstract class Event extends org.hyperledger.composer.system.Resource {
    
    // the accessor for the identifying field
    public String getID() {
-      return eventId;
+      return this.getEventId();
    }
 
-   public String eventId;
-   public java.util.Date timestamp;
-
+   private String eventId;
+   private java.util.Date timestamp;
    public String getEventId() {
       return this.eventId;
    }
    public java.util.Date getTimestamp() {
       return this.timestamp;
    }
-
    public void setEventId(String eventId) {
       this.eventId = eventId;
    }

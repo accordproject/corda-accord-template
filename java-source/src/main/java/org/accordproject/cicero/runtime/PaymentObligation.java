@@ -15,19 +15,17 @@ public class PaymentObligation extends Obligation {
    
    // the accessor for the identifying field
    public String getID() {
-      return eventId;
+      return this.getEventId();
    }
 
-   public MonetaryAmount amount;
-   public String description;
-
+   private MonetaryAmount amount;
+   private String description;
    public MonetaryAmount getAmount() {
       return this.amount;
    }
    public String getDescription() {
       return this.description;
    }
-
    public void setAmount(MonetaryAmount amount) {
       this.amount = amount;
    }

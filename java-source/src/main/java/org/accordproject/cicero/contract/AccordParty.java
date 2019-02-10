@@ -12,15 +12,13 @@ public class AccordParty extends Participant {
    
    // the accessor for the identifying field
    public String getID() {
-      return partyId;
+      return this.getPartyId();
    }
 
-   public String partyId;
-
+   private String partyId;
    public String getPartyId() {
       return this.partyId;
    }
-
    public void setPartyId(String partyId) {
       this.partyId = partyId;
    }

@@ -24,20 +24,7 @@ public class PromissoryNoteState implements ContractState, LinearState {
 
     // TODO: `amount` and `principal` are both included in parsedJSON as a accord-project monetary amount. They must be converted to the Corda Amount<Currency> class.
     // The fields listed here correspond to the fields returned in the JSON output from the Cicero-Parse shell-script.
-    public MonetaryAmount amount;
-    public Date date;
-    public String maker;
-    public double interestRate;
-    public boolean individual;
-    public String makerAddress;
-    public String lender;
-    public BusinessEntity legalEntity;
-    public String lenderAddress;
-    public MonetaryAmount principal;
-    public Date maturityDate;
-    public int defaultDays;
-    public int insolvencyDays;
-    public String jurisdiction;
+    public PromissoryNoteContract apContract;
     public UniqueIdentifier linearId;
     public Amount<Currency> paid;
     // TODO: Parties parsed from the source legal contract contain a String Name and Address, these needs to be assigned to Node identities.
@@ -46,38 +33,12 @@ public class PromissoryNoteState implements ContractState, LinearState {
 
     // Private constructor used only for copying a State object
     @ConstructorForDeserialization
-    private PromissoryNoteState(MonetaryAmount amount,
-                                Date date,
-                                String maker,
-                                double interestRate,
-                                boolean individual,
-                                String makerAddress,
-                                String lender,
-                                BusinessEntity legalEntity,
-                                String lenderAddress,
-                                MonetaryAmount principal,
-                                Date maturityDate,
-                                int defaultDays,
-                                int insolvencyDays,
-                                String jurisdiction,
+    private PromissoryNoteState(PromissoryNoteContract apContract,
                                 UniqueIdentifier linearId,
                                 Amount<Currency> paid,
                                 Party makerCordaParty,
                                 Party lenderCordaParty) {
-       this.amount = amount;
-       this.date = date;
-       this.maker = maker;
-       this.interestRate = interestRate;
-       this.individual = individual;
-       this.makerAddress = makerAddress;
-       this.lender = lender;
-       this.legalEntity = legalEntity;
-       this.lenderAddress = lenderAddress;
-       this.principal = principal;
-       this.maturityDate = maturityDate;
-       this.defaultDays = defaultDays;
-       this.insolvencyDays = insolvencyDays;
-       this.jurisdiction = jurisdiction;
+       this.apContract = apContract;
        this.linearId = linearId;
        this.paid = paid;
        this.makerCordaParty = makerCordaParty;
@@ -95,65 +56,16 @@ public class PromissoryNoteState implements ContractState, LinearState {
      */
 	public PromissoryNoteState(PromissoryNoteContract promissoryNoteContract, Party makerCordaParty, Party lenderCordaParty) {
         this(
-                promissoryNoteContract.amount,
-                promissoryNoteContract.date,
-                promissoryNoteContract.maker,
-                promissoryNoteContract.interestRate,
-                promissoryNoteContract.individual,
-                promissoryNoteContract.makerAddress,
-                promissoryNoteContract.lender,
-                promissoryNoteContract.legalEntity,
-                promissoryNoteContract.lenderAddress,
-                promissoryNoteContract.principal,
-                promissoryNoteContract.maturityDate,
-                promissoryNoteContract.defaultDays,
-                promissoryNoteContract.insolvencyDays,
-                promissoryNoteContract.jurisdiction,
+                promissoryNoteContract,
                 new UniqueIdentifier(),
-                promissoryNoteContract.amount.getCurrency(),
+                promissoryNoteContract.getAmount().getCurrency(),
                 lenderCordaParty,
                 makerCordaParty
         );
     }
 
-    public MonetaryAmount getAmount() {
-        return amount;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public String getMaker() {
-        return maker;
-    }
-
-    public double getInterestRate() {
-        return interestRate;
-    }
-
-    public boolean isIndividual() {
-        return individual;
-    }
-
-    public String getMakerAddress() {
-        return makerAddress;
-    }
-
-    public int getInsolvencyDays() {
-        return insolvencyDays;
-    }
-
-    public String getLender() {
-        return lender;
-    }
-
-    public String getLenderAddress() {
-        return lenderAddress;
-    }
-
-    public MonetaryAmount getPrincipal() {
-        return principal;
+    public PromissoryNoteContract getApContract() {
+        return apContract;
     }
 
     public Amount<Currency> getPaid() {
@@ -181,26 +93,13 @@ public class PromissoryNoteState implements ContractState, LinearState {
 
     public PromissoryNoteState pay(Amount<Currency> paidAmount) {
         Amount<Currency> newAmountPaid = this.paid.plus(paidAmount);
-        return new PromissoryNoteState(amount, date, maker, interestRate, individual, makerAddress, lender, legalEntity, lenderAddress, principal, maturityDate, defaultDays, insolvencyDays, jurisdiction, linearId, newAmountPaid, lenderCordaParty, makerCordaParty);
+        return new PromissoryNoteState(apContract, linearId, newAmountPaid, lenderCordaParty, makerCordaParty);
     }
 
     // Utility function for creating a promissory note state with a new lender.
     public PromissoryNoteState withNewLender(Party newLender) {
         return this.copy(
-                this.amount,
-                this.date,
-                this.maker,
-                this.interestRate,
-                this.individual,
-                this.makerAddress,
-                this.lender,
-                this.legalEntity,
-                this.lenderAddress,
-                this.principal,
-                this.maturityDate,
-                this.defaultDays,
-                this.insolvencyDays,
-                this.jurisdiction,
+                this.apContract,
                 this.paid,
                 newLender,
                 this.makerCordaParty
@@ -208,24 +107,15 @@ public class PromissoryNoteState implements ContractState, LinearState {
     }
 
     // Utility function for copying a promissory note state with the
-    public PromissoryNoteState copy(MonetaryAmount amount,
-                                    Date date,
-                                    String maker,
-                                    double interestRate,
-                                    boolean individual,
-                                    String makerAddress,
-                                    String lender,
-                                    BusinessEntity legalEntity,
-                                    String lenderAddress,
-                                    MonetaryAmount principal,
-                                    Date maturityDate,
-                                    int defaultDays,
-                                    int insolvencyDays,
-                                    String jurisdiction,
+    public PromissoryNoteState copy(PromissoryNoteContract apContract,
                                     Amount<Currency> paid,
                                     Party lenderCordaParty,
                                     Party makerCordaParty) {
-        return new PromissoryNoteState(amount, date, maker, interestRate, individual, makerAddress, lender, legalEntity, lenderAddress, principal, maturityDate, defaultDays, insolvencyDays, jurisdiction, this.getLinearId(), paid, lenderCordaParty, makerCordaParty);
+        return new PromissoryNoteState(apContract, this.getLinearId(), paid, lenderCordaParty, makerCordaParty);
+    }
+
+    public Amount<Currency> getAmount() {
+        return this.apContract.getAmount().getCurrency();
     }
 
 }

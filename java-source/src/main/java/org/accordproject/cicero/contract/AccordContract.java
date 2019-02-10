@@ -12,19 +12,17 @@ public abstract class AccordContract extends Asset {
    
    // the accessor for the identifying field
    public String getID() {
-      return contractId;
+      return this.getContractId();
    }
 
-   public String contractId;
-   public AccordParty[] parties;
-
+   private String contractId;
+   private AccordParty[] parties;
    public String getContractId() {
       return this.contractId;
    }
    public AccordParty[] getParties() {
       return this.parties;
    }
-
    public void setContractId(String contractId) {
       this.contractId = contractId;
    }

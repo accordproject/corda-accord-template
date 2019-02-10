@@ -12,16 +12,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties({"$class"})
 @CordaSerializable
 public class CryptoMonetaryAmount {
-   public double doubleValue;
-   public CryptoCurrencyCode cryptoCurrencyCode;
-
+   private double doubleValue;
+   private CryptoCurrencyCode cryptoCurrencyCode;
    public double getDoubleValue() {
       return this.doubleValue;
    }
    public CryptoCurrencyCode getCryptoCurrencyCode() {
       return this.cryptoCurrencyCode;
    }
-
    public void setDoubleValue(double doubleValue) {
       this.doubleValue = doubleValue;
    }

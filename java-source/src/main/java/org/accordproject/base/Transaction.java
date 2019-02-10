@@ -8,19 +8,17 @@ public abstract class Transaction extends org.hyperledger.composer.system.Resour
    
    // the accessor for the identifying field
    public String getID() {
-      return transactionId;
+      return this.getTransactionId();
    }
 
-   public String transactionId;
-   public java.util.Date timestamp;
-
+   private String transactionId;
+   private java.util.Date timestamp;
    public String getTransactionId() {
       return this.transactionId;
    }
    public java.util.Date getTimestamp() {
       return this.timestamp;
    }
-
    public void setTransactionId(String transactionId) {
       this.transactionId = transactionId;
    }
