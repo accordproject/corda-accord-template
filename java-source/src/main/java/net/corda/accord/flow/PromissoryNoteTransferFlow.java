@@ -1,7 +1,7 @@
 package net.corda.accord.flow;
 
 import co.paralleluniverse.fibers.Suspendable;
-import net.corda.accord.contract.PromissoryNoteContract;
+import net.corda.accord.contract.PromissoryNoteCordaContract;
 import net.corda.accord.state.PromissoryNoteState;
 import net.corda.core.contracts.Command;
 import net.corda.core.contracts.ContractState;
@@ -9,7 +9,7 @@ import net.corda.core.contracts.StateAndRef;
 import net.corda.core.crypto.SecureHash;
 import net.corda.core.flows.*;
 import net.corda.core.utilities.ProgressTracker;
-import net.corda.accord.contract.PromissoryNoteContract.Commands.Transfer;
+import net.corda.accord.contract.PromissoryNoteCordaContract.Commands.Transfer;
 import net.corda.core.contracts.UniqueIdentifier;
 import net.corda.core.identity.AbstractParty;
 import net.corda.core.identity.Party;
@@ -71,7 +71,7 @@ public class PromissoryNoteTransferFlow {
 
             // Add states to flow
             tb.addInputState(inputStateAndRefToTransfer);
-            tb.addOutputState(inputStateToTransfer.withNewLender(newLender), PromissoryNoteContract.PROMISSORY_NOTE_CONTRACT_ID);
+            tb.addOutputState(inputStateToTransfer.withNewLender(newLender), PromissoryNoteCordaContract.PROMISSORY_NOTE_CONTRACT_ID);
 
             if (!inputStateToTransfer.lenderCordaParty.getOwningKey().equals(getOurIdentity().getOwningKey())) {
                 throw new IllegalArgumentException("This flow must be run by the current lender.");

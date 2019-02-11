@@ -1,7 +1,7 @@
 package net.corda.accord.flow;
 
+import net.corda.accord.contract.PromissoryNoteCordaContract;
 import net.corda.core.contracts.Command;
-import net.corda.core.crypto.SecureHash;
 import net.corda.core.identity.CordaX500Name;
 import net.corda.core.transactions.SignedTransaction;
 import net.corda.testing.node.*;
@@ -10,16 +10,11 @@ import net.corda.core.flows.*;
 import net.corda.core.transactions.TransactionBuilder;
 
 
-import net.corda.accord.contract.PromissoryNoteContract;
 import net.corda.accord.state.PromissoryNoteState;
 
-import java.io.*;
-import java.nio.file.FileAlreadyExistsException;
 import java.util.stream.Collectors;
 import java.util.concurrent.Future;
 import java.util.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import org.junit.*;
 import org.junit.rules.ExpectedException;
@@ -68,7 +63,7 @@ public class PromissoryNoteIssueFlowTests {
      * - Create a {@link TransactionBuilder} and pass it a notary reference.
      * -- A notary {@link Party} object can be obtained from [FlowLogic.getServiceHub().getNetworkMapCache().getNotaryIdentities()].
      * -- In this accord project there is only one notary
-     * - Create a new {@link Command} object with the [PromissoryNoteContract.Commands.Issue] type
+     * - Create a new {@link Command} object with the [PromissoryNoteCordaContract.Commands.Issue] type
      * -- The required signers will be the same as the state's participants
      * -- Add the {@link Command} to the transaction builder [addCommand].
      * - Use the flow's {@link PromissoryNoteState} parameter as the output state with [addOutputState]
@@ -103,7 +98,7 @@ public class PromissoryNoteIssueFlowTests {
         assert (ptx.getTx().getOutputs().get(0).getData() instanceof PromissoryNoteState);
 
         Command command = ptx.getTx().getCommands().get(0);
-        assert (command.getValue() instanceof PromissoryNoteContract.Commands.Issue);
+        assert (command.getValue() instanceof PromissoryNoteCordaContract.Commands.Issue);
         assert (new HashSet<>(command.getSigners()).equals(
                 new HashSet<>(outputState.getParticipants()
                         .stream().map(el -> el.getOwningKey())
@@ -115,7 +110,7 @@ public class PromissoryNoteIssueFlowTests {
 
     /**
      * Task 2.
-     * Now we have a well formed transaction, we need to properly verify it using the {@link PromissoryNoteContract}.
+     * Now we have a well formed transaction, we need to properly verify it using the {@link PromissoryNoteCordaContract}.
      * TODO: Amend the {@link PromissoryNoteIssueFlow} to verify the transaction as well as sign it.
      * Hint: You can verify on the builder directly prior to finalizing the transaction. This way
      * you can confirm the transaction prior to making it immutable with the signature.
@@ -219,12 +214,12 @@ public class PromissoryNoteIssueFlowTests {
 //        });
 //    }
 
-//    private org.accordproject.promissorynote.PromissoryNoteContract getTestPromissoryNoteContract(Party lender, Party borrower) {
+//    private org.accordproject.promissorynote.PromissoryNoteCordaContract getTestPromissoryNoteContract(Party lender, Party borrower) {
 //
 //        ProcessBuilder ciceroParseExecutor = new ProcessBuilder();
 //        ciceroParseExecutor.command();
 //
-//        org.accordproject.promissorynote.PromissoryNoteContract promissoryNoteContract = new org.accordproject.promissorynote.PromissoryNoteContract();
+//        org.accordproject.promissorynote.PromissoryNoteCordaContract promissoryNoteContract = new org.accordproject.promissorynote.PromissoryNoteCordaContract();
 //        MonetaryAmount amount = new MonetaryAmount();
 //        amount.doubleValue = 10.0;
 //        amount.currencyCode = CurrencyCode.GBP;

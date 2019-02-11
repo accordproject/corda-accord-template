@@ -34,8 +34,8 @@ public class PromissoryNoteSettleTests {
 
     /**
      * Task 1.
-     * We need to add another case to deal with settling in the [PromissoryNoteContract.verify] function.
-     * TODO: Add the [PromissoryNoteContract.Commands.Settle] case to the verify function.
+     * We need to add another case to deal with settling in the [PromissoryNoteCordaContract.verify] function.
+     * TODO: Add the [PromissoryNoteCordaContract.Commands.Settle] case to the verify function.
      * Hint: You can leave the body empty for now.
      */
 //    @Test
@@ -46,28 +46,28 @@ public class PromissoryNoteSettleTests {
 //
 //        ledger(ledgerServices, l -> {
 //            l.transaction(tx -> {
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou.pay(Currencies.POUNDS(5)));
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, inputCash);
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, outputCash);
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou.pay(Currencies.POUNDS(5)));
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, inputCash);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, outputCash);
 //                tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
 //                return tx.failsWith("Contract Verification Failed");
 //            });
 //            l.transaction(tx -> {
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou.pay(Currencies.POUNDS(5)));
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, inputCash);
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, outputCash);
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou.pay(Currencies.POUNDS(5)));
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, inputCash);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, outputCash);
 //                tx.command(BOB.getPublicKey(), new Commands.DummyCommand());
 //                return tx.failsWith("Contract verification failed");
 //            });
 //            l.transaction(tx -> {
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou.pay(Currencies.POUNDS(5)));
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, inputCash);
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, outputCash);
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou.pay(Currencies.POUNDS(5)));
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, inputCash);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, outputCash);
 //                tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteContract.Commands.Settle());
+//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteCordaContract.Commands.Settle());
 //                return tx.verifies();
 //            });
 //            return null;
@@ -97,22 +97,22 @@ public class PromissoryNoteSettleTests {
 //
 //        ledger(ledgerServices, l -> {
 //            l.transaction(tx -> {
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, iouONE);
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, iouTWO);
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteContract.Commands.Settle());
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iouONE.pay(Currencies.POUNDS(5)));
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, inputCash);
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, outputCash.getOwnableState());
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iouONE);
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iouTWO);
+//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteCordaContract.Commands.Settle());
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iouONE.pay(Currencies.POUNDS(5)));
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, inputCash);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, outputCash.getOwnableState());
 //                tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
 //                tx.failsWith("List has more than one element.");
 //                return null;
 //            });
 //            l.transaction(tx -> {
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, iouONE);
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteContract.Commands.Settle());
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iouONE.pay(Currencies.POUNDS(5)));
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, inputCash);
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, outputCash.getOwnableState());
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iouONE);
+//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteCordaContract.Commands.Settle());
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iouONE.pay(Currencies.POUNDS(5)));
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, inputCash);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, outputCash.getOwnableState());
 //                tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
 //                tx.verifies();
 //                return null;
@@ -138,26 +138,26 @@ public class PromissoryNoteSettleTests {
 //
 //        ledger(ledgerServices, l -> {
 //            l.transaction(tx -> {
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteContract.Commands.Settle());
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
+//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteCordaContract.Commands.Settle());
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
 //                tx.failsWith("There must be one input IOU.");
 //                return null;
 //            });
 //            l.transaction(tx -> {
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteContract.Commands.Settle());
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, fivePounds);
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, fivePounds.withNewOwner(ALICE.getParty()).getOwnableState());
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
+//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteCordaContract.Commands.Settle());
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, fivePounds);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, fivePounds.withNewOwner(ALICE.getParty()).getOwnableState());
 //                tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
 //                tx.verifies();
 //                return null;
 //            });
 //            l.transaction(tx -> {
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, iouOne);
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteContract.Commands.Settle());
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, tenPounds);
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, tenPounds.withNewOwner(ALICE.getParty()).getOwnableState());
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iouOne);
+//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteCordaContract.Commands.Settle());
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, tenPounds);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, tenPounds.withNewOwner(ALICE.getParty()).getOwnableState());
 //                tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
 //                tx.verifies();
 //                return null;
@@ -169,7 +169,7 @@ public class PromissoryNoteSettleTests {
 
     /**
      * Task 4.
-     * Now we need to ensure that there are cash states present in the outputs list. The [PromissoryNoteContract] doesn't care
+     * Now we need to ensure that there are cash states present in the outputs list. The [PromissoryNoteCordaContract] doesn't care
      * about input cash as the validity of the cash transaction will be checked by the [Cash] contract. We do however
      * need to count how much cash is being used to settle and update our [PromissoryNoteState] accordingly.
      * TODO: Filter out the cash states from the list of outputs list and assign them to a constant.
@@ -186,19 +186,19 @@ public class PromissoryNoteSettleTests {
 //
 //        ledger(ledgerServices, l -> {
 //            l.transaction(tx -> {
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou.pay(Currencies.DOLLARS(5)));
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteContract.Commands.Settle());
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou.pay(Currencies.DOLLARS(5)));
+//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteCordaContract.Commands.Settle());
 //                tx.failsWith("There must be output cash.");
 //                return null;
 //            });
 //            l.transaction(tx -> {
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, cash);
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou.pay(Currencies.DOLLARS(5)));
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, cashPayment.getOwnableState());
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, cash);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou.pay(Currencies.DOLLARS(5)));
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, cashPayment.getOwnableState());
 //                tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteContract.Commands.Settle());
+//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteCordaContract.Commands.Settle());
 //                tx.verifies();
 //                return null;
 //            });
@@ -228,22 +228,22 @@ public class PromissoryNoteSettleTests {
 //
 //        ledger(ledgerServices, l -> {
 //            l.transaction(tx -> {
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, cash);
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou.pay(Currencies.POUNDS(5)));
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, invalidCashPayment.getOwnableState());
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, cash);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou.pay(Currencies.POUNDS(5)));
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, invalidCashPayment.getOwnableState());
 //                tx.command(BOB.getPublicKey(), invalidCashPayment.getCommand());
-//                tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteContract.Commands.Settle());
+//                tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteCordaContract.Commands.Settle());
 //                tx.failsWith("There must be output cash paid to the recipient.");
 //               return null;
 //            });
 //            l.transaction(tx -> {
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, cash);
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou.pay(Currencies.POUNDS(5)));
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, validCashPayment.getOwnableState());
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, cash);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou.pay(Currencies.POUNDS(5)));
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, validCashPayment.getOwnableState());
 //                tx.command(BOB.getPublicKey(), validCashPayment.getCommand());
-//                tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteContract.Commands.Settle());
+//                tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteCordaContract.Commands.Settle());
 //                tx.verifies();
 //                return null;
 //            });
@@ -273,31 +273,31 @@ public class PromissoryNoteSettleTests {
 //
 //        ledger(ledgerServices, l -> {
 //            l.transaction(tx -> {
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, elevenDollars);
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou.pay(Currencies.DOLLARS(11)));
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, elevenDollars.withNewOwner(ALICE.getParty()).getOwnableState());
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, elevenDollars);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou.pay(Currencies.DOLLARS(11)));
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, elevenDollars.withNewOwner(ALICE.getParty()).getOwnableState());
 //                tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
-//                tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteContract.Commands.Settle());
+//                tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteCordaContract.Commands.Settle());
 //                tx.failsWith("The amount settled cannot be more than the amount outstanding.");
 //                return null;
 //            });
 //            l.transaction(tx -> {
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, fiveDollars);
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou.pay(Currencies.DOLLARS(5)));
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, fiveDollars.withNewOwner(ALICE.getParty()).getOwnableState());
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, fiveDollars);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou.pay(Currencies.DOLLARS(5)));
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, fiveDollars.withNewOwner(ALICE.getParty()).getOwnableState());
 //                tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
-//                tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteContract.Commands.Settle());
+//                tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteCordaContract.Commands.Settle());
 //                tx.verifies();
 //                return null;
 //            });
 //            l.transaction(tx -> {
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, tenDollars);
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, tenDollars.withNewOwner(ALICE.getParty()).getOwnableState());
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, tenDollars);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, tenDollars.withNewOwner(ALICE.getParty()).getOwnableState());
 //                tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
-//                tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteContract.Commands.Settle());
+//                tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteCordaContract.Commands.Settle());
 //                tx.verifies();
 //                return null;
 //            });
@@ -320,20 +320,20 @@ public class PromissoryNoteSettleTests {
 //
 //        ledger(ledgerServices, l -> {
 //            l.transaction(tx -> {
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, tenPounds);
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, tenPounds.withNewOwner(ALICE.getParty()).getOwnableState());
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, tenPounds);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, tenPounds.withNewOwner(ALICE.getParty()).getOwnableState());
 //                tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
-//                tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteContract.Commands.Settle());
+//                tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteCordaContract.Commands.Settle());
 //                tx.failsWith("Token mismatch: GBP vs USD");
 //               return null;
 //            });
 //            l.transaction(tx -> {
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, tenDollars);
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, tenDollars.withNewOwner(ALICE.getParty()).getOwnableState());
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, tenDollars);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, tenDollars.withNewOwner(ALICE.getParty()).getOwnableState());
 //                tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
-//                tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteContract.Commands.Settle());
+//                tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteCordaContract.Commands.Settle());
 //                tx.verifies();
 //                return null;
 //            });
@@ -356,40 +356,40 @@ public class PromissoryNoteSettleTests {
 //        Cash.State fiveDollars = createCashState( BOB.getParty(), Currencies.DOLLARS(5));
 //            ledger(ledgerServices, l -> {
 //                l.transaction(tx -> {
-//                    tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
-//                    tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, fiveDollars);
-//                    tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, fiveDollars.withNewOwner(ALICE.getParty()).getOwnableState());
+//                    tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
+//                    tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, fiveDollars);
+//                    tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, fiveDollars.withNewOwner(ALICE.getParty()).getOwnableState());
 //                    tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
-//                    tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteContract.Commands.Settle());
+//                    tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteCordaContract.Commands.Settle());
 //                    tx.failsWith("There must be one output IOU.");
 //                    return null;
 //                });
 //                l.transaction(tx -> {
-//                    tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
-//                    tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, fiveDollars);
-//                    tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou.pay(Currencies.DOLLARS(5)));
-//                    tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, fiveDollars.withNewOwner(ALICE.getParty()).getOwnableState());
+//                    tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
+//                    tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, fiveDollars);
+//                    tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou.pay(Currencies.DOLLARS(5)));
+//                    tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, fiveDollars.withNewOwner(ALICE.getParty()).getOwnableState());
 //                    tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
-//                    tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteContract.Commands.Settle());
+//                    tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteCordaContract.Commands.Settle());
 //                    tx.verifies();
 //                    return null;
 //                });
 //                l.transaction(tx -> {
-//                    tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
-//                    tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, tenDollars);
-//                    tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou.pay(Currencies.DOLLARS(10)));
-//                    tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, tenDollars.withNewOwner(ALICE.getParty()).getOwnableState());
+//                    tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
+//                    tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, tenDollars);
+//                    tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou.pay(Currencies.DOLLARS(10)));
+//                    tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, tenDollars.withNewOwner(ALICE.getParty()).getOwnableState());
 //                    tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
-//                    tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteContract.Commands.Settle());
+//                    tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteCordaContract.Commands.Settle());
 //                    tx.failsWith("There must be no output IOU as it has been fully settled.");
 //                    return null;
 //                });
 //                l.transaction(tx -> {
-//                    tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
-//                    tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, tenDollars);
-//                    tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, tenDollars.withNewOwner(ALICE.getParty()).getOwnableState());
+//                    tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
+//                    tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, tenDollars);
+//                    tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, tenDollars.withNewOwner(ALICE.getParty()).getOwnableState());
 //                    tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
-//                    tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteContract.Commands.Settle());
+//                    tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteCordaContract.Commands.Settle());
 //                    tx.verifies();
 //                    return null;
 //                });
@@ -410,49 +410,49 @@ public class PromissoryNoteSettleTests {
 //
 //        ledger(ledgerServices, l -> {
 //            l.transaction(tx -> {
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, fiveDollars);
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, fiveDollars);
 //                PromissoryNoteState iouCopy = iou.copy(iou.amount, iou.lender, CHARLIE.getParty(), iou.paid).pay(Currencies.DOLLARS(5));
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iouCopy);
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, fiveDollars.withNewOwner(ALICE.getParty()).getOwnableState());
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iouCopy);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, fiveDollars.withNewOwner(ALICE.getParty()).getOwnableState());
 //                tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
-//                tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteContract.Commands.Settle());
+//                tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteCordaContract.Commands.Settle());
 //                tx.failsWith("The borrower may not change when settling.");
 //                return null;
 //            });
 //
 //            l.transaction(tx -> {
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, fiveDollars);
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, fiveDollars.withNewOwner(ALICE.getParty()).getOwnableState());
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, fiveDollars);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, fiveDollars.withNewOwner(ALICE.getParty()).getOwnableState());
 //                PromissoryNoteState iouCopy = iou.copy(Currencies.DOLLARS(0), iou.lender, CHARLIE.getParty(), iou.paid).pay(Currencies.DOLLARS(5));
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iouCopy);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iouCopy);
 //                tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
-//                tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteContract.Commands.Settle());
+//                tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteCordaContract.Commands.Settle());
 //                tx.failsWith("The amount may not change when settling.");
 //                return null;
 //            });
 //
 //            l.transaction(tx -> {
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, fiveDollars);
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, fiveDollars.withNewOwner(ALICE.getParty()).getOwnableState());
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, fiveDollars);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, fiveDollars.withNewOwner(ALICE.getParty()).getOwnableState());
 //                PromissoryNoteState iouCopy = iou.copy(iou.amount, CHARLIE.getParty(), iou.borrower, iou.paid).pay(Currencies.DOLLARS(5));
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iouCopy);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iouCopy);
 //                tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
-//                tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteContract.Commands.Settle());
+//                tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteCordaContract.Commands.Settle());
 //                tx.failsWith("The lender may not change when settling.");
 //                return null;
 //            });
 //
 //            l.transaction(tx -> {
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, fiveDollars);
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, fiveDollars.withNewOwner(ALICE.getParty()).getOwnableState());
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, fiveDollars);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, fiveDollars.withNewOwner(ALICE.getParty()).getOwnableState());
 //                PromissoryNoteState iouCopy = iou.copy(iou.amount, iou.lender, iou.borrower, iou.paid).pay(Currencies.DOLLARS(5));
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iouCopy);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iouCopy);
 //                tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
-//                tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteContract.Commands.Settle());
+//                tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteCordaContract.Commands.Settle());
 //                tx.verifies();
 //                return null;
 //            });
@@ -475,32 +475,32 @@ public class PromissoryNoteSettleTests {
 //
 //        ledger(ledgerServices, l -> {
 //            l.transaction(tx -> {
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, cash);
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, cashPayment.getOwnableState());
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou.pay(Currencies.DOLLARS(5)));
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, cash);
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, cashPayment.getOwnableState());
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou.pay(Currencies.DOLLARS(5)));
 //                tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), CHARLIE.getPublicKey()), new PromissoryNoteContract.Commands.Settle());
+//                tx.command(Arrays.asList(ALICE.getPublicKey(), CHARLIE.getPublicKey()), new PromissoryNoteCordaContract.Commands.Settle());
 //                tx.failsWith("Both lender and borrower together only must sign IOU settle transaction.");
 //                return null;
 //            });
 //            l.transaction(tx -> {
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, cash);
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, cashPayment.getOwnableState());
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou.pay(Currencies.DOLLARS(5)));
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, cash);
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, cashPayment.getOwnableState());
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou.pay(Currencies.DOLLARS(5)));
 //                tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
-//                tx.command(BOB.getPublicKey(), new PromissoryNoteContract.Commands.Settle());
+//                tx.command(BOB.getPublicKey(), new PromissoryNoteCordaContract.Commands.Settle());
 //                tx.failsWith("Both lender and borrower together only must sign IOU settle transaction.");
 //                return null;
 //            });
 //            l.transaction(tx -> {
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, cash);
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, cashPayment.getOwnableState());
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou.pay(Currencies.DOLLARS(5)));
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, cash);
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, cashPayment.getOwnableState());
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou.pay(Currencies.DOLLARS(5)));
 //                tx.command(BOB.getPublicKey(), new Cash.Commands.Move());
-//                tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteContract.Commands.Settle());
+//                tx.command(Arrays.asList(BOB.getPublicKey(), ALICE.getPublicKey()), new PromissoryNoteCordaContract.Commands.Settle());
 //                tx.failsWith("Both lender and borrower together only must sign IOU settle transaction.");
 //                return null;
 //            });

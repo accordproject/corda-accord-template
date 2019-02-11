@@ -3,7 +3,7 @@ package net.corda.accord.flow;
 import co.paralleluniverse.fibers.Suspendable;
 import com.google.common.collect.ImmutableSet;
 import net.corda.accord.AccordUtils;
-import net.corda.accord.contract.PromissoryNoteContract;
+import net.corda.accord.contract.PromissoryNoteCordaContract;
 import net.corda.accord.state.PromissoryNoteState;
 import net.corda.core.contracts.*;
 import net.corda.core.crypto.SecureHash;
@@ -88,8 +88,8 @@ public class PromissoryNoteSettleFlow {
 
 
             // 6.
-            Command<PromissoryNoteContract.Commands.Settle> command = new Command<>(
-                    new PromissoryNoteContract.Commands.Settle(),
+            Command<PromissoryNoteCordaContract.Commands.Settle> command = new Command<>(
+                    new PromissoryNoteCordaContract.Commands.Settle(),
                     inputStateToSettle.getParticipants()
                             .stream().map(AbstractParty::getOwningKey)
                             .collect(Collectors.toList())
@@ -101,7 +101,7 @@ public class PromissoryNoteSettleFlow {
 
             // 7. Add an IOU output state for an IOU that has not been full settled.
             if (amount.getQuantity() < inputStateToSettle.getAmount().getQuantity()) {
-                tb.addOutputState(inputStateToSettle.pay(amount), PromissoryNoteContract.PROMISSORY_NOTE_CONTRACT_ID);
+                tb.addOutputState(inputStateToSettle.pay(amount), PromissoryNoteCordaContract.PROMISSORY_NOTE_CONTRACT_ID);
             }
 
             // 8. Add the contract to the transaction

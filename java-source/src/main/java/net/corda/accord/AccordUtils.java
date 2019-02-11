@@ -42,26 +42,19 @@ public class AccordUtils {
      * logs out the JSON (which is captured in the input stream.
      */
 
-    public static InputStream getStateFromContract() throws IOException {
-        String[] command = {"./resources/cicero-parse.sh", "../../../node_modules/promissory-note", "../../../contract.txt"};
-        ProcessBuilder ciceroParse = new ProcessBuilder(command);
-        ciceroParse.directory(new File("./src/main"));
-        return ciceroParse.start().getInputStream();
-    }
-
-//    public static InputStream getStateFromContract(ServiceHub serviceHub, SecureHash secureHash) throws IOException {
-//        InputStream inputStream = serviceHub.getAttachments().openAttachment(secureHash).open();
-//        File targetFile = new File("/tmp/attachedPromissoryNote");
-//
-//        Files.copy(
-//                inputStream,
-//                targetFile.toPath(),
-//                StandardCopyOption.REPLACE_EXISTING
-//        );
-//
-//        String[] command = {"#!/usr/bin/env bash; cicero parse --template $1 --out /tmp/tempOutput.txt > /tmp/cicero.log 2>&1; cat /tmp/tempOutput.txt"
-//                , "./tmp/attachedPromissoryNote"};
+//    // Unit Test Config
+//    public static InputStream getStateFromContract() throws IOException {
+//        String[] command = {"./resources/cicero-parse.sh", "../../../node_modules/promissory-note", "../../.././contract.txt"};
 //        ProcessBuilder ciceroParse = new ProcessBuilder(command);
+//        ciceroParse.directory(new File("./src/main"));
 //        return ciceroParse.start().getInputStream();
 //    }
+
+    // Production Config
+    public static InputStream getStateFromContract() throws IOException {
+        String[] command = {"./resources/cicero-parse.sh", "../../../node_modules/promissory-note", "../../.././contract.txt"};
+        ProcessBuilder ciceroParse = new ProcessBuilder(command);
+        ciceroParse.directory(new File("../../.././src/main"));
+        return ciceroParse.start().getInputStream();
+    }
 }

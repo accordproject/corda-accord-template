@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.corda.accord.AccordUtils;
-import net.corda.accord.contract.PromissoryNoteContract;
+import net.corda.accord.contract.PromissoryNoteCordaContract;
 import net.corda.accord.state.PromissoryNoteState;
 import net.corda.core.contracts.Command;
 import net.corda.core.contracts.ContractState;
@@ -125,8 +125,8 @@ public class PromissoryNoteIssueFlow {
             // Step 2. Create a new issue command.
             // Remember that a command is a CommandData object and a list of CompositeKeys
 			progressTracker.setCurrentStep(TX_BUILDING);
-			final Command<PromissoryNoteContract.Commands.Issue> issueCommand = new Command<>(
-                    new PromissoryNoteContract.Commands.Issue(),
+			final Command<PromissoryNoteCordaContract.Commands.Issue> issueCommand = new Command<>(
+                    new PromissoryNoteCordaContract.Commands.Issue(),
 					Arrays.asList(lender.getOwningKey(), maker.getOwningKey())
 			);
 
@@ -134,11 +134,22 @@ public class PromissoryNoteIssueFlow {
             final TransactionBuilder builder = new TransactionBuilder(notary);
 
             // Step 4. Add the iou as an output state, as well as a command to the transaction builder.
-            builder.addOutputState(state, PromissoryNoteContract.PROMISSORY_NOTE_CONTRACT_ID);
+            builder.addOutputState(state, PromissoryNoteCordaContract.PROMISSORY_NOTE_CONTRACT_ID);
             builder.addCommand(issueCommand);
 
 			// Step 5. Add the contract to the transaction
-			File ciceroTemplateFile = new File("../../../contract.txt");
+			System.out.println("HELLOHELLO");
+			try {
+				System.out.println(new File("../../../../contract.txt").getCanonicalPath());
+			} catch (IOException e) {
+				throw new Error(e.getLocalizedMessage());
+			}
+
+			// CONFIG REQUIRED FOR TESTING
+//			File ciceroTemplateFile = new File("../contract.txt");
+
+//			CONFIG REQUIRE FOR DEPLOYMENT
+			File ciceroTemplateFile = new File("../../../../contract.txt");
 
 			try {
 				InputStream ciceroTemplateFileInputStream = new FileInputStream(ciceroTemplateFile);

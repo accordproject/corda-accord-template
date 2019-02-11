@@ -16,8 +16,8 @@ import java.util.*;
 /**
  * This contract governs how promissory notes may be Issued, Settled or Transferred.
  */
-public class PromissoryNoteContract implements Contract {
-    public static final String PROMISSORY_NOTE_CONTRACT_ID = "net.corda.accord.contract.PromissoryNoteContract";
+public class PromissoryNoteCordaContract implements Contract {
+    public static final String PROMISSORY_NOTE_CONTRACT_ID = "net.corda.accord.contract.PromissoryNoteCordaContract";
     
     public interface Commands extends CommandData {
         class Issue extends TypeOnlyCommandData implements Commands{};
@@ -25,7 +25,7 @@ public class PromissoryNoteContract implements Contract {
         class Transfer extends TypeOnlyCommandData implements Commands{};
     }
     /**
-     * The contract code for the [PromissoryNoteContract].
+     * The contract code for the [PromissoryNoteCordaContract].
      * The constraints are self documenting so don't require any additional explanation.
      */
     @Override

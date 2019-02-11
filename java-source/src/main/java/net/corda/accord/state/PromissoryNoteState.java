@@ -1,9 +1,7 @@
 package net.corda.accord.state;
 
-import net.corda.core.contracts.Amount;
-import net.corda.core.contracts.ContractState;
-import net.corda.core.contracts.LinearState;
-import net.corda.core.contracts.UniqueIdentifier;
+import net.corda.accord.contract.PromissoryNoteCordaContract;
+import net.corda.core.contracts.*;
 import net.corda.core.identity.Party;
 import net.corda.core.identity.AbstractParty;
 import java.util.*;
@@ -20,6 +18,7 @@ import org.accordproject.money.MonetaryAmount;
  * to be included as part of state data.
  */
 
+@BelongsToContract(PromissoryNoteCordaContract.class)
 public class PromissoryNoteState implements ContractState, LinearState {
 
     // TODO: `amount` and `principal` are both included in parsedJSON as a accord-project monetary amount. They must be converted to the Corda Amount<Currency> class.

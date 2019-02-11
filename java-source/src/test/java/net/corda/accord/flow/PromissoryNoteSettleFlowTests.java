@@ -114,7 +114,7 @@ public class PromissoryNoteSettleFlowTests {
 //                assert (outputCashSum.equals(inputIOU.amount.minus(inputIOU.paid).minus(outputIOU.paid)));
 //
 //                CommandWithParties command = ledgerTx.getCommands().get(0);
-//                assert (command.getValue().equals(new PromissoryNoteContract.Commands.Settle()));
+//                assert (command.getValue().equals(new PromissoryNoteCordaContract.Commands.Settle()));
 //
 //                settleResult.verifySignaturesExcept(b.getInfo().getLegalIdentities().get(0).getOwningKey(),
 //                        mockNetwork.getDefaultNotaryIdentity().getOwningKey());
