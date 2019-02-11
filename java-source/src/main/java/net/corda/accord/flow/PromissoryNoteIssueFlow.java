@@ -5,6 +5,7 @@ import co.paralleluniverse.fibers.Suspendable;
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,6 +17,7 @@ import net.corda.core.contracts.ContractState;
 import net.corda.core.crypto.SecureHash;
 import net.corda.core.flows.*;
 import net.corda.core.identity.Party;
+import net.corda.core.identity.PartyAndCertificate;
 import net.corda.core.transactions.SignedTransaction;
 import net.corda.core.transactions.TransactionBuilder;
 import static net.corda.core.contracts.ContractsDSL.requireThat;
@@ -33,18 +35,18 @@ public class PromissoryNoteIssueFlow {
     @InitiatingFlow
     @StartableByRPC
     public static class InitiatorFlow extends FlowLogic<SignedTransaction> {
-        private final Party lender;
-		private final Party maker;
+        private final String lenderString;
+		private final String makerString;
 
-        public InitiatorFlow(Party lender, Party maker) {
-        	this.lender = lender;
-        	this.maker = maker;
+        public InitiatorFlow(String lenderString, String makerString) {
+
+			this.lenderString = lenderString;
+			this.makerString = makerString;
         }
 
 		/** TODO: Enable the user to specify the file path for the promissory note template
 		 * TODO: Adjust the cicero-parse command to include an option on only return the JSON with no initial messaging
 		 * TODO: Enable the user to specify the file path for the source legal document */
-
 		// Giving our flow a progress tracker allows us to see the flow's
 		// progress visually in our node's CRaSH shell.
 		private static final Step GENERATING_STATE_FROM_CONTRACT = new Step("Generating a state using Cicero CLI Functionality to Parse a legal document.");
@@ -90,6 +92,13 @@ public class PromissoryNoteIssueFlow {
         @Suspendable
         @Override
         public SignedTransaction call() throws FlowException {
+
+			Iterable<PartyAndCertificate> list = getServiceHub().getIdentityService().getAllIdentities();
+			Set<Party> setOfLenderParties = getServiceHub().getIdentityService().partiesFromName(lenderString, true);
+			Set<Party> setOfMakerParties = getServiceHub().getIdentityService().partiesFromName(makerString, true);
+
+			Party lender = (Party) setOfLenderParties.toArray()[0];
+			Party maker = (Party) setOfMakerParties.toArray()[0];
 
         	PromissoryNoteState state;
 

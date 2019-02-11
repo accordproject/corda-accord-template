@@ -84,7 +84,7 @@ public class PromissoryNoteIssueFlowTests {
 
         // TODO: Note naming conflicts for transactions (database transaction) and getAttachments (gets attachment functionality)
         // TODO: Write a wrapper class for Lambda function
-        PromissoryNoteIssueFlow.InitiatorFlow flow = new PromissoryNoteIssueFlow.InitiatorFlow(lender, maker);
+        PromissoryNoteIssueFlow.InitiatorFlow flow = new PromissoryNoteIssueFlow.InitiatorFlow("Mock Company 1", "Mock Company 2");
 
         Future<SignedTransaction> future = a.startFlow(flow);
         mockNetwork.runNetwork();
