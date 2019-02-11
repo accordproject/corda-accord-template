@@ -34,6 +34,7 @@ public class PromissoryNoteIssueFlow {
 
     @InitiatingFlow
     @StartableByRPC
+	@StartableByService
     public static class InitiatorFlow extends FlowLogic<SignedTransaction> {
         private final String lenderString;
 		private final String makerString;
@@ -138,13 +139,6 @@ public class PromissoryNoteIssueFlow {
             builder.addCommand(issueCommand);
 
 			// Step 5. Add the contract to the transaction
-			System.out.println("HELLOHELLO");
-			try {
-				System.out.println(new File("../../../../contract.txt").getCanonicalPath());
-			} catch (IOException e) {
-				throw new Error(e.getLocalizedMessage());
-			}
-
 			// CONFIG REQUIRED FOR TESTING
 //			File ciceroTemplateFile = new File("../contract.txt");
 

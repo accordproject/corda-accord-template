@@ -15,12 +15,13 @@ public class BraidServer extends SingletonSerializeAsToken {
 
     public BraidServer(AppServiceHub serviceHub) {
         this.appServiceHub = serviceHub;
-//
-//        new BraidConfig()
-//                .withService("myService", new BraidService(appServiceHub))
-//                .withPort((Integer) serviceHub.getAppContext().getConfig().get("braid"))
-//                .withHttpServerOptions(new HttpServerOptions().setSsl(false))
-//                .bootstrapBraid(appServiceHub);
+
+        new BraidConfig()
+                .withFlow("PromissoryNoteIssueFlow", PromissoryNoteIssueFlow.InitiatorFlow.class)
+                .withService("PromissoryNotesInterface", new BraidService(appServiceHub))
+                .withPort((Integer) serviceHub.getAppContext().getConfig().get("braid"))
+                .withHttpServerOptions(new HttpServerOptions().setSsl(false))
+                .bootstrapBraid(appServiceHub);
     }
 
 }
