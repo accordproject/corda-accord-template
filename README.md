@@ -22,6 +22,7 @@ After installing the required tools, clone or download a zip of this repository,
 ### Cicero setup
 
 * from the command line where you placed this repository, run: `npm install` (to install `cicero` and the `promissory-note` template)
+* then run: `npm run build` to generate the Accord Project classes
 
 ### IntelliJ setup
 * From the main menu, click `open` (not `import`!) then navigate to where you placed this repository.
