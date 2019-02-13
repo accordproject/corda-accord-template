@@ -73,3 +73,7 @@ docs/virtualenv/
 
 # NPM
 node_modules/
+
+# Accord Classes
+java-source/src/main/java/org/
+
