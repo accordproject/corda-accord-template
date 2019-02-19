@@ -5,7 +5,11 @@
     "promissory-note": "file:./promissory-note.0.9.1.tar.gz"
   },
   "scripts": {
-    "build": "cicero generate --template node_modules/promissory-note --format Corda --outputDirectory ./java-source/src/main/java"
+    "build:accordproject": "cicero generate --template node_modules/promissory-note --format Corda --outputDirectory ./java-source/src/main/java",
+    "build:corda": "./gradlew clean deployNodes",
+    "build": "npm run build:accordproject && npm run build:corda",
+    "start": "java-source/build/nodes/runNodes",
+    "clean": "rm -rf .gradle build log logs kotlin-source/build java-source/build java-source/out java-source/src/main/java/org"
   },
   "name": "corda-accord-template",
   "version": "0.1.0",
