@@ -105,7 +105,7 @@ public class PromissoryNoteIssueFlow {
 				state = new PromissoryNoteState(parsedContractData, lender, maker);
 				progressTracker.setCurrentStep(MAKING_PARENTS_HAPPY);
 			} catch (Exception e) {
-				throw new FlowException(e.toString());
+				throw new FlowException("Error parsing contract.txt" + e.toString());
 			}
 
             // Step 1. Get a reference to the notary service on our network and our key pair.

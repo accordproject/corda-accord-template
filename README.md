@@ -19,10 +19,10 @@ This repository is divided into two parts: a Java reference solution (which is c
 
 After installing the required tools, clone or download a zip of this repository, and place it in your desired location.
 
-### Cicero setup
+### Building Corda + Accord Project code
 
 * from the command line where you placed this repository, run: `npm install` (to install `cicero` and the `promissory-note` template)
-* then run: `npm run build` to generate the Accord Project classes
+* then run: `npm run build` to generate the Accord Project classes, and compile the Corda code
 
 ### IntelliJ setup
 * From the main menu, click `open` (not `import`!) then navigate to where you placed this repository.
@@ -47,8 +47,7 @@ again leaving all options as they are.
 * "-javaagent: /PATH_TO_FILE_FROM_ROOT_DIR/quasar.jar"
 
 ### Deploying Locally
-* From the root directory run './gradlew clean deployNodes' at the command line.
-* From the root directory you may then run 'java-source/build/nodes/runNodes'
+* From the root directory run 'npm run start' at the command line.
 
 # Template Files
 
