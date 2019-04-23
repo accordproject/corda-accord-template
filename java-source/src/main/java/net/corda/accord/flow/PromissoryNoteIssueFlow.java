@@ -3,6 +3,9 @@ package net.corda.accord.flow;
 import co.paralleluniverse.fibers.Suspendable;
 
 import java.io.*;
+import java.lang.reflect.Array;
+import java.security.PublicKey;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,9 +15,11 @@ import net.corda.accord.AccordUtils;
 import net.corda.accord.contract.PromissoryNoteContract;
 import net.corda.accord.state.PromissoryNoteState;
 import net.corda.core.contracts.Command;
+import net.corda.core.contracts.CommandData;
 import net.corda.core.contracts.ContractState;
 import net.corda.core.crypto.SecureHash;
 import net.corda.core.flows.*;
+import net.corda.core.identity.CordaX500Name;
 import net.corda.core.identity.Party;
 import net.corda.core.transactions.SignedTransaction;
 import net.corda.core.transactions.TransactionBuilder;
@@ -33,13 +38,6 @@ public class PromissoryNoteIssueFlow {
     @InitiatingFlow
     @StartableByRPC
     public static class InitiatorFlow extends FlowLogic<SignedTransaction> {
-        private final Party lender;
-		private final Party maker;
-
-        public InitiatorFlow(Party lender, Party maker) {
-        	this.lender = lender;
-        	this.maker = maker;
-        }
 
 		/** TODO: Enable the user to specify the file path for the promissory note template
 		 * TODO: Adjust the cicero-parse command to include an option on only return the JSON with no initial messaging
@@ -62,7 +60,6 @@ public class PromissoryNoteIssueFlow {
 				return CollectSignaturesFlow.Companion.tracker();
 			}
 		};
-		private static final Step VERIFYING_SIGS = new Step("Verifying a transaction's signatures.");
 		private static final Step FINALISATION = new Step("Finalising a transaction.") {
 			@Override public ProgressTracker childProgressTracker() {
 				return FinalityFlow.Companion.tracker();
@@ -97,12 +94,20 @@ public class PromissoryNoteIssueFlow {
 			progressTracker.setCurrentStep(GENERATING_STATE_FROM_CONTRACT);
 			try {
 				progressTracker.setCurrentStep(GETTING_LAW_DEGREE);
+
+				// Get an input stream of data from the accord utils shell script.
 				InputStream dataFromContract = AccordUtils.getStateFromContract();
+
+				// Map the JSON obtained from the input stream to a POJO.
 				String jsonData = IOUtils.toString(dataFromContract, "UTF-8");
 				ObjectMapper objectMapper = new ObjectMapper();
 				progressTracker.setCurrentStep(PARSING_LEGALESE);
 				org.accordproject.promissorynote.PromissoryNoteContract parsedContractData = objectMapper.readValue(jsonData, org.accordproject.promissorynote.PromissoryNoteContract.class);
-				state = new PromissoryNoteState(parsedContractData, lender, maker);
+
+				// Get the relevant Corda parties from the network map using parsed contract data.
+				Party maker = getServiceHub().getNetworkMapCache().getPeerByLegalName(new CordaX500Name(parsedContractData.getMaker(), "NY", "US"));
+				Party lender = getServiceHub().getNetworkMapCache().getPeerByLegalName(new CordaX500Name(parsedContractData.getLender(), "NY", "US"));
+				state = new PromissoryNoteState(parsedContractData, maker, lender);
 				progressTracker.setCurrentStep(MAKING_PARENTS_HAPPY);
 			} catch (Exception e) {
 				throw new FlowException("Error parsing contract.txt" + e.toString());
@@ -116,9 +121,11 @@ public class PromissoryNoteIssueFlow {
             // Step 2. Create a new issue command.
             // Remember that a command is a CommandData object and a list of CompositeKeys
 			progressTracker.setCurrentStep(TX_BUILDING);
-			final Command<PromissoryNoteContract.Commands.Issue> issueCommand = new Command<>(
-                    new PromissoryNoteContract.Commands.Issue(),
-					Arrays.asList(lender.getOwningKey(), maker.getOwningKey())
+
+			CommandData commandData = new PromissoryNoteContract.Commands.Issue();
+			final Command issueCommand = new Command(
+                    commandData,
+					new ArrayList(Arrays.asList( state.lenderCordaParty.getOwningKey(), state.makerCordaParty.getOwningKey()))
 			);
 
             // Step 3. Create a new TransactionBuilder object.
@@ -129,7 +136,7 @@ public class PromissoryNoteIssueFlow {
             builder.addCommand(issueCommand);
 
 			// Step 5. Add the contract to the transaction
-			File ciceroTemplateFile = new File("../../../contract.txt");
+			File ciceroTemplateFile = new File("../contract.txt");
 
 			try {
 				InputStream ciceroTemplateFileInputStream = new FileInputStream(ciceroTemplateFile);

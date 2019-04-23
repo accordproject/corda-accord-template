@@ -1,28 +1,21 @@
 package net.corda.accord.flow;
 
+import net.corda.accord.contract.PromissoryNoteContract;
+import net.corda.accord.state.PromissoryNoteState;
 import net.corda.core.contracts.Command;
-import net.corda.core.crypto.SecureHash;
 import net.corda.core.identity.CordaX500Name;
 import net.corda.core.transactions.SignedTransaction;
 import net.corda.testing.node.*;
 import net.corda.core.identity.Party;
 import net.corda.core.flows.*;
 import net.corda.core.transactions.TransactionBuilder;
-
-
-import net.corda.accord.contract.PromissoryNoteContract;
-import net.corda.accord.state.PromissoryNoteState;
-
-import java.io.*;
-import java.nio.file.FileAlreadyExistsException;
 import java.util.stream.Collectors;
 import java.util.concurrent.Future;
 import java.util.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
 import org.junit.*;
 import org.junit.rules.ExpectedException;
+
+import static net.corda.accord.TestUtils.*;
 
 /**
  * The test executed below will parse the source contract data and create a corresponding Corda state representing a promissory note.
@@ -32,14 +25,14 @@ public class PromissoryNoteIssueFlowTests {
     private MockNetwork mockNetwork;
     private StartedMockNode a, b;
 
-
     @Before
     public void setup() {
-        MockNetworkParameters mockNetworkParameters = new MockNetworkParameters().withNotarySpecs(Arrays.asList(new MockNetworkNotarySpec(new CordaX500Name("Notary", "London", "GB"))));
-        mockNetwork = new MockNetwork(Arrays.asList("net.corda.accord"), mockNetworkParameters);
+        MockNetworkParameters mockNetworkParameters = new MockNetworkParameters(Arrays.asList(TestCordapp.findCordapp("net.corda.accord"), TestCordapp.findCordapp("net.corda.finance.contracts"), TestCordapp.findCordapp("net.corda.finance.workflows")))
+                .withNotarySpecs(Arrays.asList(new MockNetworkNotarySpec(new CordaX500Name("Notary", "London", "GB"))));
+        mockNetwork = new MockNetwork(mockNetworkParameters);
 
-        a = mockNetwork.createNode(new MockNodeParameters());
-        b = mockNetwork.createNode(new MockNodeParameters());
+        a = mockNetwork.createNode(DANIEL_SELMAN.getName());
+        b = mockNetwork.createNode(CLAUSE.getName());
 
         ArrayList<StartedMockNode> startedNodes = new ArrayList<>();
         startedNodes.add(a);
@@ -79,12 +72,9 @@ public class PromissoryNoteIssueFlowTests {
 
     @Test
     public void flowReturnsCorrectlyFormedPartiallySignedTransaction() throws Exception {
-        Party lender = a.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
-        Party maker = b.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
 
-        // TODO: Note naming conflicts for transactions (database transaction) and getAttachments (gets attachment functionality)
         // TODO: Write a wrapper class for Lambda function
-        PromissoryNoteIssueFlow.InitiatorFlow flow = new PromissoryNoteIssueFlow.InitiatorFlow(lender, maker);
+        PromissoryNoteIssueFlow.InitiatorFlow flow = new PromissoryNoteIssueFlow.InitiatorFlow();
 
         Future<SignedTransaction> future = a.startFlow(flow);
         mockNetwork.runNetwork();
@@ -109,7 +99,7 @@ public class PromissoryNoteIssueFlowTests {
                         .stream().map(el -> el.getOwningKey())
                         .collect(Collectors.toList()))));
 
-        ptx.verifySignaturesExcept(maker.getOwningKey(),
+        ptx.verifySignaturesExcept(outputState.lenderCordaParty.getOwningKey(),
                 mockNetwork.getDefaultNotaryNode().getInfo().getLegalIdentitiesAndCerts().get(0).getOwningKey());
     }
 

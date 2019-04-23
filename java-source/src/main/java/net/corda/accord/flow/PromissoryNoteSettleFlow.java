@@ -24,7 +24,7 @@ import java.io.*;
 import java.lang.IllegalArgumentException;
 
 import static net.corda.core.contracts.ContractsDSL.requireThat;
-import static net.corda.finance.contracts.GetBalances.getCashBalance;
+import static net.corda.finance.workflows.GetBalances.getCashBalance;
 
 import java.util.ArrayList;
 import java.util.Currency;
@@ -75,7 +75,7 @@ public class PromissoryNoteSettleFlow {
             TransactionBuilder tb = new TransactionBuilder(notary);
 
             // 4. Check we have enough cash to settle the requested amount
-            final Amount<Currency> cashBalance = getCashBalance(getServiceHub(), (Currency) amount.getToken());
+            final Amount<Currency> cashBalance = getCashBalance(getServiceHub(), amount.getToken());
 
             if (cashBalance.getQuantity() < amount.getQuantity()) {
                 throw new IllegalArgumentException("Maker doesn't have enough cash to settle with the amount specified.");
@@ -84,7 +84,7 @@ public class PromissoryNoteSettleFlow {
             }
 
             // 5. Get some cash from the vault and add a spend to our transaction builder.
-            Cash.generateSpend(getServiceHub(), tb, amount, inputStateToSettle.lenderCordaParty, ImmutableSet.of()).getSecond();
+//            Cash.generateSpend(tb, amount, inputStateToSettle.lenderCordaParty, ImmutableSet.of()).getSecond();
 
 
             // 6.

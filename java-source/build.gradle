@@ -33,7 +33,6 @@ dependencies {
 
     // Corda integration dependencies
     cordaCompile "$corda_release_distribution:corda-core:$corda_release_version"
-    cordaCompile "$corda_release_distribution:corda-finance:$corda_release_version"
     cordaCompile "$corda_release_distribution:corda-jackson:$corda_release_version"
     cordaCompile "$corda_release_distribution:corda-rpc:$corda_release_version"
     cordaCompile "$corda_release_distribution:corda-node-api:$corda_release_version"
@@ -44,7 +43,6 @@ dependencies {
     testCompile "$corda_release_distribution:corda-test-utils:$corda_release_version"
     testCompile "$corda_release_distribution:corda-node-driver:$corda_release_version"
 
-
     // GraphStream: For visualisation (required by TemplateClientRPC app)
     compile "org.graphstream:gs-core:1.3"
     compile("org.graphstream:gs-ui:1.3") {
@@ -54,7 +52,9 @@ dependencies {
 
     // CorDapp dependencies
     // Specify your cordapp's dependencies below, including dependent CorDapps
-    cordapp "$corda_release_distribution:corda-finance:$corda_release_version"
+    cordaCompile "$corda_release_distribution:corda-finance-contracts:$corda_release_version"
+    cordaCompile "$corda_release_distribution:corda-finance-workflows:$corda_release_version"
+
 }
 
 tasks.withType(JavaCompile) {
