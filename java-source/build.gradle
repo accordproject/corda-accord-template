@@ -33,6 +33,8 @@ dependencies {
 
     // Corda integration dependencies
     cordaCompile "$corda_release_distribution:corda-core:$corda_release_version"
+    cordaCompile "$corda_release_distribution:corda-finance-contracts:$corda_release_version"
+    cordaCompile "$corda_release_distribution:corda-finance-workflows:$corda_release_version"
     cordaCompile "$corda_release_distribution:corda-jackson:$corda_release_version"
     cordaCompile "$corda_release_distribution:corda-rpc:$corda_release_version"
     cordaCompile "$corda_release_distribution:corda-node-api:$corda_release_version"
@@ -52,8 +54,9 @@ dependencies {
 
     // CorDapp dependencies
     // Specify your cordapp's dependencies below, including dependent CorDapps
-    cordaCompile "$corda_release_distribution:corda-finance-contracts:$corda_release_version"
-    cordaCompile "$corda_release_distribution:corda-finance-workflows:$corda_release_version"
+    cordapp "$corda_release_distribution:corda-finance-contracts:$corda_release_version"
+    cordapp "$corda_release_distribution:corda-finance-workflows:$corda_release_version"
+
 
 }
 
@@ -75,11 +78,15 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         enabled false
     }
 
+    nodeDefaults {
+        cordapp("$corda_release_distribution:corda-finance-contracts:$corda_release_version")
+        cordapp("$corda_release_distribution:corda-finance-workflows:$corda_release_version")
+    }
+
     node {
         name "O=Notary,L=London,C=GB"
         notary = [validating: false]
         p2pPort 10002
-        cordapps = ["$corda_release_distribution:corda-finance:$corda_release_version"]
         rpcSettings {
             useSsl false
             standAloneBroker false
@@ -90,7 +97,6 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
     node {
         name "O=ParticipantA,L=London,C=GB"
         p2pPort 10004
-        cordapps = ["$corda_release_distribution:corda-finance:$corda_release_version"]
         rpcSettings {
             useSsl false
             standAloneBroker false
@@ -102,7 +108,6 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
     node {
         name "O=ParticipantB,L=New York,C=US"
         p2pPort 10006
-        cordapps = ["$corda_release_distribution:corda-finance:$corda_release_version"]
         rpcSettings {
             useSsl false
             standAloneBroker false
@@ -114,7 +119,6 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
     node {
         name "O=ParticipantC,L=Paris,C=FR"
         p2pPort 10008
-        cordapps = ["$corda_release_distribution:corda-finance:$corda_release_version"]
         rpcSettings {
             useSsl false
             standAloneBroker false

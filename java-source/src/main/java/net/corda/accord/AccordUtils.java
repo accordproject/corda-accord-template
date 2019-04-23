@@ -43,7 +43,14 @@ public class AccordUtils {
      */
 
     public static InputStream getStateFromContract() throws IOException {
-        String root = System.getenv("CORDAPP_ROOT");
+        String root;
+
+        if (System.getenv("CORDAPP_ROOT") != null) {
+            root = System.getenv("CORDAPP_ROOT");
+        } else {
+            root = "./src/main";
+        }
+        
         String[] command = {"./scripts/cicero-parse.sh",  "./node_modules/promissory-note", "./contract.txt"};
         ProcessBuilder ciceroParse = new ProcessBuilder(command);
         ciceroParse.directory(new File(root));
