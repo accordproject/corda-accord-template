@@ -82,3 +82,7 @@ Flow:
 In the Corda shell:
 * Initiate a promissory note: `flow start net.corda.accord.flow.PromissoryNoteIssueFlow$InitiatorFlow lender: "ParticipantA", maker: "ParticipantB"`
 
+### Issue a Flow from the Corda shell
+
+To initiate the contract: `flow start PromissoryNoteIssueFlow lender: ParticipantA, maker: ParticipantB`
+

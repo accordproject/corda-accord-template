@@ -3,7 +3,7 @@
     <ExternalSystemSettings>
       <option name="env">
         <map>
-          <entry key="CORDAPP_ROOT" value="../../.." />
+          <entry key="CORDAPP_ROOT" value=".." />
         </map>
       </option>
       <option name="executionName" />

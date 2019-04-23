@@ -129,7 +129,7 @@ public class PromissoryNoteIssueFlow {
             builder.addCommand(issueCommand);
 
 			// Step 5. Add the contract to the transaction
-      String root = System.getenv("CORDAPP_ROOT");
+      		String root = System.getenv("CORDAPP_ROOT");
 			File ciceroTemplateFile = new File(root + "/contract.txt");
 
 			try {
