@@ -1,7 +1,6 @@
 package net.corda.accord.flow;
 
 import co.paralleluniverse.fibers.Suspendable;
-import com.google.common.collect.ImmutableSet;
 import net.corda.accord.AccordUtils;
 import net.corda.accord.contract.PromissoryNoteContract;
 import net.corda.accord.state.PromissoryNoteState;
