@@ -47,7 +47,7 @@ again leaving all options as they are.
 * "-javaagent: /PATH_TO_FILE_FROM_ROOT_DIR/quasar.jar"
 
 ### Deploying Locally
-* From the root directory run 'npm run start' at the command line.
+* From the root directory run 'npm run deploy' at the command line.
 
 # Template Files
 
@@ -78,3 +78,11 @@ Flow:
 * Transfer tests: `java-source/src/test/java/net/corda/training/flow/PromissoryNoteTransferFlowTests.java`
 * Settle template: `java-source/src/main/java/net/corda/training/flow/PromissoryNoteSettleFlow.java`
 * Settle tests: `java-source/src/test/java/net/corda/training/flow/PromissoryNoteSettleFlowTests.java`
+
+In the Corda shell:
+* Initiate a promissory note: `flow start net.corda.accord.flow.PromissoryNoteIssueFlow$InitiatorFlow lender: "ParticipantA", maker: "ParticipantB"`
+
+### Issue a Flow from the Corda shell
+
+To initiate the contract: `flow start PromissoryNoteIssueFlow lender: ParticipantA, maker: ParticipantB`
+

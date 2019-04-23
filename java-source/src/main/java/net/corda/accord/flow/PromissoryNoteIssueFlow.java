@@ -136,7 +136,8 @@ public class PromissoryNoteIssueFlow {
             builder.addCommand(issueCommand);
 
 			// Step 5. Add the contract to the transaction
-			File ciceroTemplateFile = new File("../contract.txt");
+      		String root = System.getenv("CORDAPP_ROOT");
+			File ciceroTemplateFile = new File(root + "/contract.txt");
 
 			try {
 				InputStream ciceroTemplateFileInputStream = new FileInputStream(ciceroTemplateFile);

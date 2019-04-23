@@ -6,6 +6,7 @@ import net.corda.core.identity.AbstractParty;
 import java.util.*;
 import com.google.common.collect.ImmutableList;
 import net.corda.core.serialization.ConstructorForDeserialization;
+import net.corda.core.contracts.BelongsToContract;
 import net.corda.finance.Currencies;
 import org.accordproject.promissorynote.PromissoryNoteContract;
 import org.accordproject.usa.business.BusinessEntity;
