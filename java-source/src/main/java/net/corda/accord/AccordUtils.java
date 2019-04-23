@@ -48,7 +48,7 @@ public class AccordUtils {
         if (System.getenv("CORDAPP_ROOT") != null) {
             root = System.getenv("CORDAPP_ROOT");
         } else {
-            root = "./src/main";
+            root = "../";
         }
         
         String[] command = {"./scripts/cicero-parse.sh",  "./node_modules/promissory-note", "./contract.txt"};
