@@ -1,9 +1,6 @@
 package net.corda.accord.state;
 
-import net.corda.core.contracts.Amount;
-import net.corda.core.contracts.ContractState;
-import net.corda.core.contracts.LinearState;
-import net.corda.core.contracts.UniqueIdentifier;
+import net.corda.core.contracts.*;
 import net.corda.core.identity.Party;
 import net.corda.core.identity.AbstractParty;
 import java.util.*;

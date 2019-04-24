@@ -35,7 +35,6 @@ public class NodeDriver{
         driver(new DriverParameters()
                 .withIsDebug(true)
                 .withWaitForAllNodesToFinish(true)
-                .withExtraCordappPackagesToScan(ImmutableList.of("net.corda.finance", "net.corda.accord"))
                 .withNotarySpecs(Arrays.asList(new NotarySpec(new CordaX500Name("Notary", "London","GB"), true,  Arrays.asList(user), VerifierType.InMemory, null))), dsl -> {
             CordaFuture<NodeHandle> partyAFuture = dsl.startNode(new NodeParameters()
                     .withProvidedName(new CordaX500Name("ParticipantA", "London", "GB"))

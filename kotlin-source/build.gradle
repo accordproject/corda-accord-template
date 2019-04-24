@@ -35,7 +35,8 @@ dependencies {
 
     // Corda integration dependencies
     cordaCompile "$corda_release_distribution:corda-core:$corda_release_version"
-    cordaCompile "$corda_release_distribution:corda-finance:$corda_release_version"
+    cordaCompile "$corda_release_distribution:corda-finance-contracts:$corda_release_version"
+    cordaCompile "$corda_release_distribution:corda-finance-workflows:$corda_release_version"
     cordaCompile "$corda_release_distribution:corda-jackson:$corda_release_version"
     cordaCompile "$corda_release_distribution:corda-rpc:$corda_release_version"
     cordaCompile "$corda_release_distribution:corda-node-api:$corda_release_version"
@@ -55,7 +56,8 @@ dependencies {
 
     // CorDapp dependencies
     // Specify your cordapp's dependencies below, including dependent cordapps
-    cordapp "$corda_release_distribution:corda-finance:$corda_release_version"
+    cordapp "$corda_release_distribution:corda-finance-contracts:$corda_release_version"
+    cordapp "$corda_release_distribution:corda-finance-workflows:$corda_release_version"
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
@@ -85,7 +87,6 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         name "O=Notary,L=London,C=GB"
         notary = [validating: false]
         p2pPort 10002
-        cordapps = ["$corda_release_distribution:corda-finance:$corda_release_version"]
         rpcSettings {
             useSsl false
             standAloneBroker false
@@ -97,7 +98,6 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         name "O=ParticipantA,L=London,C=GB"
         p2pPort 10007
         webPort 10009
-        cordapps = ["$corda_release_distribution:corda-finance:$corda_release_version"]
         rpcSettings {
             useSsl false
             standAloneBroker false
@@ -110,7 +110,6 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         name "O=ParticipantB,L=New York,C=US"
         p2pPort 10010
         webPort 10012
-        cordapps = ["$corda_release_distribution:corda-finance:$corda_release_version"]
         rpcSettings {
             useSsl false
             standAloneBroker false
@@ -123,7 +122,6 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         name "O=ParticipantC,L=Paris,C=FR"
         p2pPort 10013
         webPort 10015
-        cordapps = ["$corda_release_distribution:corda-finance:$corda_release_version"]
         rpcSettings {
             useSsl false
             standAloneBroker false
