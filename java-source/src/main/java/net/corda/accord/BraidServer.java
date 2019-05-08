@@ -3,6 +3,7 @@ package net.corda.accord;
 import io.bluebank.braid.corda.BraidConfig;
 import io.vertx.core.http.HttpServerOptions;
 import net.corda.accord.flow.PromissoryNoteIssueFlow;
+import net.corda.accord.flow.PromissoryNoteIssueJSONFlow;
 import net.corda.core.node.AppServiceHub;
 import net.corda.core.node.ServiceHub;
 import net.corda.core.node.services.CordaService;
@@ -18,6 +19,7 @@ public class BraidServer extends SingletonSerializeAsToken {
 
         new BraidConfig()
                 .withFlow("PromissoryNoteIssueFlow", PromissoryNoteIssueFlow.InitiatorFlow.class)
+                .withFlow("PromissoryNoteIssueJSONFlow", PromissoryNoteIssueJSONFlow.InitiatorFlow.class)
                 .withService("PromissoryNotesInterface", new BraidService(appServiceHub))
                 .withPort((Integer) serviceHub.getAppContext().getConfig().get("braid"))
                 .withHttpServerOptions(new HttpServerOptions().setSsl(false))
