@@ -1,7 +1,7 @@
 {
   "devDependencies": {
-    "@accordproject/cicero-core": "0.12.0",
-    "@accordproject/cicero-cli": "0.12.0",
+    "@accordproject/cicero-core": "0.12.2",
+    "@accordproject/cicero-cli": "0.12.2",
     "promissory-note": "file:./promissory-note.0.11.1.tar.gz"
   },
   "scripts": {
