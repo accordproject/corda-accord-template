@@ -28,7 +28,7 @@ public class PromissoryNoteIssueFlowTests {
 
     @Before
     public void setup() {
-        MockNetworkParameters mockNetworkParameters = new MockNetworkParameters(Arrays.asList(TestCordapp.findCordapp("net.corda.accord"), TestCordapp.findCordapp("net.corda.finance.contracts"), TestCordapp.findCordapp("net.corda.finance.workflows")))
+        MockNetworkParameters mockNetworkParameters = new MockNetworkParameters(Arrays.asList(TestCordapp.findCordapp("net.corda.accord")))
                 .withNotarySpecs(Arrays.asList(new MockNetworkNotarySpec(new CordaX500Name("Notary", "London", "GB"))));
         mockNetwork = new MockNetwork(mockNetworkParameters);
 
