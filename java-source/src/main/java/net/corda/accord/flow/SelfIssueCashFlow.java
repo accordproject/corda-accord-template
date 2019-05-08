@@ -8,9 +8,7 @@ import net.corda.core.transactions.SignedTransaction;
 import net.corda.core.utilities.OpaqueBytes;
 import net.corda.finance.contracts.asset.Cash;
 import net.corda.finance.flows.CashIssueFlow;
-import org.intellij.lang.annotations.Flow;
 
-import javax.annotation.Signed;
 import java.util.Currency;
 
 public class SelfIssueCashFlow extends FlowLogic<Cash.State> {

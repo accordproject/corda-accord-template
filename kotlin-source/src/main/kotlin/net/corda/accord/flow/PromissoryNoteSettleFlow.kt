@@ -15,11 +15,10 @@ import net.corda.core.transactions.SignedTransaction
 import net.corda.core.transactions.TransactionBuilder
 import net.corda.core.utilities.OpaqueBytes
 import net.corda.finance.contracts.asset.Cash
+import net.corda.finance.contracts.getCashBalance
 import net.corda.finance.flows.CashIssueFlow
 import net.corda.accord.contract.PromissoryNoteContract
 import net.corda.accord.state.PromissoryNoteState
-import net.corda.finance.workflows.asset.CashUtils.generateSpend
-import net.corda.finance.workflows.getCashBalance
 import java.lang.IllegalArgumentException
 import java.util.*
 
@@ -67,7 +66,7 @@ class PromissoryNoteSettleFlow(val linearId: UniqueIdentifier, val amount: Amoun
         val tx = tb.withItems(stateAndRefToSettle, StateAndContract(settledState, PromissoryNoteContract.IOU_CONTRACT_ID))
 
         //generateSpend(services, tx, amount, to, ourIdentity, onlyFromParties
-        generateSpend(serviceHub, tx, amount, ourIdentityAndCert, settledState.lender, setOf(ourIdentity))
+        Cash.generateSpend(serviceHub, tx, amount, ourIdentityAndCert, settledState.lender, setOf(ourIdentity))
 
         val ptx = serviceHub.signInitialTransaction(tx)
 

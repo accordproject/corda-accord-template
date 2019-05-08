@@ -1,5 +1,6 @@
 package net.corda.accord.state;
 
+import net.corda.accord.contract.PromissoryNoteCordaContract;
 import net.corda.core.contracts.*;
 import net.corda.core.identity.Party;
 import net.corda.core.identity.AbstractParty;
@@ -7,10 +8,7 @@ import java.util.*;
 import com.google.common.collect.ImmutableList;
 import net.corda.core.serialization.ConstructorForDeserialization;
 import net.corda.core.contracts.BelongsToContract;
-import net.corda.finance.Currencies;
 import org.accordproject.promissorynote.PromissoryNoteContract;
-import org.accordproject.usa.business.BusinessEntity;
-import org.accordproject.money.MonetaryAmount;
 
 /**
  * The data in this state is parsed from a source legal document using Cicero. Where necessary, classes have been manually converted from Accord Project classes
@@ -18,7 +16,7 @@ import org.accordproject.money.MonetaryAmount;
  * to be included as part of state data.
  */
 
-@BelongsToContract(net.corda.accord.contract.PromissoryNoteContract.class)
+@BelongsToContract(PromissoryNoteCordaContract.class)
 public class PromissoryNoteState implements ContractState, LinearState {
 
     // TODO: `amount` and `principal` are both included in parsedJSON as a accord-project monetary amount. They must be converted to the Corda Amount<Currency> class.

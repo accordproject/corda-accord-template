@@ -87,7 +87,7 @@ public class PromissoryNoteTransferFlowTests {
 //        PromissoryNoteState outputIOU = (PromissoryNoteState) ptx.getTx().getOutput(0);
 //        Command command = ptx.getTx().getCommands().get(0);
 //
-//        assert (command.getValue().equals(new PromissoryNoteContract.Commands.Transfer()));
+//        assert (command.getValue().equals(new PromissoryNoteCordaContract.Commands.Transfer()));
 //        ptx.verifySignaturesExcept(b.getInfo().getLegalIdentities().get(0).getOwningKey(), c.getInfo().getLegalIdentities().get(0).getOwningKey(), mockNetwork.getDefaultNotaryIdentity().getOwningKey());
 //    }
 

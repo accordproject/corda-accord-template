@@ -9,7 +9,8 @@ import net.corda.finance.*
 import net.corda.testing.internal.chooseIdentityAndCert
 import net.corda.testing.node.*
 import net.corda.accord.contract.PromissoryNoteContract
-import net.corda.accord.state.IOUState
+import net.corda.accord.state.PromissoryNoteState
+import net.corda.core.utilities.getOrThrow
 import org.junit.*
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -35,7 +36,7 @@ class PromissoryNoteIssueFlowTests {
         b = mockNetwork.createNode(MockNodeParameters())
         val startedNodes = arrayListOf(a, b)
         // For real nodes this happens automatically, but we have to manually register the flow for tests
-        startedNodes.forEach { it.registerInitiatedFlow(IOUIssueFlowResponder::class.java) }
+        startedNodes.forEach { it.registerInitiatedFlow(PromissoryNoteIssueFlowResponder::class.java) }
         mockNetwork.runNetwork()
     }
 
@@ -46,8 +47,8 @@ class PromissoryNoteIssueFlowTests {
 
     /**
      * Task 1.
-     * Build out the [IOUIssueFlow]!
-     * TODO: Implement the [IOUIssueFlow] flow which builds and returns a partially [SignedTransaction].
+     * Build out the [PromissoryNoteIssueFlow]!
+     * TODO: Implement the [PromissoryNoteIssueFlow] flow which builds and returns a partially [SignedTransaction].
      * Hint:
      * - There's a lot to do to get this unit test to pass!
      * - Create a [TransactionBuilder] and pass it a notary reference.
@@ -56,7 +57,7 @@ class PromissoryNoteIssueFlowTests {
      * - Create an [PromissoryNoteContract.Commands.Issue] inside a new [Command].
      * -- The required signers will be the same as the state's participants
      * -- Add the [Command] to the transaction builder [addCommand].
-     * - Use the flow's [IOUState] parameter as the output state with [addOutputState]
+     * - Use the flow's [PromissoryNoteState] parameter as the output state with [addOutputState]
      * - Extra credit: use [TransactionBuilder.withItems] to create the transaction instead
      * - Sign the transaction and convert it to a [SignedTransaction] using the [serviceHub.signInitialTransaction] method.
      * - Return the [SignedTransaction].
@@ -65,18 +66,18 @@ class PromissoryNoteIssueFlowTests {
     fun flowReturnsCorrectlyFormedPartiallySignedTransaction() {
         val lender = a.info.chooseIdentityAndCert().party
         val borrower = b.info.chooseIdentityAndCert().party
-        val iou = IOUState(10.POUNDS, lender, borrower)
-        val flow = IOUIssueFlow(iou)
+        val iou = PromissoryNoteState(10.POUNDS, lender, borrower)
+        val flow = PromissoryNoteIssueFlow(iou)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()
-        // Return the unsigned(!) SignedTransaction object from the IOUIssueFlow.
+        // Return the unsigned(!) SignedTransaction object from the PromissoryNoteIssueFlow.
         val ptx: SignedTransaction = future.getOrThrow()
         // Print the transaction for debugging purposes.
         println(ptx.tx)
         // Check the transaction is well formed...
-        // No outputs, one input IOUState and a command with the right properties.
+        // No outputs, one input PromissoryNoteState and a command with the right properties.
         assert(ptx.tx.inputs.isEmpty())
-        assert(ptx.tx.outputs.single().data is IOUState)
+        assert(ptx.tx.outputs.single().data is PromissoryNoteState)
         val command = ptx.tx.commands.single()
         assert(command.value is PromissoryNoteContract.Commands.Issue)
         assert(command.signers.toSet() == iou.participants.map { it.owningKey }.toSet())
@@ -87,27 +88,27 @@ class PromissoryNoteIssueFlowTests {
     /**
      * Task 2.
      * Now we have a well formed transaction, we need to properly verify it using the [PromissoryNoteContract].
-     * TODO: Amend the [IOUIssueFlow] to verify the transaction as well as sign it.
+     * TODO: Amend the [PromissoryNoteIssueFlow] to verify the transaction as well as sign it.
      * Hint: You can verify on the builder directly prior to finalizing the transaction. This way
      * you can confirm the transaction prior to making it immutable with the signature.
      */
     @Test
     fun flowReturnsVerifiedPartiallySignedTransaction() {
-        // Check that a zero amount IOU fails.
+        // Check that a zero amount PromissoryNote fails.
         val lender = a.info.chooseIdentityAndCert().party
         val borrower = b.info.chooseIdentityAndCert().party
-        val zeroIou = IOUState(0.POUNDS, lender, borrower)
-        val futureOne = a.startFlow(IOUIssueFlow(zeroIou))
+        val zeroIou = PromissoryNoteState(0.POUNDS, lender, borrower)
+        val futureOne = a.startFlow(PromissoryNoteIssueFlow(zeroIou))
         mockNetwork.runNetwork()
         assertFailsWith<TransactionVerificationException> { futureOne.getOrThrow() }
-        // Check that an IOU with the same participants fails.
-        val borrowerIsLenderIou = IOUState(10.POUNDS, lender, lender)
-        val futureTwo = a.startFlow(IOUIssueFlow(borrowerIsLenderIou))
+        // Check that an PromissoryNote with the same participants fails.
+        val borrowerIsLenderIou = PromissoryNoteState(10.POUNDS, lender, lender)
+        val futureTwo = a.startFlow(PromissoryNoteIssueFlow(borrowerIsLenderIou))
         mockNetwork.runNetwork()
         assertFailsWith<TransactionVerificationException> { futureTwo.getOrThrow() }
-        // Check a good IOU passes.
-        val iou = IOUState(10.POUNDS, lender, borrower)
-        val futureThree = a.startFlow(IOUIssueFlow(iou))
+        // Check a good PromissoryNote passes.
+        val iou = PromissoryNoteState(10.POUNDS, lender, borrower)
+        val futureThree = a.startFlow(PromissoryNoteIssueFlow(iou))
         mockNetwork.runNetwork()
         futureThree.getOrThrow()
     }
@@ -116,7 +117,7 @@ class PromissoryNoteIssueFlowTests {
      * IMPORTANT: Review the [CollectSignaturesFlow] before continuing here.
      * Task 3.
      * Now we need to collect the signature from the [otherParty] using the [CollectSignaturesFlow].
-     * TODO: Amend the [IOUIssueFlow] to collect the [otherParty]'s signature.
+     * TODO: Amend the [PromissoryNoteIssueFlow] to collect the [otherParty]'s signature.
      * Hint:
      * On the Initiator side:
      * - Get a set of signers required from the participants who are not the node
@@ -141,8 +142,8 @@ class PromissoryNoteIssueFlowTests {
     fun flowReturnsTransactionSignedByBothParties() {
         val lender = a.info.chooseIdentityAndCert().party
         val borrower = b.info.chooseIdentityAndCert().party
-        val iou = IOUState(10.POUNDS, lender, borrower)
-        val flow = IOUIssueFlow(iou)
+        val iou = PromissoryNoteState(10.POUNDS, lender, borrower)
+        val flow = PromissoryNoteIssueFlow(iou)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()
         val stx = future.getOrThrow()
@@ -152,7 +153,7 @@ class PromissoryNoteIssueFlowTests {
     /**
      * Task 4.
      * Now we need to store the finished [SignedTransaction] in both counter-party vaults.
-     * TODO: Amend the [IOUIssueFlow] by adding a call to [FinalityFlow].
+     * TODO: Amend the [PromissoryNoteIssueFlow] by adding a call to [FinalityFlow].
      * Hint:
      * - As mentioned above, use the [FinalityFlow] to ensure the transaction is recorded in both [Party] vaults.
      * - Do not use the [BroadcastTransactionFlow]!
@@ -165,8 +166,8 @@ class PromissoryNoteIssueFlowTests {
     fun flowRecordsTheSameTransactionInBothPartyVaults() {
         val lender = a.info.chooseIdentityAndCert().party
         val borrower = b.info.chooseIdentityAndCert().party
-        val iou = IOUState(10.POUNDS, lender, borrower)
-        val flow = IOUIssueFlow(iou)
+        val iou = PromissoryNoteState(10.POUNDS, lender, borrower)
+        val flow = PromissoryNoteIssueFlow(iou)
         val future = a.startFlow(flow)
         mockNetwork.runNetwork()
         val stx = future.getOrThrow()

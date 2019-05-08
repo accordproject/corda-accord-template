@@ -25,11 +25,11 @@ public class PromissoryNoteIssueTests {
      * public keys as parameters which correspond to the required signers for the transaction.
      * Commands also become more important later on when multiple actions are possible with an PromissoryNoteState, e.g. Transfer
      * and Settle.
-     * TODO: Add an "Issue" command to the PromissoryNoteContract and check for the existence of the command in the verify function.
+     * TODO: Add an "Issue" command to the PromissoryNoteCordaContract and check for the existence of the command in the verify function.
      * Hint:
      * - For the Issue command we only care about the existence of it in a transaction, therefore it should extend
      *   the {@link TypeOnlyCommandData} class.
-     * - The command should be defined inside {@link PromissoryNoteContract}.
+     * - The command should be defined inside {@link PromissoryNoteCordaContract}.
      * - We usually encapsulate our commands in an interface inside the contract class called {@link Commands} which
      *   extends the {@link CommandData} interface. The Issue command itself should be defined inside the {@link Commands}
      *   interface as well as implement it, for example:
@@ -38,7 +38,7 @@ public class PromissoryNoteIssueTests {
      *      class X extends TypeOnlyCommandData implements Commands{}
      *   }
      *
-     * - We can check for the existence of any command that implements [PromissoryNoteContract.Commands] by using the
+     * - We can check for the existence of any command that implements [PromissoryNoteCordaContract.Commands] by using the
      *   [requireSingleCommand] function which takes a {@link Class} argument.
      * - You can use the [requireSingleCommand] function on [tx.getCommands()] to check for the existence and type of the specified command
      *   in the transaction. [requireSingleCommand] requires a Class argument to identify the type of command required.
@@ -51,13 +51,13 @@ public class PromissoryNoteIssueTests {
 //
 //        ledger(ledgerServices, l -> {
 //            l.transaction(tx -> {
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
 //                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new Commands.DummyCommand()); // Wrong type.
 //                return tx.failsWith("Contract verification failed");
 //            });
 //            l.transaction(tx -> {
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteContract.Commands.Issue()); // Correct type.
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
+//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteCordaContract.Commands.Issue()); // Correct type.
 //                return tx.verifies();
 //            });
 //            return null;
@@ -69,7 +69,7 @@ public class PromissoryNoteIssueTests {
      * As previously observed, issue transactions should not have any input state references. Therefore we must check to
      * ensure that no input states are included in a transaction to issue an IOU.
      * TODO: Write a contract constraint that ensures a transaction to issue an IOU does not include any input states.
-     * Hint: use a [requireThat] lambda with a constraint to inside the [PromissoryNoteContract.verify] function to encapsulate your
+     * Hint: use a [requireThat] lambda with a constraint to inside the [PromissoryNoteCordaContract.verify] function to encapsulate your
      * constraints:
      *
      *     requireThat(requirement -> {
@@ -82,7 +82,7 @@ public class PromissoryNoteIssueTests {
      * defined with your contract constraints. If not then the unit test will fail!
      *
      * You can access the list of inputs via the {@link LedgerTransaction} object which is passed into
-     * [PromissoryNoteContract.verify].
+     * [PromissoryNoteCordaContract.verify].
      */
 //    @Test
 //    public void issueTransactionMustHaveNoInputs() {
@@ -90,14 +90,14 @@ public class PromissoryNoteIssueTests {
 //
 //        ledger(ledgerServices, l -> {
 //            l.transaction(tx -> {
-//                tx.input(PromissoryNoteContract.IOU_CONTRACT_ID, new DummyState());
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteContract.Commands.Issue());
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
+//                tx.input(PromissoryNoteCordaContract.IOU_CONTRACT_ID, new DummyState());
+//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteCordaContract.Commands.Issue());
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
 //                return tx.failsWith("No inputs should be consumed when issuing an IOU");
 //            });
 //            l.transaction(tx -> {
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteContract.Commands.Issue());
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
+//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteCordaContract.Commands.Issue());
 //                return tx.verifies(); // As there are no input sates
 //            });
 //            return null;
@@ -116,14 +116,14 @@ public class PromissoryNoteIssueTests {
 //        PromissoryNoteState iou = new PromissoryNoteState(Currencies.POUNDS(1), ALICE.getParty(), BOB.getParty());
 //        ledger(ledgerServices, l -> {
 //            l.transaction(tx -> {
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteContract.Commands.Issue());
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou); // Two outputs fails.
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
+//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteCordaContract.Commands.Issue());
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou); // Two outputs fails.
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
 //                return tx.failsWith("Only one output state should be created when issuing an IOU.");
 //            });
 //            l.transaction(tx -> {
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteContract.Commands.Issue());
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou); // One output passes.
+//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteCordaContract.Commands.Issue());
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou); // One output passes.
 //                return tx.verifies();
 //            });
 //            return null;
@@ -151,23 +151,23 @@ public class PromissoryNoteIssueTests {
 //    public void cannotCreateZeroValueIOUs() {
 //        ledger(ledgerServices, l -> {
 //            l.transaction(tx -> {
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteContract.Commands.Issue());
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, new PromissoryNoteState(Currencies.POUNDS(0), ALICE.getParty(), BOB.getParty())); // Zero amount fails.
+//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteCordaContract.Commands.Issue());
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, new PromissoryNoteState(Currencies.POUNDS(0), ALICE.getParty(), BOB.getParty())); // Zero amount fails.
 //                return tx.failsWith("A newly issued IOU must have a positive amount.");
 //            });
 //            l.transaction(tx -> {
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteContract.Commands.Issue());
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, new PromissoryNoteState(Currencies.SWISS_FRANCS(100), ALICE.getParty(), BOB.getParty()));
+//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteCordaContract.Commands.Issue());
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, new PromissoryNoteState(Currencies.SWISS_FRANCS(100), ALICE.getParty(), BOB.getParty()));
 //                return tx.verifies();
 //            });
 //            l.transaction(tx -> {
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteContract.Commands.Issue());
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, new PromissoryNoteState(Currencies.POUNDS(1), ALICE.getParty(), BOB.getParty()));
+//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteCordaContract.Commands.Issue());
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, new PromissoryNoteState(Currencies.POUNDS(1), ALICE.getParty(), BOB.getParty()));
 //                return tx.verifies();
 //            });
 //            l.transaction(tx -> {
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteContract.Commands.Issue());
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, new PromissoryNoteState(Currencies.DOLLARS(10), ALICE.getParty(), BOB.getParty()));
+//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteCordaContract.Commands.Issue());
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, new PromissoryNoteState(Currencies.DOLLARS(10), ALICE.getParty(), BOB.getParty()));
 //                return tx.verifies();
 //            });
 //            return null;
@@ -188,13 +188,13 @@ public class PromissoryNoteIssueTests {
 //        PromissoryNoteState borrowerIsLenderIou = new PromissoryNoteState(Currencies.POUNDS(10), ALICE.getParty(), ALICE.getParty());
 //        ledger(ledgerServices, l-> {
 //            l.transaction(tx -> {
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteContract.Commands.Issue());
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, borrowerIsLenderIou);
+//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteCordaContract.Commands.Issue());
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, borrowerIsLenderIou);
 //                return tx.failsWith("The lender and borrower cannot have the same identity.");
 //            });
 //            l.transaction(tx -> {
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteContract.Commands.Issue());
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
+//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteCordaContract.Commands.Issue());
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
 //                return tx.verifies();
 //            });
 //            return null;
@@ -230,38 +230,38 @@ public class PromissoryNoteIssueTests {
 //        PromissoryNoteState iou = new PromissoryNoteState(Currencies.POUNDS(1), ALICE.getParty(), BOB.getParty());
 //        ledger(ledgerServices, l->{
 //            l.transaction(tx-> {
-//                tx.command(DUMMY.getPublicKey(),  new PromissoryNoteContract.Commands.Issue());
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
+//                tx.command(DUMMY.getPublicKey(),  new PromissoryNoteCordaContract.Commands.Issue());
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
 //                return tx.failsWith("Both lender and borrower together only may sign IOU issue transaction.");
 //            });
 //            l.transaction(tx-> {
-//                tx.command(ALICE.getPublicKey(),  new PromissoryNoteContract.Commands.Issue());
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
+//                tx.command(ALICE.getPublicKey(),  new PromissoryNoteCordaContract.Commands.Issue());
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
 //                return tx.failsWith("Both lender and borrower together only may sign IOU issue transaction.");
 //            });
 //            l.transaction(tx-> {
-//                tx.command(BOB.getPublicKey(),  new PromissoryNoteContract.Commands.Issue());
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
+//                tx.command(BOB.getPublicKey(),  new PromissoryNoteCordaContract.Commands.Issue());
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
 //                return tx.failsWith("Both lender and borrower together only may sign IOU issue transaction.");
 //            });
 //            l.transaction(tx-> {
-//                tx.command(Arrays.asList(BOB.getPublicKey(), BOB.getPublicKey(), BOB.getPublicKey()),  new PromissoryNoteContract.Commands.Issue());
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
+//                tx.command(Arrays.asList(BOB.getPublicKey(), BOB.getPublicKey(), BOB.getPublicKey()),  new PromissoryNoteCordaContract.Commands.Issue());
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
 //                return tx.failsWith("Both lender and borrower together only may sign IOU issue transaction.");
 //            });
 //            l.transaction(tx-> {
-//                tx.command(Arrays.asList(BOB.getPublicKey(), BOB.getPublicKey(), MINICORP.getPublicKey(), ALICE.getPublicKey()),  new PromissoryNoteContract.Commands.Issue());
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
+//                tx.command(Arrays.asList(BOB.getPublicKey(), BOB.getPublicKey(), MINICORP.getPublicKey(), ALICE.getPublicKey()),  new PromissoryNoteCordaContract.Commands.Issue());
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
 //                return tx.failsWith("Both lender and borrower together only may sign IOU issue transaction.");
 //            });
 //            l.transaction(tx-> {
-//                tx.command(Arrays.asList(BOB.getPublicKey(), BOB.getPublicKey(), BOB.getPublicKey(), ALICE.getPublicKey()),  new PromissoryNoteContract.Commands.Issue());
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
+//                tx.command(Arrays.asList(BOB.getPublicKey(), BOB.getPublicKey(), BOB.getPublicKey(), ALICE.getPublicKey()),  new PromissoryNoteCordaContract.Commands.Issue());
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
 //                return tx.verifies();
 //            });
 //            l.transaction(tx-> {
-//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteContract.Commands.Issue());
-//                tx.output(PromissoryNoteContract.IOU_CONTRACT_ID, iou);
+//                tx.command(Arrays.asList(ALICE.getPublicKey(), BOB.getPublicKey()), new PromissoryNoteCordaContract.Commands.Issue());
+//                tx.output(PromissoryNoteCordaContract.IOU_CONTRACT_ID, iou);
 //                return tx.verifies();
 //            });
 //            return null;

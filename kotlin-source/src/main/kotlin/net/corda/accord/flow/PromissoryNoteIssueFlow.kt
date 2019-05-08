@@ -52,8 +52,6 @@ class PromissoryNoteIssueFlow(val state: PromissoryNoteState) : FlowLogic<Signed
 
         val listOfFlows = (state.participants - ourIdentity).map{ it -> initiateFlow(it) }.toSet()
 
-        System.out.println(listOfFlows)
-
         val fullySignedTransaction = subFlow(CollectSignaturesFlow(partiallySignedTransaction, listOfFlows))
 
         return subFlow(FinalityFlow(fullySignedTransaction))

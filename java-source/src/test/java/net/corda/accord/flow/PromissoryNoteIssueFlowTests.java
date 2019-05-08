@@ -1,6 +1,6 @@
 package net.corda.accord.flow;
 
-import net.corda.accord.contract.PromissoryNoteContract;
+import net.corda.accord.contract.PromissoryNoteCordaContract;
 import net.corda.accord.state.PromissoryNoteState;
 import net.corda.core.contracts.Command;
 import net.corda.core.identity.CordaX500Name;
@@ -24,6 +24,7 @@ import static net.corda.accord.TestUtils.*;
 public class PromissoryNoteIssueFlowTests {
     private MockNetwork mockNetwork;
     private StartedMockNode a, b;
+
 
     @Before
     public void setup() {
@@ -93,7 +94,7 @@ public class PromissoryNoteIssueFlowTests {
         assert (ptx.getTx().getOutputs().get(0).getData() instanceof PromissoryNoteState);
 
         Command command = ptx.getTx().getCommands().get(0);
-        assert (command.getValue() instanceof PromissoryNoteContract.Commands.Issue);
+        assert (command.getValue() instanceof PromissoryNoteCordaContract.Commands.Issue);
         assert (new HashSet<>(command.getSigners()).equals(
                 new HashSet<>(outputState.getParticipants()
                         .stream().map(el -> el.getOwningKey())
@@ -105,7 +106,7 @@ public class PromissoryNoteIssueFlowTests {
 
     /**
      * Task 2.
-     * Now we have a well formed transaction, we need to properly verify it using the {@link PromissoryNoteContract}.
+     * Now we have a well formed transaction, we need to properly verify it using the {@link PromissoryNoteCordaContract}.
      * TODO: Amend the {@link PromissoryNoteIssueFlow} to verify the transaction as well as sign it.
      * Hint: You can verify on the builder directly prior to finalizing the transaction. This way
      * you can confirm the transaction prior to making it immutable with the signature.

@@ -84,5 +84,5 @@ In the Corda shell:
 
 ### Issue a Flow from the Corda shell
 
-To initiate the contract: `flow start PromissoryNoteIssueFlow lender: ParticipantA, maker: ParticipantB`
+To initiate the contract: `flow start PromissoryNoteIssueFlow`
 

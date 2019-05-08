@@ -3,8 +3,6 @@ package net.corda.accord.flow;
 import co.paralleluniverse.fibers.Suspendable;
 
 import java.io.*;
-import java.lang.reflect.Array;
-import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,7 +10,7 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.corda.accord.AccordUtils;
-import net.corda.accord.contract.PromissoryNoteContract;
+import net.corda.accord.contract.PromissoryNoteCordaContract;
 import net.corda.accord.state.PromissoryNoteState;
 import net.corda.core.contracts.Command;
 import net.corda.core.contracts.CommandData;
@@ -27,6 +25,7 @@ import static net.corda.core.contracts.ContractsDSL.requireThat;
 import net.corda.core.utilities.ProgressTracker;
 import net.corda.core.utilities.ProgressTracker.Step;
 
+import org.accordproject.promissorynote.PromissoryNoteContract;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -37,6 +36,7 @@ public class PromissoryNoteIssueFlow {
 
     @InitiatingFlow
     @StartableByRPC
+	@StartableByService
     public static class InitiatorFlow extends FlowLogic<SignedTransaction> {
 
 		/** TODO: Enable the user to specify the file path for the promissory note template
@@ -102,7 +102,7 @@ public class PromissoryNoteIssueFlow {
 				String jsonData = IOUtils.toString(dataFromContract, "UTF-8");
 				ObjectMapper objectMapper = new ObjectMapper();
 				progressTracker.setCurrentStep(PARSING_LEGALESE);
-				org.accordproject.promissorynote.PromissoryNoteContract parsedContractData = objectMapper.readValue(jsonData, org.accordproject.promissorynote.PromissoryNoteContract.class);
+				PromissoryNoteContract parsedContractData = objectMapper.readValue(jsonData, org.accordproject.promissorynote.PromissoryNoteContract.class);
 
 				// Get the relevant Corda parties from the network map using parsed contract data.
 				Party maker = getServiceHub().getNetworkMapCache().getPeerByLegalName(new CordaX500Name(parsedContractData.getMaker(), "NY", "US"));
@@ -122,7 +122,7 @@ public class PromissoryNoteIssueFlow {
             // Remember that a command is a CommandData object and a list of CompositeKeys
 			progressTracker.setCurrentStep(TX_BUILDING);
 
-			CommandData commandData = new PromissoryNoteContract.Commands.Issue();
+			CommandData commandData = new PromissoryNoteCordaContract.Commands.Issue();
 			final Command issueCommand = new Command(
                     commandData,
 					new ArrayList(Arrays.asList( state.lenderCordaParty.getOwningKey(), state.makerCordaParty.getOwningKey()))
@@ -132,7 +132,7 @@ public class PromissoryNoteIssueFlow {
             final TransactionBuilder builder = new TransactionBuilder(notary);
 
             // Step 4. Add the iou as an output state, as well as a command to the transaction builder.
-            builder.addOutputState(state, PromissoryNoteContract.PROMISSORY_NOTE_CONTRACT_ID);
+            builder.addOutputState(state, PromissoryNoteCordaContract.PROMISSORY_NOTE_CONTRACT_ID);
             builder.addCommand(issueCommand);
 
 			// Step 5. Add the contract to the transaction

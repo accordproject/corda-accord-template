@@ -4,7 +4,7 @@ import net.corda.core.contracts.*
 import net.corda.core.transactions.LedgerTransaction
 import net.corda.finance.contracts.asset.Cash
 import net.corda.accord.state.PromissoryNoteState
-import net.corda.finance.contracts.utils.sumCash
+import net.corda.finance.utils.sumCash
 import java.security.PublicKey
 
 /**
@@ -60,9 +60,6 @@ class PromissoryNoteContract : Contract {
                 "Only the lender property may change." using (checkOutputState.withNewLender(checkInputState.lender) == checkInputState)
                 "The lender property must change in a transfer." using (checkOutputState.lender != checkInputState.lender)
                 val listOfPublicKeys = listOf(checkInputState.lender.owningKey, checkInputState.borrower.owningKey, checkOutputState.lender.owningKey)
-                System.out.println("HEYLOOKFORMEWHYDON'TYA")
-                System.out.println(command.signers)
-                System.out.println(command.signers.size)
                 "The borrower, old lender and new lender only must sign an IOU transfer transaction" using (command.signers.containsAll(listOfPublicKeys) && command.signers.size == 3)
             }
 
