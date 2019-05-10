@@ -23,5 +23,4 @@ public class BraidServer extends SingletonSerializeAsToken {
                 .withHttpServerOptions(new HttpServerOptions().setSsl(false))
                 .bootstrapBraid(appServiceHub, asyncResult -> System.out.println(asyncResult.result()));
     }
-
 }

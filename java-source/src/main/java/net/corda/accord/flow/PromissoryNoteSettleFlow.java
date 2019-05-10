@@ -23,7 +23,7 @@ import java.io.*;
 import java.lang.IllegalArgumentException;
 
 import static net.corda.core.contracts.ContractsDSL.requireThat;
-import static net.corda.finance.contracts.GetBalances.getCashBalance;
+import static net.corda.finance.workflows.GetBalances.getCashBalance;
 
 import java.util.ArrayList;
 import java.util.Currency;
