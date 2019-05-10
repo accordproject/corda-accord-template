@@ -31,8 +31,7 @@ import java.security.PublicKey
 @InitiatingFlow
 @StartableByRPC
 @StartableByService
-class PromissoryNoteIssueFlow : FlowLogic<SignedTransaction>() {
-
+class PromissoryNoteIssueJSONFlow : FlowLogic<SignedTransaction>() {
 
     /** TODO: Enable the user to specify the file path for the promissory note template
      * TODO: Adjust the cicero-parse command to include an option on only return the JSON with no initial messaging
@@ -167,8 +166,8 @@ class PromissoryNoteIssueFlow : FlowLogic<SignedTransaction>() {
  * This is the flow which signs IOU issuances.
  * The signing is handled by the [SignTransactionFlow].
  */
-@InitiatedBy(PromissoryNoteIssueFlow::class)
-class PromissoryNoteIssueResponderFlow(private val flowSession: FlowSession) : FlowLogic<SignedTransaction>() {
+@InitiatedBy(PromissoryNoteIssueJSONFlow::class)
+class PromissoryNoteIssueJSONResponderFlow(private val flowSession: FlowSession) : FlowLogic<SignedTransaction>() {
 
     @Suspendable
     override fun call(): SignedTransaction {

@@ -5,7 +5,6 @@ import io.vertx.core.http.HttpServerOptions;
 import net.corda.accord.flow.PromissoryNoteIssueFlow;
 import net.corda.accord.flow.PromissoryNoteIssueJSONFlow;
 import net.corda.core.node.AppServiceHub;
-import net.corda.core.node.ServiceHub;
 import net.corda.core.node.services.CordaService;
 import net.corda.core.serialization.SingletonSerializeAsToken;
 

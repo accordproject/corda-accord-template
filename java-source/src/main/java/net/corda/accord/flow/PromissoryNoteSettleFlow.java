@@ -85,7 +85,6 @@ public class PromissoryNoteSettleFlow {
             // 5. Get some cash from the vault and add a spend to our transaction builder.
 //            Cash.generateSpend(tb, amount, inputStateToSettle.lenderCordaParty, ImmutableSet.of()).getSecond();
 
-
             // 6.
             Command<PromissoryNoteCordaContract.Commands.Settle> command = new Command<>(
                     new PromissoryNoteCordaContract.Commands.Settle(),

@@ -121,7 +121,6 @@ public class PromissoryNoteIssueFlow {
             // Step 2. Create a new issue command.
             // Remember that a command is a CommandData object and a list of CompositeKeys
 			progressTracker.setCurrentStep(TX_BUILDING);
-
 			CommandData commandData = new PromissoryNoteCordaContract.Commands.Issue();
 			final Command issueCommand = new Command(
                     commandData,
@@ -214,8 +213,6 @@ public class PromissoryNoteIssueFlow {
 					txWeJustSigned = stx.getId();
 				}
 			}
-
-			flowSession.getCounterpartyFlowInfo().getFlowVersion();
 
 			// Create a sign transaction flow
 			SignTxFlow signTxFlow = new SignTxFlow(flowSession, SignTransactionFlow.Companion.tracker());

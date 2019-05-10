@@ -10,10 +10,10 @@ import java.security.PublicKey
 /**
  * TODO: Refactor for promissory note and Accord integration.
  */
-class PromissoryNoteContract : Contract {
+class PromissoryNoteCordaContract : Contract {
     companion object {
         @JvmStatic
-        val IOU_CONTRACT_ID = "net.corda.accord.contract.PromissoryNoteContract"
+        val PROMISSORY_NOTE_CONTRACT_ID = "net.corda.accord.contract.PromissoryNoteContract"
     }
 
     /**
@@ -43,11 +43,11 @@ class PromissoryNoteContract : Contract {
 
                 val outputState = tx.outputStates.single() as PromissoryNoteState
                 "A newly issued IOU must have a positive amount." using (outputState.amount.quantity > 0)
-                "The lender and borrower cannot have the same identity." using (outputState.lender != outputState.borrower)
+                "The lender and maker cannot have the same identity." using (outputState.lenderCordaParty != outputState.makerCordaParty)
 
                 val signingParties = tx.commands.requireSingleCommand<Commands.Issue>().signers.toSet()
                 val participants = tx.outputStates.single().participants.map{ it -> it.owningKey }
-                "Both lender and borrower together only may sign IOU issue transaction." using(signingParties.containsAll<PublicKey>(participants) && signingParties.size == 2)
+                "Both lender and maker together only may sign IOU issue transaction." using(signingParties.containsAll<PublicKey>(participants) && signingParties.size == 2)
             }
 
             is Commands.Transfer -> requireThat {
@@ -57,10 +57,10 @@ class PromissoryNoteContract : Contract {
                 // Copy of input with new lender
                 val checkOutputState = tx.outputStates.single() as PromissoryNoteState
                 val checkInputState = tx.inputStates.single() as PromissoryNoteState
-                "Only the lender property may change." using (checkOutputState.withNewLender(checkInputState.lender) == checkInputState)
-                "The lender property must change in a transfer." using (checkOutputState.lender != checkInputState.lender)
-                val listOfPublicKeys = listOf(checkInputState.lender.owningKey, checkInputState.borrower.owningKey, checkOutputState.lender.owningKey)
-                "The borrower, old lender and new lender only must sign an IOU transfer transaction" using (command.signers.containsAll(listOfPublicKeys) && command.signers.size == 3)
+                "Only the lender property may change." using (checkOutputState.withNewLender(checkInputState.lenderCordaParty) == checkInputState)
+                "The lender property must change in a transfer." using (checkOutputState.lenderCordaParty != checkInputState.lenderCordaParty)
+                val listOfPublicKeys = listOf(checkInputState.lenderCordaParty.owningKey, checkInputState.makerCordaParty.owningKey, checkOutputState.lenderCordaParty.owningKey)
+                "The maker, old lender and new lender only must sign an IOU transfer transaction" using (command.signers.containsAll(listOfPublicKeys) && command.signers.size == 3)
             }
 
             is Commands.Settle -> requireThat {
@@ -76,7 +76,7 @@ class PromissoryNoteContract : Contract {
                 "The amount settled cannot be more than the amount outstanding." using (inputAmount.amount >= sum)
 
                 val checkOutput = tx.inputsOfType<PromissoryNoteState>().single()
-                val ourCash = cashStates.filter { it.owner.owningKey == checkOutput.lender.owningKey }
+                val ourCash = cashStates.filter { it.owner.owningKey == checkOutput.lenderCordaParty.owningKey }
 
                 "There must be output cash paid to the recipient." using ( ourCash.size > 0 )
 
@@ -90,9 +90,9 @@ class PromissoryNoteContract : Contract {
                     val outputStates = tx.outputsOfType<PromissoryNoteState>()
                     "There must be one output IOU." using ( outputStates.size == 1 )
 
-                    "The borrower may not change when settling." using ( inputState.borrower == outputStates.single().borrower )
+                    "The maker may not change when settling." using ( inputState.makerCordaParty == outputStates.single().makerCordaParty )
                     "The amount may not change when settling." using ( inputState.amount == outputStates.single().amount )
-                    "The lender may not change when settling." using ( inputState.lender == outputStates.single().lender )
+                    "The lender may not change when settling." using ( inputState.lenderCordaParty == outputStates.single().lenderCordaParty )
 
                 } else {
 
@@ -100,7 +100,7 @@ class PromissoryNoteContract : Contract {
 
                 }
 
-                "Both lender and borrower together only must sign IOU settle transaction." using (
+                "Both lender and maker together only must sign IOU settle transaction." using (
                         command.signers.toSet() == inputState.participants.map{ it -> it.owningKey }.toSet()
                         )
 

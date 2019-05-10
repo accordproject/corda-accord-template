@@ -16,8 +16,9 @@ import net.corda.core.transactions.TransactionBuilder
 import net.corda.core.utilities.OpaqueBytes
 import net.corda.finance.contracts.asset.Cash
 import net.corda.finance.flows.CashIssueFlow
-import net.corda.accord.contract.PromissoryNoteContract
+import net.corda.accord.contract.PromissoryNoteCordaContract
 import net.corda.accord.state.PromissoryNoteState
+import net.corda.core.identity.Party
 import net.corda.finance.workflows.getCashBalance
 import java.lang.IllegalArgumentException
 import java.util.*
@@ -40,7 +41,7 @@ class PromissoryNoteSettleFlow(val linearId: UniqueIdentifier, val amount: Amoun
         val notary = serviceHub.networkMapCache.notaryIdentities[0]
 
         // Throw exception if borrower is not running the flow
-        if (stateAndRefToSettle.state.data.borrower != ourIdentity) {
+        if (stateAndRefToSettle.state.data.makerCordaParty != ourIdentity) {
             throw IllegalArgumentException("The borrower must issue the flow")
         }
 
@@ -59,18 +60,18 @@ class PromissoryNoteSettleFlow(val linearId: UniqueIdentifier, val amount: Amoun
 
         // Add a command to the flow
         val tb = TransactionBuilder(notary)
-        val command = Command(PromissoryNoteContract.Commands.Settle(), listOf(ourIdentity.owningKey, stateAndRefToSettle.state.data.lender.owningKey))
+        val command = Command(PromissoryNoteCordaContract.Commands.Settle(), listOf(ourIdentity.owningKey, stateAndRefToSettle.state.data.lenderCordaParty.owningKey))
         tb.addCommand(command)
 
         // Add states to transaction
-        val tx = tb.withItems(stateAndRefToSettle, StateAndContract(settledState, PromissoryNoteContract.IOU_CONTRACT_ID))
+        val tx = tb.withItems(stateAndRefToSettle, StateAndContract(settledState, PromissoryNoteCordaContract.PROMISSORY_NOTE_CONTRACT_ID))
 
 //        //generateSpend(services, tx, amount, to, ourIdentity, onlyFromParties
-//        Cash.generateSpend(serviceHub, tx, amount, ourIdentityAndCert, settledState.lender, setOf(ourIdentity))
+//        Cash.generateSpend(serviceHub, tx, amount, ourIdentityAndCert, settledState.lenderCordaParty, setOf(ourIdentity))
 
         val ptx = serviceHub.signInitialTransaction(tx)
 
-        val listOfFlows = (stateAndRefToSettle.state.data.participants - ourIdentity).map{ it -> initiateFlow(it) }
+        val listOfFlows = (stateAndRefToSettle.state.data.participants - ourIdentity).map{ it -> initiateFlow(it as Party) }
         val stx = subFlow(CollectSignaturesFlow(ptx, listOfFlows))
 
         return subFlow(FinalityFlow(stx))
