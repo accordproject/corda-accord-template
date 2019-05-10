@@ -84,5 +84,7 @@ In the Corda shell:
 
 ### Issue a Flow from the Corda shell
 
-To initiate the contract: `flow start PromissoryNoteIssueFlow`
+To initiate the contract based on the `./contract.txt` legal agreement: `flow start PromissoryNoteIssueFlow`
+
+To initiate the contract based on a JSON instance: `flow start PromissoryNoteIssueJSONFlow jsonData: "{ \"$class\": \"org.accordproject.promissorynote.PromissoryNoteContract\",   \"contractId\": \"616d82b2-8fc4-4ff3-b43d-777671076d81\",   \"amount\": {     \"$class\": \"org.accordproject.money.MonetaryAmount\",     \"doubleValue\": 299.99,     \"currencyCode\": \"USD\"   },   \"date\": \"2018-01-30\",   \"maker\": \"ParticipantC\",   \"interestRate\": 3.8,   \"individual\": true,   \"makerAddress\": \"1 Main Street\",   \"lender\": \"Clause\",   \"legalEntity\": \"CORP\",   \"lenderAddress\": \"246 5th Ave, 3rd Fl, New York, NY 10001\",   \"principal\": {     \"$class\": \"org.accordproject.money.MonetaryAmount\",     \"doubleValue\": 500,     \"currencyCode\": \"USD\"   },   \"maturityDate\": \"2019-01-20\",   \"defaultDays\": 90,   \"insolvencyDays\": 90,   \"jurisdiction\": \"New York, NY\" }", contractText: "[ ... Contract goes here ... ]"`
 

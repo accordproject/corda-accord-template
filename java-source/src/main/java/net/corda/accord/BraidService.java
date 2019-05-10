@@ -15,8 +15,11 @@ public class BraidService {
         this.serviceHub = serviceHub;
     }
 
-    public String getIssuedPromissoryNotes() {
+    public String getOwner() {
+        return this.serviceHub.getMyInfo().getLegalIdentities().get(0).getName().toString();
+    }
 
+    public String getIssuedPromissoryNotes() {
         JsonArrayBuilder allStatesJSONArrayBuilder = Json.createArrayBuilder();
 
         serviceHub.getVaultService().queryBy(PromissoryNoteState.class).getStates().stream().forEach(stateAndRef -> {
@@ -26,6 +29,7 @@ public class BraidService {
             objectBuilder.add("AmountQuantity", ((double) stateAndRef.getState().getData().getAmount().getQuantity()) / 100.00);
             objectBuilder.add("AmountToken", stateAndRef.getState().getData().getAmount().getToken().toString());
             objectBuilder.add("LinearId", stateAndRef.getState().getData().getLinearId().toString());
+            objectBuilder.add("owner", this.serviceHub.getMyInfo().getLegalIdentities().get(0).getName().toString());
             allStatesJSONArrayBuilder.add(objectBuilder.build().toString());
         });
 
