@@ -26,7 +26,6 @@ import net.corda.core.utilities.ProgressTracker;
 import net.corda.core.utilities.ProgressTracker.Step;
 
 import org.accordproject.promissorynote.PromissoryNoteContract;
-import org.apache.commons.io.IOUtils;
 
 /**
  * This is the flow which handles issuance of new promissory notes from a legal document.

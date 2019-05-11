@@ -6,7 +6,6 @@ import net.corda.core.identity.Party
 import net.corda.core.identity.AbstractParty
 import java.util.*
 import com.google.common.collect.ImmutableList
-import net.corda.core.serialization.ConstructorForDeserialization
 import net.corda.core.contracts.BelongsToContract
 import org.accordproject.promissorynote.PromissoryNoteContract
 
@@ -26,15 +25,6 @@ data class PromissoryNoteState(val apContract: PromissoryNoteContract,
                                override val linearId: UniqueIdentifier = UniqueIdentifier()
 ): ContractState, LinearState {
 
-    @ConstructorForDeserialization
-    private constructor(promissoryNoteContract: PromissoryNoteContract, paidAmount: Amount<Currency>, makerCordaParty: Party, lenderCordaParty: Party, uniqueIdentifier: UniqueIdentifier) : this (
-            promissoryNoteContract,
-            paidAmount,
-            lenderCordaParty,
-            makerCordaParty,
-            uniqueIdentifier
-    )
-
     // Participants included in the contract must also be CordaNodes.
     override val participants: List<AbstractParty>
         get() = ImmutableList.of<AbstractParty>(makerCordaParty, lenderCordaParty)
@@ -44,7 +34,7 @@ data class PromissoryNoteState(val apContract: PromissoryNoteContract,
 
     fun pay(paidAmount: Amount<Currency>): PromissoryNoteState {
         val newAmountPaid = this.paid.plus(paidAmount)
-        return PromissoryNoteState(apContract, newAmountPaid, lenderCordaParty, makerCordaParty, linearId)
+        return PromissoryNoteState(apContract, lenderCordaParty, makerCordaParty, newAmountPaid, linearId)
     }
 
     // Utility function for creating a promissory note state with a new lender.
@@ -62,7 +52,7 @@ data class PromissoryNoteState(val apContract: PromissoryNoteContract,
              paid: Amount<Currency>,
              lenderCordaParty: Party,
              makerCordaParty: Party): PromissoryNoteState {
-        return PromissoryNoteState(apContract, paid, lenderCordaParty, makerCordaParty, this.linearId)
+        return PromissoryNoteState(apContract, lenderCordaParty, makerCordaParty, paid, this.linearId)
     }
 
 }
