@@ -29,7 +29,6 @@ public class BraidService {
             objectBuilder.add("AmountQuantity", ((double) stateAndRef.getState().getData().getAmount().getQuantity()) / 100.00);
             objectBuilder.add("AmountToken", stateAndRef.getState().getData().getAmount().getToken().toString());
             objectBuilder.add("LinearId", stateAndRef.getState().getData().getLinearId().toString());
-            objectBuilder.add("owner", this.serviceHub.getMyInfo().getLegalIdentities().get(0).getName().toString());
             allStatesJSONArrayBuilder.add(objectBuilder.build().toString());
         });
 
