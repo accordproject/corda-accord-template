@@ -20,7 +20,6 @@ import net.corda.core.contracts.requireThat
 import net.corda.core.utilities.ProgressTracker
 import net.corda.core.utilities.ProgressTracker.Step
 
-import org.apache.commons.io.IOUtils
 import java.security.PublicKey
 
 /**
@@ -31,7 +30,7 @@ import java.security.PublicKey
 @InitiatingFlow
 @StartableByRPC
 @StartableByService
-class PromissoryNoteIssueJSONFlow : FlowLogic<SignedTransaction>() {
+class PromissoryNoteIssueJSONFlow(private val contractText: String, private val jsonData: String) : FlowLogic<SignedTransaction>() {
 
     /** TODO: Enable the user to specify the file path for the promissory note template
      * TODO: Adjust the cicero-parse command to include an option on only return the JSON with no initial messaging
@@ -46,19 +45,14 @@ class PromissoryNoteIssueJSONFlow : FlowLogic<SignedTransaction>() {
         progressTracker.currentStep = GENERATING_STATE_FROM_CONTRACT
         try {
             progressTracker.currentStep = GETTING_LAW_DEGREE
-            // Get an input stream of data from the accord utils shell script.
-            val dataFromContract = AccordUtils.stateFromContract
-
-            // Map the JSON obtained from the input stream to a POJO.
-            val jsonData = IOUtils.toString(dataFromContract, "UTF-8")
             val objectMapper = ObjectMapper()
 
             progressTracker.currentStep = PARSING_LEGALESE
-            val parsedContractData = objectMapper.readValue<org.accordproject.promissorynote.PromissoryNoteContract>(jsonData, org.accordproject.promissorynote.PromissoryNoteContract::class.java)
+            val parsedContractData = objectMapper.readValue(jsonData, org.accordproject.promissorynote.PromissoryNoteContract::class.java)
 
             // Get the relevant Corda parties from the network map using parsed contract data.
-            val maker = serviceHub.networkMapCache.getPeerByLegalName(CordaX500Name(parsedContractData.getMaker(), "NY", "US"))
-            val lender = serviceHub.networkMapCache.getPeerByLegalName(CordaX500Name(parsedContractData.getLender(), "NY", "US"))
+            val maker = serviceHub.networkMapCache.getPeerByLegalName(CordaX500Name(parsedContractData.maker, "NY", "US"))
+            val lender = serviceHub.networkMapCache.getPeerByLegalName(CordaX500Name(parsedContractData.lender, "NY", "US"))
             state = PromissoryNoteState(parsedContractData, maker!!, lender!!)
             progressTracker.currentStep = MAKING_PARENTS_HAPPY
         } catch (e: Exception) {
@@ -87,18 +81,9 @@ class PromissoryNoteIssueJSONFlow : FlowLogic<SignedTransaction>() {
         builder.addCommand(issueCommand)
 
         // Step 5. Add the contract to the transaction
-        val root: String
-        if (System.getenv("CORDAPP_ROOT") != null) {
-            root = System.getenv("CORDAPP_ROOT")
-        } else {
-            root = "../"
-        }
-
-        val ciceroTemplateFile = File("$root/contract.txt")
-
         try {
-            val ciceroTemplateFileInputStream = FileInputStream(ciceroTemplateFile)
-            val attachmentHash = serviceHub.attachments.importAttachment(AccordUtils.getCompressed(ciceroTemplateFileInputStream), ourIdentity.name.toString(), ciceroTemplateFile.name)
+            val ciceroTemplateFileInputStream = ByteArrayInputStream(contractText.toByteArray())
+            val attachmentHash = serviceHub.attachments.importAttachment(AccordUtils.getCompressed(ciceroTemplateFileInputStream), ourIdentity.name.toString(), "contract.txt")
             builder.addAttachment(attachmentHash)
         } catch (e: Exception) {
             throw Error(e.message)
@@ -178,11 +163,8 @@ class PromissoryNoteIssueJSONResponderFlow(private val flowSession: FlowSession)
             }
         }
 
-
         val txWeJustSignedId = subFlow(signedTransactionFlow)
-
         return subFlow(ReceiveFinalityFlow(flowSession, txWeJustSignedId.id))
-
     }
 
 }

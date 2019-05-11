@@ -20,7 +20,7 @@ class BraidServer(appServiceHub: AppServiceHub) : SingletonSerializeAsToken() {
 
         BraidConfig()
                 .withFlow("PromissoryNoteIssueFlow", PromissoryNoteIssueFlow::class.java)
-                .withFlow("PromissoryNoteIssueJSONFlow", PromissoryNoteIssueJSONFlow.InitiatorFlow::class.java)
+                .withFlow("PromissoryNoteIssueJSONFlow", PromissoryNoteIssueJSONFlow::class.java)
                 .withService("PromissoryNotesInterface", BraidService(appServiceHub))
                 .withPort(appServiceHub.getAppContext().config.get("braid") as Int)
                 .withHttpServerOptions(HttpServerOptions().setSsl(false))

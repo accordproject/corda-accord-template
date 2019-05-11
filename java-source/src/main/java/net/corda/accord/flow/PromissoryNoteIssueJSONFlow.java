@@ -140,13 +140,6 @@ public class PromissoryNoteIssueJSONFlow {
             builder.addCommand(issueCommand);
 
       // Step 5. Add the contract to the transaction
-      String root;
-      if (System.getenv("CORDAPP_ROOT") != null) {
-        root = System.getenv("CORDAPP_ROOT");
-      } else {
-        root = "../";
-      }
-
       try {
         InputStream ciceroTemplateInputStream = new ByteArrayInputStream(contractText.getBytes());
         SecureHash attachmentHash = getServiceHub().getAttachments().importAttachment(AccordUtils.getCompressed(ciceroTemplateInputStream), getOurIdentity().getName().toString(), "contract.txt");
@@ -216,8 +209,6 @@ public class PromissoryNoteIssueJSONFlow {
           txWeJustSigned = stx.getId();
         }
       }
-
-      flowSession.getCounterpartyFlowInfo().getFlowVersion();
 
       // Create a sign transaction flow
       SignTxFlow signTxFlow = new SignTxFlow(flowSession, SignTransactionFlow.Companion.tracker());

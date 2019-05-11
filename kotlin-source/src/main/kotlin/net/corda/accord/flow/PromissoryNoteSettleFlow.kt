@@ -2,14 +2,6 @@ package net.corda.accord.flow
 
 import co.paralleluniverse.fibers.Suspendable
 import net.corda.core.contracts.*
-import net.corda.core.flows.CollectSignaturesFlow
-import net.corda.core.flows.FinalityFlow
-import net.corda.core.flows.FlowLogic
-import net.corda.core.flows.FlowSession
-import net.corda.core.flows.InitiatedBy
-import net.corda.core.flows.InitiatingFlow
-import net.corda.core.flows.SignTransactionFlow
-import net.corda.core.flows.StartableByRPC
 import net.corda.core.node.services.vault.QueryCriteria
 import net.corda.core.transactions.SignedTransaction
 import net.corda.core.transactions.TransactionBuilder
@@ -18,6 +10,7 @@ import net.corda.finance.contracts.asset.Cash
 import net.corda.finance.flows.CashIssueFlow
 import net.corda.accord.contract.PromissoryNoteCordaContract
 import net.corda.accord.state.PromissoryNoteState
+import net.corda.core.flows.*
 import net.corda.core.identity.Party
 import net.corda.finance.workflows.getCashBalance
 import java.lang.IllegalArgumentException
@@ -83,9 +76,9 @@ class PromissoryNoteSettleFlow(val linearId: UniqueIdentifier, val amount: Amoun
  * The signing is handled by the [SignTransactionFlow].
  */
 @InitiatedBy(PromissoryNoteSettleFlow::class)
-class PromissoryNoteSettleFlowResponder(val flowSession: FlowSession): FlowLogic<Unit>() {
+class PromissoryNoteSettleFlowResponder(val flowSession: FlowSession): FlowLogic<SignedTransaction>() {
     @Suspendable
-    override fun call() {
+    override fun call(): SignedTransaction {
         val signedTransactionFlow = object : SignTransactionFlow(flowSession) {
             override fun checkTransaction(stx: SignedTransaction) = requireThat {
                 val outputStates = stx.tx.outputs.map { it.data::class.java.name }.toList()
@@ -93,7 +86,8 @@ class PromissoryNoteSettleFlowResponder(val flowSession: FlowSession): FlowLogic
             }
         }
 
-        subFlow(signedTransactionFlow)
+        val txWeJustSignedId = subFlow(signedTransactionFlow)
+        return subFlow(ReceiveFinalityFlow(flowSession, txWeJustSignedId.id))
     }
 }
 

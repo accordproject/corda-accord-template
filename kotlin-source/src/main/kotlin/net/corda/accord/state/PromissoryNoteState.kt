@@ -16,45 +16,35 @@ import org.accordproject.promissorynote.PromissoryNoteContract
  * to be included as part of state data.
  */
 
+// TODO: Parties parsed from the source legal contract contain a String Name and Address, these needs to be assigned to Node identities.
+// TODO: `amount` and `principal` are both included in parsedJSON as a accord-project monetary amount. They must be converted to the Corda Amount<Currency> class.
 @BelongsToContract(PromissoryNoteCordaContract::class)
-class PromissoryNoteState// Private constructor used only for copying a State object
-@ConstructorForDeserialization
-private constructor(// TODO: `amount` and `principal` are both included in parsedJSON as a accord-project monetary amount. They must be converted to the Corda Amount<Currency> class.
-        // The fields listed here correspond to the fields returned in the JSON output from the Cicero-Parse shell-script.
-        var apContract: PromissoryNoteContract,
-        override var linearId: UniqueIdentifier,
-        var paid: Amount<Currency>,
-        // TODO: Parties parsed from the source legal contract contain a String Name and Address, these needs to be assigned to Node identities.
-        var makerCordaParty: Party,
-        var lenderCordaParty: Party) : ContractState, LinearState {
+data class PromissoryNoteState(val apContract: PromissoryNoteContract,
+                               val makerCordaParty: Party,
+                               val lenderCordaParty: Party,
+                               val paid: Amount<Currency> = apContract.amount.currency,
+                               override val linearId: UniqueIdentifier = UniqueIdentifier()
+): ContractState, LinearState {
+
+    @ConstructorForDeserialization
+    private constructor(promissoryNoteContract: PromissoryNoteContract, paidAmount: Amount<Currency>, makerCordaParty: Party, lenderCordaParty: Party, uniqueIdentifier: UniqueIdentifier) : this (
+            promissoryNoteContract,
+            paidAmount,
+            lenderCordaParty,
+            makerCordaParty,
+            uniqueIdentifier
+    )
 
     // Participants included in the contract must also be CordaNodes.
     override val participants: List<AbstractParty>
         get() = ImmutableList.of<AbstractParty>(makerCordaParty, lenderCordaParty)
 
     val amount: Amount<Currency>
-        get() = this.apContract.getAmount().getCurrency()
-
-    /**
-     * This is the primary constructor for creating a new promissory note from JSON data returned by Cicero-Parse. It's also important to note
-     * that the constructor has both maker and lender party parameters. This information cannot be parsed from the contract and the nodes must be
-     * explicitly passed in as a reference.
-     */
-
-    /**
-     * TODO: Align node CordaX500Names with legal documentation so that nodes might be identified and selected from the network at the time of issuance rather than being explicitly passed in.
-     */
-    constructor(promissoryNoteContract: PromissoryNoteContract, makerCordaParty: Party, lenderCordaParty: Party) : this(
-            promissoryNoteContract,
-            UniqueIdentifier(),
-            promissoryNoteContract.getAmount().getCurrency(),
-            lenderCordaParty,
-            makerCordaParty
-    )
+        get() = this.apContract.amount.currency
 
     fun pay(paidAmount: Amount<Currency>): PromissoryNoteState {
         val newAmountPaid = this.paid.plus(paidAmount)
-        return PromissoryNoteState(apContract, linearId, newAmountPaid, lenderCordaParty, makerCordaParty)
+        return PromissoryNoteState(apContract, newAmountPaid, lenderCordaParty, makerCordaParty, linearId)
     }
 
     // Utility function for creating a promissory note state with a new lender.
@@ -72,7 +62,7 @@ private constructor(// TODO: `amount` and `principal` are both included in parse
              paid: Amount<Currency>,
              lenderCordaParty: Party,
              makerCordaParty: Party): PromissoryNoteState {
-        return PromissoryNoteState(apContract, this.linearId, paid, lenderCordaParty, makerCordaParty)
+        return PromissoryNoteState(apContract, paid, lenderCordaParty, makerCordaParty, this.linearId)
     }
 
 }
