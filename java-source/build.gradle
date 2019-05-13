@@ -50,8 +50,8 @@ dependencies {
 
     // CorDapp dependencies
     // Specify your cordapp's dependencies below, including dependent CorDapps
-    cordapp "$corda_release_distribution:corda-finance-workflows:$corda_release_version"
     cordapp "$corda_release_distribution:corda-finance-contracts:$corda_release_version"
+    cordapp "$corda_release_distribution:corda-finance-workflows:$corda_release_version"
 }
 
 tasks.withType(JavaCompile) {

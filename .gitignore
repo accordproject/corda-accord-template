@@ -76,4 +76,5 @@ node_modules/
 
 # Accord Classes
 java-source/src/main/java/org/
+kotlin-source/src/main/kotlin/org/
 
