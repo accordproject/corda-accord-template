@@ -34,5 +34,4 @@ public class BraidService {
 
         return allStatesJSONArrayBuilder.build().toString();
     }
-
 }
