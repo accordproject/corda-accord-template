@@ -56,8 +56,8 @@ public class PromissoryNoteState implements ContractState, LinearState {
                 promissoryNoteContract,
                 new UniqueIdentifier(),
                 promissoryNoteContract.getAmount().getCurrency(),
-                lenderCordaParty,
-                makerCordaParty
+                makerCordaParty,
+                lenderCordaParty
         );
     }
 
@@ -90,7 +90,7 @@ public class PromissoryNoteState implements ContractState, LinearState {
 
     public PromissoryNoteState pay(Amount<Currency> paidAmount) {
         Amount<Currency> newAmountPaid = this.paid.plus(paidAmount);
-        return new PromissoryNoteState(apContract, linearId, newAmountPaid, lenderCordaParty, makerCordaParty);
+        return new PromissoryNoteState(apContract, linearId, newAmountPaid, makerCordaParty, lenderCordaParty);
     }
 
     // Utility function for creating a promissory note state with a new lender.
@@ -108,7 +108,7 @@ public class PromissoryNoteState implements ContractState, LinearState {
                                     Amount<Currency> paid,
                                     Party lenderCordaParty,
                                     Party makerCordaParty) {
-        return new PromissoryNoteState(apContract, this.getLinearId(), paid, lenderCordaParty, makerCordaParty);
+        return new PromissoryNoteState(apContract, this.getLinearId(), paid, makerCordaParty, lenderCordaParty);
     }
 
     public Amount<Currency> getAmount() {

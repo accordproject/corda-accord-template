@@ -34,7 +34,7 @@ data class PromissoryNoteState(val apContract: PromissoryNoteContract,
 
     fun pay(paidAmount: Amount<Currency>): PromissoryNoteState {
         val newAmountPaid = this.paid.plus(paidAmount)
-        return PromissoryNoteState(apContract, lenderCordaParty, makerCordaParty, newAmountPaid, linearId)
+        return PromissoryNoteState(apContract, makerCordaParty, lenderCordaParty, newAmountPaid, linearId)
     }
 
     // Utility function for creating a promissory note state with a new lender.
@@ -42,17 +42,17 @@ data class PromissoryNoteState(val apContract: PromissoryNoteContract,
         return this.copy(
                 this.apContract,
                 this.paid,
-                newLender,
-                this.makerCordaParty
+                this.makerCordaParty,
+                newLender
         )
     }
 
     // Utility function for copying a promissory note state with the
     fun copy(apContract: PromissoryNoteContract,
              paid: Amount<Currency>,
-             lenderCordaParty: Party,
-             makerCordaParty: Party): PromissoryNoteState {
-        return PromissoryNoteState(apContract, lenderCordaParty, makerCordaParty, paid, this.linearId)
+             makerCordaParty: Party,
+             lenderCordaParty: Party): PromissoryNoteState {
+        return PromissoryNoteState(apContract, makerCordaParty, lenderCordaParty, paid, this.linearId)
     }
 
 }
