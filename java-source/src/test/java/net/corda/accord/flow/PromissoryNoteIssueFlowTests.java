@@ -23,7 +23,7 @@ import static net.corda.accord.TestUtils.*;
 
 public class PromissoryNoteIssueFlowTests {
     private MockNetwork mockNetwork;
-    private StartedMockNode a, b;
+    private StartedMockNode a, b, c, d;
 
 
     @Before
@@ -32,12 +32,16 @@ public class PromissoryNoteIssueFlowTests {
                 .withNotarySpecs(Arrays.asList(new MockNetworkNotarySpec(new CordaX500Name("Notary", "London", "GB"))));
         mockNetwork = new MockNetwork(mockNetworkParameters);
 
-        a = mockNetwork.createNode(DANIEL_SELMAN.getName());
+        a = mockNetwork.createNode(DANIEL.getName());
         b = mockNetwork.createNode(CLAUSE.getName());
+        c = mockNetwork.createNode(JASON.getName());
+        d = mockNetwork.createNode(R3.getName());
 
         ArrayList<StartedMockNode> startedNodes = new ArrayList<>();
         startedNodes.add(a);
         startedNodes.add(b);
+        startedNodes.add(c);
+        startedNodes.add(d);
 
         // For real nodes this happens automatically, but we have to manually register the flow for tests
         startedNodes.forEach(el -> el.registerInitiatedFlow(PromissoryNoteIssueFlow.ResponderFlow.class));

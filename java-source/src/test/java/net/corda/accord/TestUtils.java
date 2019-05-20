@@ -13,7 +13,9 @@ public class TestUtils {
 	public static TestIdentity DUMMY = new TestIdentity(new CordaX500Name("Dummy", "FakeLand", "US"));
 
 	// Accord Project Test Utils
-	public static TestIdentity DANIEL_SELMAN = new TestIdentity(new CordaX500Name("Daniel Selman", "NY", "US"));
-	public static TestIdentity CLAUSE = new TestIdentity(new CordaX500Name("Clause", "NY", "US"));
+	public static TestIdentity DANIEL = new TestIdentity(new CordaX500Name("Daniel", "NY", "US"));
+	public static TestIdentity CLAUSE = new TestIdentity(new CordaX500Name("Clause Inc.", "NY", "US"));
+	public static TestIdentity JASON = new TestIdentity(new CordaX500Name("Jason", "NY", "US"));
+	public static TestIdentity R3 = new TestIdentity(new CordaX500Name("R3 LLC", "NY", "US"));
 
 }
