@@ -92,7 +92,16 @@ public class PromissoryNoteIssueFlow {
 
 			// Step 0. Generate an input state from the parsed Contract.
 			progressTracker.setCurrentStep(GENERATING_STATE_FROM_CONTRACT);
+			String root;
+			if (System.getenv("CORDAPP_ROOT") != null) {
+				root = System.getenv("CORDAPP_ROOT");
+			} else {
+				root = "../";
+			}
+			File ciceroTemplateFile = new File(root + "/contract.txt");
+
 			try {
+				InputStream ciceroTemplateFileInputStream = new FileInputStream(ciceroTemplateFile);
 				progressTracker.setCurrentStep(GETTING_LAW_DEGREE);
 
 				// Get an input stream of data from the accord utils shell script.
@@ -107,7 +116,7 @@ public class PromissoryNoteIssueFlow {
 				// Get the relevant Corda parties from the network map using parsed contract data.
 				Party maker = getServiceHub().getNetworkMapCache().getPeerByLegalName(new CordaX500Name(parsedContractData.getMaker(), "NY", "US"));
 				Party lender = getServiceHub().getNetworkMapCache().getPeerByLegalName(new CordaX500Name(parsedContractData.getLender(), "NY", "US"));
-				state = new PromissoryNoteState(parsedContractData, maker, lender);
+				state = new PromissoryNoteState(parsedContractData, ciceroTemplateFileInputStream.toString(), maker, lender);
 				progressTracker.setCurrentStep(MAKING_PARENTS_HAPPY);
 			} catch (Exception e) {
 				throw new FlowException("Error parsing contract.txt" + e.toString());
@@ -135,15 +144,6 @@ public class PromissoryNoteIssueFlow {
             builder.addCommand(issueCommand);
 
 			// Step 5. Add the contract to the transaction
-			String root;
-			if (System.getenv("CORDAPP_ROOT") != null) {
-				root = System.getenv("CORDAPP_ROOT");
-			} else {
-				root = "../";
-			}
-
-			File ciceroTemplateFile = new File(root + "/contract.txt");
-
 			try {
 				InputStream ciceroTemplateFileInputStream = new FileInputStream(ciceroTemplateFile);
 				SecureHash attachmentHash = getServiceHub().getAttachments().importAttachment(AccordUtils.getCompressed(ciceroTemplateFileInputStream), getOurIdentity().getName().toString(), ciceroTemplateFile.getName());

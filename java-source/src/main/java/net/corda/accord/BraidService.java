@@ -30,6 +30,7 @@ public class BraidService {
             objectBuilder.add("AmountToken", stateAndRef.getState().getData().getAmount().getToken().toString());
             objectBuilder.add("LinearId", stateAndRef.getState().getData().getLinearId().toString());
             objectBuilder.add("IssuedOn", stateAndRef.getState().getData().getApContract().getDate().toString());
+            objectBuilder.add("ContractText", stateAndRef.getState().getData().getApContractText());
             allStatesJSONArrayBuilder.add(objectBuilder.build().toString());
         });
 

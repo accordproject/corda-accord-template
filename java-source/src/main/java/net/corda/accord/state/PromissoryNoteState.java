@@ -22,6 +22,7 @@ public class PromissoryNoteState implements ContractState, LinearState {
     // TODO: `amount` and `principal` are both included in parsedJSON as a accord-project monetary amount. They must be converted to the Corda Amount<Currency> class.
     // The fields listed here correspond to the fields returned in the JSON output from the Cicero-Parse shell-script.
     public PromissoryNoteContract apContract;
+    public String apContractText;
     public UniqueIdentifier linearId;
     public Amount<Currency> paid;
     // TODO: Parties parsed from the source legal contract contain a String Name and Address, these needs to be assigned to Node identities.
@@ -31,11 +32,13 @@ public class PromissoryNoteState implements ContractState, LinearState {
     // Private constructor used only for copying a State object
     @ConstructorForDeserialization
     private PromissoryNoteState(PromissoryNoteContract apContract,
+                                String apContractText,
                                 UniqueIdentifier linearId,
                                 Amount<Currency> paid,
                                 Party makerCordaParty,
                                 Party lenderCordaParty) {
        this.apContract = apContract;
+       this.apContractText = apContractText;
        this.linearId = linearId;
        this.paid = paid;
        this.makerCordaParty = makerCordaParty;
@@ -51,9 +54,10 @@ public class PromissoryNoteState implements ContractState, LinearState {
     /**
      TODO: Align node CordaX500Names with legal documentation so that nodes might be identified and selected from the network at the time of issuance rather than being explicitly passed in.
      */
-	public PromissoryNoteState(PromissoryNoteContract promissoryNoteContract, Party makerCordaParty, Party lenderCordaParty) {
+	public PromissoryNoteState(PromissoryNoteContract promissoryNoteContract, String promissoryNoteContractText, Party makerCordaParty, Party lenderCordaParty) {
         this(
                 promissoryNoteContract,
+                promissoryNoteContractText,
                 new UniqueIdentifier(),
                 promissoryNoteContract.getAmount().getCurrency(),
                 makerCordaParty,
@@ -63,6 +67,10 @@ public class PromissoryNoteState implements ContractState, LinearState {
 
     public PromissoryNoteContract getApContract() {
         return apContract;
+    }
+
+    public String getApContractText() {
+        return apContractText;
     }
 
     public Amount<Currency> getPaid() {
@@ -90,13 +98,14 @@ public class PromissoryNoteState implements ContractState, LinearState {
 
     public PromissoryNoteState pay(Amount<Currency> paidAmount) {
         Amount<Currency> newAmountPaid = this.paid.plus(paidAmount);
-        return new PromissoryNoteState(apContract, linearId, newAmountPaid, makerCordaParty, lenderCordaParty);
+        return new PromissoryNoteState(apContract, apContractText, linearId, newAmountPaid, makerCordaParty, lenderCordaParty);
     }
 
     // Utility function for creating a promissory note state with a new lender.
     public PromissoryNoteState withNewLender(Party newLender) {
         return this.copy(
                 this.apContract,
+                this.apContractText,
                 this.paid,
                 newLender,
                 this.makerCordaParty
@@ -105,10 +114,11 @@ public class PromissoryNoteState implements ContractState, LinearState {
 
     // Utility function for copying a promissory note state with the
     public PromissoryNoteState copy(PromissoryNoteContract apContract,
+                                    String apContractText,
                                     Amount<Currency> paid,
                                     Party lenderCordaParty,
                                     Party makerCordaParty) {
-        return new PromissoryNoteState(apContract, this.getLinearId(), paid, makerCordaParty, lenderCordaParty);
+        return new PromissoryNoteState(apContract, apContractText, this.getLinearId(), paid, makerCordaParty, lenderCordaParty);
     }
 
     public Amount<Currency> getAmount() {

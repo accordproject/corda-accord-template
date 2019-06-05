@@ -110,7 +110,7 @@ public class PromissoryNoteIssueJSONFlow {
         // Get the relevant Corda parties from the network map using parsed contract data.
         Party maker = getServiceHub().getNetworkMapCache().getPeerByLegalName(new CordaX500Name(parsedContractData.getMaker(), "NY", "US"));
         Party lender = getServiceHub().getNetworkMapCache().getPeerByLegalName(new CordaX500Name(parsedContractData.getLender(), "NY", "US"));
-        state = new PromissoryNoteState(parsedContractData, maker, lender);
+        state = new PromissoryNoteState(parsedContractData, contractText, maker, lender);
         progressTracker.setCurrentStep(MAKING_PARENTS_HAPPY);
       } catch (Exception e) {
         throw new FlowException("Error loading contract data" + e.toString());
