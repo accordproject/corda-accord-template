@@ -6,21 +6,20 @@ import java.util.zip.ZipOutputStream;
 
 public class AccordUtils {
 
-
     /**
      * This function returns an input stream after compressing the file that is read from disk.
-    */
-    public static InputStream getCompressed(InputStream is )
+     */
+    public static InputStream getCompressed(InputStream is)
             throws IOException
     {
         byte data[] = new byte[2048];
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ZipOutputStream zos = new ZipOutputStream( bos );
-        BufferedInputStream entryStream = new BufferedInputStream( is, 2048);
-        ZipEntry entry = new ZipEntry( "" );
-        zos.putNextEntry( entry );
+        ZipOutputStream zos = new ZipOutputStream(bos);
+        BufferedInputStream entryStream = new BufferedInputStream(is, 2048);
+        ZipEntry entry = new ZipEntry("");
+        zos.putNextEntry(entry);
         int count;
-        while ( ( count = entryStream.read( data, 0, 2048) ) != -1 )
+        while ( ( count = entryStream.read( data, 0, 2048) ) != -1)
         {
             zos.write( data, 0, count );
         }
@@ -28,7 +27,27 @@ public class AccordUtils {
         zos.closeEntry();
         zos.close();
 
-        return new ByteArrayInputStream( bos.toByteArray() );
+        return new ByteArrayInputStream( bos.toByteArray());
+    }
+
+
+    /**
+     * This function returns a string from an input stream
+     */
+    public static String getContent(InputStream is)
+            throws IOException
+    {
+        try( BufferedReader br =
+             new BufferedReader( new InputStreamReader(is, "UTF-8")))
+            {
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while(( line = br.readLine()) != null ) {
+                    sb.append( line );
+                    sb.append( '\n' );
+                }
+                return sb.toString();
+            }
     }
 
     /**
@@ -36,7 +55,6 @@ public class AccordUtils {
      * The script 'cicero-parse.sh writes the output of Cicero-parse to a temporary file, suppresses standard system-out messaging and then
      * logs out the JSON (which is captured in the input stream.
      */
-
     public static InputStream getStateFromContract() throws IOException {
         String root;
 

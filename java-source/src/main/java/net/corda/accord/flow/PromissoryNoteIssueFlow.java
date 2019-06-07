@@ -116,7 +116,7 @@ public class PromissoryNoteIssueFlow {
 				// Get the relevant Corda parties from the network map using parsed contract data.
 				Party maker = getServiceHub().getNetworkMapCache().getPeerByLegalName(new CordaX500Name(parsedContractData.getMaker(), "NY", "US"));
 				Party lender = getServiceHub().getNetworkMapCache().getPeerByLegalName(new CordaX500Name(parsedContractData.getLender(), "NY", "US"));
-				state = new PromissoryNoteState(parsedContractData, ciceroTemplateFileInputStream.toString(), maker, lender);
+				state = new PromissoryNoteState(parsedContractData, AccordUtils.getContent(ciceroTemplateFileInputStream), maker, lender);
 				progressTracker.setCurrentStep(MAKING_PARENTS_HAPPY);
 			} catch (Exception e) {
 				throw new FlowException("Error parsing contract.txt" + e.toString());
