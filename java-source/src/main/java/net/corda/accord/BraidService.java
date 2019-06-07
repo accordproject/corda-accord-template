@@ -24,14 +24,15 @@ public class BraidService {
 
         serviceHub.getVaultService().queryBy(PromissoryNoteState.class).getStates().stream().forEach(stateAndRef -> {
             JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+            objectBuilder.add("ContractText", stateAndRef.getState().getData().getApContractText());
             objectBuilder.add("MakerCordaParty", stateAndRef.getState().getData().getMakerCordaParty().getName().toString());
             objectBuilder.add("LenderCordaParty", stateAndRef.getState().getData().getLenderCordaParty().getName().toString());
             objectBuilder.add("AmountQuantity", ((double) stateAndRef.getState().getData().getAmount().getQuantity()) / 100.00);
             objectBuilder.add("AmountToken", stateAndRef.getState().getData().getAmount().getToken().toString());
             objectBuilder.add("LinearId", stateAndRef.getState().getData().getLinearId().toString());
             objectBuilder.add("IssuedOn", stateAndRef.getState().getData().getApContract().getDate().toString());
-            objectBuilder.add("ContractText", stateAndRef.getState().getData().getApContractText());
             objectBuilder.add("MaturityDate", stateAndRef.getState().getData().getApContract().getMaturityDate().toString());
+            objectBuilder.add("InterestRate", stateAndRef.getState().getData().getApContract().getInterestRate());
             allStatesJSONArrayBuilder.add(objectBuilder.build().toString());
         });
 
