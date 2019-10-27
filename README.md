@@ -26,8 +26,7 @@ After installing the required tools, clone or download a zip of this repository,
 
 ### IntelliJ setup
 * From the main menu, click `open` (not `import`!) then navigate to where you placed this repository.
-* Click `File->Project Structure`, and set the `Project SDK` to be the JDK you downloaded (by clicking `new` and 
-nagivating to where the JDK was installed). Click `Okay`.
+* Click `File->Project Structure`, and set the `Project SDK` to be the JDK you downloaded (by clicking `new` and navigating to where the JDK was installed). Click `Okay`.
 * Next, click `import` on the `Import Gradle Project` popup, leaving all options as they are. 
 * If you do not see the popup: Navigate back to `Project Structure->Modules`, clicking the `+ -> Import` button,
 navigate to and select the repository folder, select `Gradle` from the next menu, and finally click `Okay`, 
@@ -87,4 +86,3 @@ In the Corda shell:
 To initiate the contract based on the `./contract.txt` legal agreement: `flow start PromissoryNoteIssueFlow`
 
 To initiate the contract based on a JSON instance: `flow start PromissoryNoteIssueJSONFlow jsonData: "{ \"$class\": \"org.accordproject.promissorynote.PromissoryNoteContract\",   \"contractId\": \"616d82b2-8fc4-4ff3-b43d-777671076d81\",   \"amount\": {     \"$class\": \"org.accordproject.money.MonetaryAmount\",     \"doubleValue\": 299.99,     \"currencyCode\": \"USD\"   },   \"date\": \"2018-01-30\",   \"maker\": \"Jason\",   \"interestRate\": 3.8,   \"individual\": true,   \"makerAddress\": \"1 Main Street\",   \"lender\": \"Clause Inc.\",   \"legalEntity\": \"CORP\",   \"lenderAddress\": \"246 5th Ave, 3rd Fl, New York, NY 10001\",   \"principal\": {     \"$class\": \"org.accordproject.money.MonetaryAmount\",     \"doubleValue\": 500,     \"currencyCode\": \"USD\"   },   \"maturityDate\": \"2019-01-20\",   \"defaultDays\": 90,   \"insolvencyDays\": 90,   \"jurisdiction\": \"New York, NY\" }", contractText: "[ ... Contract goes here ... ]"`
-
